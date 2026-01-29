@@ -7,4 +7,5 @@ export interface Tour {
   imagenUrl: string;
   latitud: number;
   longitud: number;
+  precio?: number;
 }

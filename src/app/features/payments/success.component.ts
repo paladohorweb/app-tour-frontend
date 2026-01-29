@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-success',
   standalone: true,
-  imports: [],
-  templateUrl: './success.component.html',
-  styleUrl: './success.component.css'
+  template: `
+  <h1>✅ Pago exitoso</h1>
+  <p>Gracias por tu compra</p>
+  <a routerLink="/">Volver</a>
+  `
 })
-export class SuccessComponent {
+export class SuccessComponent {}
 
-}

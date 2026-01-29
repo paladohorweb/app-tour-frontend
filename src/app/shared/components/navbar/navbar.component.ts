@@ -1,12 +1,29 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [],
-  templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
-})
-export class NavbarComponent {
+  imports: [RouterModule],
+  template: `
+  <nav class="nav">
+    <a routerLink="/">Tours</a>
 
-}
+    <div class="actions">
+      <a routerLink="/login">Login</a>
+      <a routerLink="/register">Registro</a>
+    </div>
+  </nav>
+  `,
+  styles: [`
+    .nav {
+      display:flex;
+      justify-content:space-between;
+      padding:1rem;
+      background:#111;
+      color:#fff;
+    }
+    a { color:#fff; margin-right:1rem; text-decoration:none; }
+  `]
+})
+export class NavbarComponent {}
