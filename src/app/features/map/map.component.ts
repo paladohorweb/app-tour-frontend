@@ -1,25 +1,30 @@
-import { Component, Input, AfterViewInit } from "@angular/core";
-import mapboxgl from 'mapbox-gl';
-
+import { Component, OnInit } from "@angular/core";
+import { TourService } from "../../core/services/tour.service";
 
 @Component({
   standalone: true,
-  template: `<div id="map" style="height:400px"></div>`
+  selector: 'app-map',
+  template: `<div id="map" style="height:500px"></div>`
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements OnInit {
 
-  @Input() lat!: number;
-  @Input() lng!: number;
-  API: any;
+  constructor(private tourService: TourService) {}
 
-  ngAfterViewInit() {
-    mapboxgl.accessToken = this.API.AUHT;
+  ngOnInit() {
+    const map = L.map('map').setView([6.24, -75.57], 7);
 
-    new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [this.lng, this.lat],
-      zoom: 12
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+      .addTo(map);
+
+    this.tourService.getAll().subscribe(tours => {
+      tours.forEach(t => {
+        if (t.latitud && t.longitud) {
+          L.marker([t.latitud, t.longitud])
+            .addTo(map)
+            .bindPopup(`<b>${t.nombre}</b><br>${t.ciudad}`);
+        }
+      });
     });
   }
 }
+

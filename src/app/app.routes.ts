@@ -4,7 +4,9 @@ import { CheckoutComponent } from './features/payments/checkout.component';
 import { TourListComponent } from './features/tours/tour-list.component';
 import { CancelComponent } from './features/payments/cancel.component';
 import { SuccessComponent } from './features/payments/success.component';
-
+import { LoginComponent } from './features/auth/login.component';
+import { RegisterComponent } from './features/auth/register.component';
+import { TourDetailComponent } from './features/tours/tour-detail.component';
 
 export const routes: Routes = [
   { path: '', component: TourListComponent },
@@ -23,7 +25,8 @@ export const routes: Routes = [
   path: 'admin',
   canActivate: [authGuard],
   loadComponent: () =>
-    import('./features/admin/admin-dashboard.component')
+    import('./features/admin/pages/admin-dashboard.component')
       .then(m => m.AdminDashboardComponent)
 }
 ];
+
