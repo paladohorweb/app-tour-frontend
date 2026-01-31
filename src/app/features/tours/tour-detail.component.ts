@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { Tour } from "../../core/models/tour";
+import { Tour } from "../../core/models/tour.model";
 import { TourService } from "../../core/services/tour.service";
 
 @Component({
@@ -21,7 +21,7 @@ import { TourService } from "../../core/services/tour.service";
   </div>
   `
 })
-export class TourListComponent {
+export class TourDetailComponent {
 
   tours: Tour[] = [];
 

@@ -1,48 +1,45 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { AuthResponse, LoginRequest } from "../models/auth.model";
-import { API } from "../constants/api.constants";
-import { tap } from "rxjs";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private tokenKey = 'access_token';
-
   constructor(private http: HttpClient) {}
 
-  login(data: LoginRequest) {
-    return this.http.post<AuthResponse>(`${API.AUTH}/login`, data)
-      .pipe(tap(res => localStorage.setItem(this.tokenKey, res.accessToken)));
+  login(request: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(
+      `${BASE_URL}/auth/login`,
+      request
+    ).pipe(
+      tap(res => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('rol', res.rol);
+      })
+    );
   }
 
-  register(data: any) {
-    return this.http.post(`${API.AUTH}/register`, data);
+  register(request: RegisterRequest) {
+    return this.http.post(
+      `${API_URL}/auth/register`,
+      request
+    );
   }
 
   logout() {
-    localStorage.removeItem(this.tokenKey);
+    localStorage.clear();
   }
 
-  get token() {
-    return localStorage.getItem(this.tokenKey);
+  get token(): string | null {
+    return localStorage.getItem('token');
   }
 
-  isAuthenticated(): boolean {
+  get rol(): string | null {
+    return localStorage.getItem('rol');
+  }
+
+  isLogged(): boolean {
     return !!this.token;
   }
-
-  refreshToken() {
-    const refreshToken = localStorage.getItem('refresh_token');
-    return this.http.post<AuthResponse>(
-    `${API.AUTH}/refresh`,
-      { refreshToken }
-    ).pipe(tap(res => this.saveTokens(res)));
-  }
-
-    saveTokens(res: AuthResponse) {
-    localStorage.setItem('access_token', res.accessToken);
-    localStorage.setItem('refresh_token', res.refreshToken);
-  }
 }
-

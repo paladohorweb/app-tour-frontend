@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterLink } from "@angular/router";
-import { Tour } from "../../core/models/tour";
+import { Tour } from "../../core/models/tour.model";
 import { TourService } from "../../core/services/tour.service";
 
 @Component({
