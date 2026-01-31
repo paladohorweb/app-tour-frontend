@@ -1,0 +1,34 @@
+<h2>Crear nuevo Tour</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+
+  <label>Nombre</label>
+  <input formControlName="nombre" />
+
+  <label>Descripción</label>
+  <textarea formControlName="descripcion"></textarea>
+
+  <label>Ciudad</label>
+  <input formControlName="ciudad" />
+
+  <label>País</label>
+  <input formControlName="pais" />
+
+  <label>Imagen URL</label>
+  <input formControlName="imagenUrl" />
+
+  <label>Precio</label>
+  <input type="number" formControlName="precio" />
+
+  <label>Latitud</label>
+  <input type="number" formControlName="latitud" />
+
+  <label>Longitud</label>
+  <input type="number" formControlName="longitud" />
+
+  <button type="submit" [disabled]="loading">
+    {{ loading ? 'Guardando...' : 'Crear Tour' }}
+  </button>
+
+  <p *ngIf="error" style="color:red">{{ error }}</p>
+</form>

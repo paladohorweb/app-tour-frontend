@@ -18,7 +18,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/admin/pages/admin-dashboard.component')
         .then(c => c.AdminDashboardComponent)
-  }
+  },
+     {
+  path: 'mapa',
+  loadComponent: () =>
+    import('./features/map/map.component')
+      .then(m => m.MapComponent)
+}
 
 ];
 

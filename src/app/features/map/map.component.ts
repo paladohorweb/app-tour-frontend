@@ -1,30 +1,48 @@
-import { Component, OnInit } from "@angular/core";
-import { TourService } from "../../core/services/tour.service";
+import { Component, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import * as L from 'leaflet';
+import { TourService } from '../../core/services/tour.service';
 
 @Component({
   standalone: true,
   selector: 'app-map',
-  template: `<div id="map" style="height:500px"></div>`
+  imports: [CommonModule],
+  template: `<div id="map" style="height: 100vh"></div>`
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements AfterViewInit {
+
+  private map!: L.Map;
 
   constructor(private tourService: TourService) {}
 
-  ngOnInit() {
-    const map = L.map('map').setView([6.24, -75.57], 7);
+  ngAfterViewInit(): void {
+    this.initMap();
+    this.loadTours();
+  }
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
-      .addTo(map);
+  private initMap(): void {
+    this.map = L.map('map').setView([4.5709, -74.2973], 6); // Colombia
 
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(this.map);
+  }
+
+  private loadTours(): void {
     this.tourService.getAll().subscribe(tours => {
-      tours.forEach(t => {
-        if (t.latitud && t.longitud) {
-          L.marker([t.latitud, t.longitud])
-            .addTo(map)
-            .bindPopup(`<b>${t.nombre}</b><br>${t.ciudad}`);
+      tours.forEach(tour => {
+        if (tour.latitud && tour.longitud) {
+          L.marker([tour.latitud, tour.longitud])
+            .addTo(this.map)
+            .bindPopup(`
+              <strong>${tour.nombre}</strong><br>
+              ${tour.ciudad}, ${tour.pais}<br>
+              💲 ${tour.precio}
+            `);
         }
       });
     });
   }
 }
+
 
