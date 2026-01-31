@@ -1,26 +1,20 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { API } from "../constants/api.constants";
 import { Tour } from "../models/tour.model";
+import { API } from "../constants/api.constants";
+import { Observable } from "rxjs";
 
 @Injectable({ providedIn: 'root' })
 export class TourService {
 
   constructor(private http: HttpClient) {}
 
-  getAll() {
-    return this.http.get<Tour[]>(API.TOURS);
+  listar() {
+    return this.http.get<Tour[]>(
+      `${API.BASE_URL}${API.TOURS}`
+    );
   }
-
-  getById(id: number) {
-    return this.http.get<Tour>(`${API.TOURS}/${id}`);
-  }
-
-  create(tour: Tour) {
-    return this.http.post<Tour>(API.TOURS, tour);
-  }
-
-  delete(id: number) {
-    return this.http.delete(`${API.TOURS}/${id}`);
+    crear(tour: Tour): Observable<Tour> {
+    return this.http.post<Tour>('/api/tours', tour);
   }
 }

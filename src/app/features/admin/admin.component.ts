@@ -1,16 +1,30 @@
 import { Component } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
-import { NavbarComponent } from "../../shared/components/navbar/navbar.component";
+import { TourService } from "../../core/services/tour.service";
 
 @Component({
   standalone: true,
-  selector: 'app-admin',
-  imports: [RouterOutlet, NavbarComponent],
   template: `
-    <app-navbar></app-navbar>
-    <section class="admin-container">
-      <router-outlet></router-outlet>
-    </section>
+  <h2>Admin - Crear Tour</h2>
+  <button (click)="crear()">Crear</button>
   `
 })
-export class AdminComponent {}
+export class AdminComponent {
+
+  constructor(private service: TourService) {}
+
+  crear(): any {
+    const tour = {
+      id: 1,
+      nombre: 'Nuevo Tour',
+      descripcion: 'Test',
+      ciudad: 'Medellín',
+      pais: 'Colombia',
+      precio: 100,
+      imagenUrl: '',
+      latitud: 0,
+      longitud: 0
+    };
+
+    this.service.crear(tour).subscribe();
+  }
+}

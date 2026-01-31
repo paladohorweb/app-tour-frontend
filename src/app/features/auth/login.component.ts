@@ -22,8 +22,12 @@ export class LoginComponent {
 
   constructor(private auth: AuthService, private router: Router) {}
 
-  login() {
+   login() {
     this.auth.login({ email: this.email, password: this.password })
-      .subscribe(() => this.router.navigate(['/tours']));
+      .subscribe(res => {
+        this.auth.saveToken(res.accessToken);
+        this.router.navigate(['/tours']);
+      });
   }
 }
+
