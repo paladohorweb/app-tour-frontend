@@ -1,0 +1,23 @@
+<h2>Administración de Tours</h2>
+
+<div *ngIf="loading">Cargando...</div>
+
+<table *ngIf="!loading">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Ciudad</th>
+      <th>Precio</th>
+      <th>Activo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let tour of tours">
+      <td>{{ tour.nombre }}</td>
+      <td>{{ tour.ciudad }}</td>
+      <td>{{ tour.precio | currency:'COP' }}</td>
+      <td>{{ tour.activo ? 'Sí' : 'No' }}</td>
+    </tr>
+  </tbody>
+</table>
+

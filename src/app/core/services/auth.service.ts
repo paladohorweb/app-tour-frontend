@@ -1,41 +1,81 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { API } from '../constants/api.constants';
-import { LoginRequest, AuthResponse } from '../models/auth.model';
+import { decodeJwt } from '../utils/jwt.utils';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
+
+  private readonly BASE_URL = API.BASE_URL + API.AUTH;
+
+   private readonly TOKEN_KEY = 'access_token';
 
   constructor(private http: HttpClient) {}
 
-  login(data: LoginRequest) {
-    return this.http.post<AuthResponse>(
-      `${API.BASE_URL}${API.AUTH}/login`,
-      data
-    );
+  // ============================
+  // LOGIN
+  // ============================
+  login(payload: { email: string; password: string }): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/login`, payload)
+      .pipe(
+        tap(res => {
+          this.setSession(res);
+        })
+      );
   }
 
-  register(data: any) {
-    return this.http.post(
-      `${API.BASE_URL}${API.AUTH}/register`,
-      data
-    );
+  // ============================
+  // REGISTER
+  // ============================
+  register(payload: {
+    nombre: string;
+    email: string;
+    password: string;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/register`, payload);
   }
 
-  saveToken(token: string) {
-    localStorage.setItem('token', token);
+  // ============================
+  // TOKEN MANAGEMENT
+  // ============================
+  private setSession(authResponse: any): void {
+    localStorage.setItem('TOKEN_KEY', authResponse.accessToken);
+    localStorage.setItem('refresh_token', authResponse.refreshToken);
   }
 
-  getToken() {
-    return localStorage.getItem('token');
+ getAccessToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  logout() {
-    localStorage.clear();
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refresh_token');
   }
 
-  isAuthenticated(): boolean {
-    return !!this.getToken();
+  isLoggedIn(): boolean {
+    return !!this.getAccessToken();
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem('refresh_token');
+  }
+    isAuthenticated(): boolean {
+    return !!this.getAccessToken();
+  }
+
+    getUserRole(): 'ADMIN' | 'USER' | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    const payload = decodeJwt(token);
+    return payload?.rol ?? null;
+  }
+
+  isAdmin(): boolean {
+    return this.getUserRole() === 'ADMIN';
   }
 }
-

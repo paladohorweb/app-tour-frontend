@@ -1,4 +1,5 @@
 export interface Tour {
+activo: boolean 
   id: number;
   nombre: string;
   descripcion: string;
