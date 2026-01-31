@@ -24,6 +24,12 @@ export const routes: Routes = [
   loadComponent: () =>
     import('./features/map/map.component')
       .then(m => m.MapComponent)
+},
+    {
+  path: 'pago/:reservaId',
+  loadComponent: () =>
+    import('./features/pago/pago.component')
+      .then(m => m.PagoComponent)
 }
 
 ];

@@ -1,6 +1,5 @@
 export interface PagoRequest {
-  tourId: number;
-   cantidad: number;
+  reservaId: number;
 }
 export interface PagoResponse {
   clientSecret: string;
