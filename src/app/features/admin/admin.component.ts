@@ -12,19 +12,15 @@ export class AdminComponent {
 
   constructor(private service: TourService) {}
 
-  crear(): any {
-    const tour = {
-      id: 1,
-      nombre: 'Nuevo Tour',
-      descripcion: 'Test',
+  crear() {
+    this.service.createTour({
+      nombre: 'Tour desde Admin',
+      descripcion: 'Tour creado desde el panel de administración',
       ciudad: 'Medellín',
       pais: 'Colombia',
       precio: 100,
       imagenUrl: '',
       latitud: 0,
       longitud: 0
-    };
-
-    this.service.crear(tour).subscribe();
-  }
-}
+    });
+  }}

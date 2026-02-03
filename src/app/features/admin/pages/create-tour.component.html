@@ -26,7 +26,8 @@
   <label>Longitud</label>
   <input type="number" formControlName="longitud" />
 
-  <button type="submit" [disabled]="loading">
+  <button *ngIf="isAdmin()" routerLink="/admin"
+  type="submit" [disabled]="loading">
     {{ loading ? 'Guardando...' : 'Crear Tour' }}
   </button>
 

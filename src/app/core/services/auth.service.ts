@@ -47,6 +47,10 @@ export class AuthService {
     localStorage.setItem('refresh_token', authResponse.refreshToken);
   }
 
+   saveToken(token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+  }
+
  getAccessToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }

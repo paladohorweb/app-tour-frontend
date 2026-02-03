@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from '../../core/guards/role.guard';
+import { AdminToursComponent } from './pages/tours/admin-tours.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -15,5 +16,10 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () =>
       import('./pages/create-tour.component')
         .then(m => m.CreateTourComponent)
+  },
+     {
+    path: 'tours',
+    component: AdminToursComponent,
+    canActivate: [adminGuard]
   }
 ];

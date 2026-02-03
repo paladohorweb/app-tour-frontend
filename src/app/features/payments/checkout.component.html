@@ -1,0 +1,13 @@
+<div class="checkout">
+
+  <h2>Pago seguro</h2>
+
+  <div *ngIf="loading">Cargando pago...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <form id="payment-form">
+    <div id="payment-element"></div>
+    <button type="submit">Pagar ahora</button>
+  </form>
+
+</div>
