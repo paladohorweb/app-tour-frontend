@@ -28,6 +28,6 @@ export class TourDetailComponent {
   constructor(private service: TourService) {}
 
   ngOnInit() {
-    this.service.getAll().subscribe(res => this.tours = res);
+    this.service.listar().subscribe(res => this.tours = res);
   }
 }

@@ -20,7 +20,7 @@ export class AdminToursComponent implements OnInit {
   }
 
   cargarTours() {
-    this.tourService.getAll().subscribe({
+    this.tourService.listar().subscribe({
       next: res => {
         this.tours = res;
         this.loading = false;

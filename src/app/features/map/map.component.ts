@@ -29,7 +29,7 @@ export class MapComponent implements AfterViewInit {
   }
 
   private loadTours(): void {
-    this.tourService.getAll().subscribe(tours => {
+    this.tourService.listar().subscribe(tours => {
       tours.forEach(tour => {
         if (tour.latitud && tour.longitud) {
           L.marker([tour.latitud, tour.longitud])

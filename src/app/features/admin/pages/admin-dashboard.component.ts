@@ -22,7 +22,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadTours(): void {
-    this.tourService.getAll().subscribe({
+    this.tourService.listar().subscribe({
       next: data => {
         this.tours = data;
         this.loading = false;

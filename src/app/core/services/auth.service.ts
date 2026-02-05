@@ -42,10 +42,10 @@ export class AuthService {
   // ============================
   // TOKEN MANAGEMENT
   // ============================
-  private setSession(authResponse: any): void {
-    localStorage.setItem('TOKEN_KEY', authResponse.accessToken);
-    localStorage.setItem('refresh_token', authResponse.refreshToken);
-  }
+ private setSession(authResponse: any): void {
+  localStorage.setItem(this.TOKEN_KEY, authResponse.accessToken);
+  localStorage.setItem('refresh_token', authResponse.refreshToken);
+}
 
    saveToken(token: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
@@ -71,13 +71,16 @@ export class AuthService {
     return !!this.getAccessToken();
   }
 
-    getUserRole(): 'ADMIN' | 'USER' | null {
-    const token = this.getAccessToken();
-    if (!token) return null;
+   getUserRole(): 'ADMIN' | 'USER' | null {
+  const token = this.getAccessToken();
+  if (!token) return null;
 
-    const payload = decodeJwt(token);
-    return payload?.rol ?? null;
-  }
+  const payload = decodeJwt(token);
+
+  if (!payload?.rol) return null;
+
+  return payload.rol.replace('ROL_', '') as 'ADMIN' | 'USER';
+}
 
   isAdmin(): boolean {
     return this.getUserRole() === 'ADMIN';

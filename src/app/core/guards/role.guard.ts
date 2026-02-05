@@ -3,13 +3,13 @@ import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 
 export const adminGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
+  const auth = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAdmin()) {
+  if (auth.isAuthenticated() && auth.isAdmin()) {
     return true;
   }
 
-  router.navigate(['/']);
+  router.navigate(['/tours']); // ✅ ruta válida
   return false;
 };

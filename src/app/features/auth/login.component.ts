@@ -22,12 +22,21 @@ export class LoginComponent {
 
   constructor(private auth: AuthService, private router: Router) {}
 
-   login() {
-    this.auth.login({ email: this.email, password: this.password })
-      .subscribe(res => {
-        this.auth.saveToken(res.accessToken);
-        this.router.navigate(['/tours']);
-      });
-  }
+login() {
+  this.auth.login({ email: this.email, password: this.password })
+    .subscribe({
+      next: () => {
+        if (this.auth.isAdmin()) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/tours']);
+        }
+      },
+      error: () => {
+        alert('Credenciales incorrectas');
+      }
+    });
 }
+}
+
 
