@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { TourService } from '../../../core/services/tour.service';
 import { TourCreate } from '../../../core/models/tour-create.model';
 
 @Component({
   standalone: true,
   selector: 'app-create-tour',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,RouterModule],
   templateUrl: '././create-tour.component.html',
   styleUrls: ['./create-tour.component.css']
 })
