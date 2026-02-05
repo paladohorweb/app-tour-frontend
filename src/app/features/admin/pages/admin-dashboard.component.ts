@@ -8,7 +8,8 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   selector: 'app-admin-dashboard',
   imports: [CommonModule, RouterModule],
-  templateUrl: './admin-dashboard.component.html'
+  templateUrl: './admin-dashboard.component.html',
+  styleUrls: ['./admin-dashboard.component.css']
 })
 export class AdminDashboardComponent implements OnInit {
 
@@ -29,6 +30,10 @@ export class AdminDashboardComponent implements OnInit {
       },
       error: () => this.loading = false
     });
+  }
+
+    getTotalRevenue(): number {
+    return this.tours.reduce((sum, tour) => sum + (tour.precio || 0), 0);
   }
 }
 

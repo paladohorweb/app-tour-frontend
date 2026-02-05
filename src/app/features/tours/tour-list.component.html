@@ -1,0 +1,27 @@
+<section class="container">
+  <h1 class="title">Explora Tours</h1>
+
+  <div class="grid" *ngIf="tours.length; else loadingTpl">
+    <article class="card" *ngFor="let tour of tours">
+      <img [src]="tour.imagenUrl" />
+
+      <div class="content">
+        <h3>{{ tour.nombre }}</h3>
+        <p>{{ tour.descripcion }}</p>
+
+        <div class="meta">
+          <span>{{ tour.ciudad }}, {{ tour.pais }}</span>
+          <strong>$ {{ tour.precio | number }}</strong>
+        </div>
+
+        <a [routerLink]="['/checkout', tour.id]" class="btn">
+          Reservar
+        </a>
+      </div>
+    </article>
+  </div>
+
+  <ng-template #loadingTpl>
+    <p>Cargando tours...</p>
+  </ng-template>
+</section>

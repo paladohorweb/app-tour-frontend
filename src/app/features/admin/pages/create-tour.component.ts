@@ -9,7 +9,8 @@ import { TourCreate } from '../../../core/models/tour-create.model';
   standalone: true,
   selector: 'app-create-tour',
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: '././create-tour.component.html'
+  templateUrl: '././create-tour.component.html',
+  styleUrls: ['./create-tour.component.css']
 })
 export class CreateTourComponent {
 
@@ -32,6 +33,11 @@ form = this.fb.nonNullable.group({
     private tourService: TourService,
     private router: Router
   ) {}
+
+   onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+  }
 
  submit(): void {
   if (this.form.invalid) return;

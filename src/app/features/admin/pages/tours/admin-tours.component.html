@@ -1,27 +1,22 @@
-<h2>Administrar Tours</h2>
+<div class="wrap">
+  <h2>Tours creados</h2>
 
-<table *ngIf="!loading">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Ciudad</th>
-      <th>Precio</th>
-      <th>Activo</th>
-    </tr>
-  </thead>
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Ciudad</th>
+        <th>Precio</th>
+      </tr>
+    </thead>
 
-  <tbody>
-    <tr *ngFor="let tour of tours">
-      <td>{{ tour.nombre }}</td>
-      <td>{{ tour.ciudad }}</td>
-      <td>{{ tour.precio | currency }}</td>
-      <td>
-        <span [style.color]="tour.activo ? 'green' : 'red'">
-          {{ tour.activo ? 'SI' : 'NO' }}
-        </span>
-      </td>
-    </tr>
-  </tbody>
-</table>
+    <tbody>
+      <tr *ngFor="let t of tours">
+        <td>{{ t.nombre }}</td>
+        <td>{{ t.ciudad }}</td>
+        <td>$ {{ t.precio | number }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-<p *ngIf="loading">Cargando tours...</p>

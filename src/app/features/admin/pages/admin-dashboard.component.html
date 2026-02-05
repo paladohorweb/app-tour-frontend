@@ -1,23 +1,26 @@
-<h2>Administración de Tours</h2>
-<a routerLink="/admin/crear">➕ Crear Tour</a>
-<div *ngIf="loading">Cargando...</div>
+<div class="admin-wrap">
 
-<table *ngIf="!loading">
-  <thead>
-    <tr>
-      <th>Nombre</th>
-      <th>Ciudad</th>
-      <th>Precio</th>
-      <th>Activo</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let tour of tours">
-      <td>{{ tour.nombre }}</td>
-      <td>{{ tour.ciudad }}</td>
-      <td>{{ tour.precio | currency:'COP' }}</td>
-      <td>{{ tour.activo ? 'Sí' : 'No' }}</td>
-    </tr>
-  </tbody>
-</table>
+  <div class="header">
+    <h1>Panel Admin</h1>
+
+    <div class="actions">
+      <a routerLink="/admin/crear" class="btn">➕ Crear Tour</a>
+      <a routerLink="/admin/tours" class="btn ghost">📋 Ver Tours</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <strong>{{ tours.length }}</strong>
+      <span>Tours creados</span>
+    </div>
+
+    <div class="stat">
+       <strong>$ {{ getTotalRevenue() | number }}</strong>
+      <span>Total precios</span>
+    </div>
+  </div>
+
+</div>
+
 

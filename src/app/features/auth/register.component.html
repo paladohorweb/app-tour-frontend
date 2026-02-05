@@ -1,0 +1,62 @@
+<div class="auth-page">
+  <div class="auth-card light">
+    <div class="brand light">
+      <div class="logo light">T</div>
+      <div class="brand-text">
+        <h1>Crear cuenta</h1>
+        <p>Regístrate en menos de 1 minuto</p>
+      </div>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <label class="field">
+        <span>Nombre</span>
+        <input type="text" formControlName="nombre" placeholder="Jorge Palacio" autocomplete="name" />
+        <small class="hint" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.invalid">
+          El nombre es obligatorio
+        </small>
+      </label>
+
+      <label class="field">
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="jorge@mail.com" autocomplete="email" />
+        <small class="hint" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+          Ingresa un email válido
+        </small>
+      </label>
+
+      <label class="field">
+        <span>Contraseña</span>
+        <input type="password" formControlName="password" placeholder="mínimo 6 caracteres" autocomplete="new-password" />
+        <small class="hint" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+          La contraseña es obligatoria
+        </small>
+      </label>
+
+      <button class="btn primary" type="submit" [disabled]="form.invalid || loading">
+        <span *ngIf="!loading">Crear cuenta</span>
+        <span *ngIf="loading">Creando…</span>
+      </button>
+
+      <p class="error" *ngIf="error">{{ error }}</p>
+
+      <p class="footer">
+        ¿Ya tienes cuenta?
+        <a routerLink="/login">Inicia sesión</a>
+      </p>
+    </form>
+  </div>
+
+  <div class="auth-side gradient">
+    <h2>Tu aventura comienza aquí</h2>
+    <p>
+      Crea tu cuenta para reservar tours, pagar con Stripe y acceder a tu historial de reservas.
+    </p>
+
+    <div class="cta">
+      <div class="badge">🔒 Pago seguro</div>
+      <div class="badge">📍 Mapa integrado</div>
+      <div class="badge">⚡ Rápido y moderno</div>
+    </div>
+  </div>
+</div>

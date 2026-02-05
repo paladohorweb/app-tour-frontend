@@ -1,0 +1,60 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="brand">
+      <div class="logo">T</div>
+      <div class="brand-text">
+        <h1>TourApp</h1>
+        <p>Inicia sesión para continuar</p>
+      </div>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <label class="field">
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="jorge@mail.com" autocomplete="email" />
+        <small class="hint" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+          Ingresa un email válido
+        </small>
+      </label>
+
+      <label class="field">
+        <span>Contraseña</span>
+        <input type="password" formControlName="password" placeholder="••••••••" autocomplete="current-password" />
+        <small class="hint" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+          La contraseña es obligatoria
+        </small>
+      </label>
+
+      <button class="btn primary" type="submit" [disabled]="form.invalid || loading">
+        <span *ngIf="!loading">Entrar</span>
+        <span *ngIf="loading">Ingresando…</span>
+      </button>
+
+      <p class="error" *ngIf="error">{{ error }}</p>
+
+      <div class="divider">
+        <span>o</span>
+      </div>
+
+      <a class="btn ghost" routerLink="/register">Crear cuenta</a>
+
+      <p class="footer">
+        Al continuar aceptas nuestros <a href="#" (click)="$event.preventDefault()">términos</a>.
+      </p>
+    </form>
+  </div>
+
+  <div class="auth-side">
+    <h2>Descubre experiencias</h2>
+    <p>
+      Reserva tours, mira ubicaciones en el mapa y paga con Stripe.
+      Todo en una sola plataforma.
+    </p>
+
+    <ul class="bullets">
+      <li>✅ Tours curados por ciudad</li>
+      <li>✅ Checkout seguro con Stripe</li>
+      <li>✅ Panel Admin para gestionar tours</li>
+    </ul>
+  </div>
+</div>

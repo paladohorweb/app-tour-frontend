@@ -1,42 +1,61 @@
-import { Component } from "@angular/core";
-import { AuthService } from "../../core/services/auth.service";
-import { Router } from "@angular/router";
-import { FormsModule } from "@angular/forms";
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  standalone: true,
   selector: 'app-login',
-  imports: [FormsModule],
-  template: `
-    <form (ngSubmit)="login()">
-      <input [(ngModel)]="email" name="email" placeholder="Email">
-      <input [(ngModel)]="password" name="password" type="password">
-      <button>Login</button>
-    </form>
-  `
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
+  loading = false;
+  error: string | null = null;
 
-  email = '';
-  password = '';
+  form = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(4)]],
+  });
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router
+  ) {}
 
-login() {
-  this.auth.login({ email: this.email, password: this.password })
-    .subscribe({
+  submit(): void {
+    this.error = null;
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+
+    this.auth.login(this.form.getRawValue()).subscribe({
       next: () => {
+        this.loading = false;
+
+        // ✅ si es admin lo llevamos al panel, sino a tours
         if (this.auth.isAdmin()) {
           this.router.navigate(['/admin']);
         } else {
           this.router.navigate(['/tours']);
         }
       },
-      error: () => {
-        alert('Credenciales incorrectas');
+      error: (err) => {
+        this.loading = false;
+        this.error =
+          err?.error?.message ||
+          'No se pudo iniciar sesión. Verifica tus credenciales.';
       }
     });
+  }
 }
-}
+
 
 

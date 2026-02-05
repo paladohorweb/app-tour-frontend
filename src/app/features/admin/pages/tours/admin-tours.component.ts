@@ -7,7 +7,8 @@ import { Tour } from '../../../../core/models/tour.model';
 @Component({
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './admin-tours.component.html'
+  templateUrl: './admin-tours.component.html',
+  styleUrls: ['./admin-tours.component.css']
 })
 export class AdminToursComponent implements OnInit {
 

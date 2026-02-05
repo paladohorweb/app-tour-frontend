@@ -1,0 +1,28 @@
+.wrap {
+  max-width: 900px;
+  margin: 40px auto;
+  padding:16px;
+}
+
+table {
+  width:100%;
+  border-collapse: collapse;
+  background:white;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+th, td {
+  padding:14px;
+  border-bottom:1px solid #eee;
+  text-align:left;
+}
+
+th {
+  background:#f4f6fa;
+}
+
+tr:hover {
+  background:#f9fafc;
+}

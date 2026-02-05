@@ -1,35 +1,103 @@
-<h2>Crear nuevo Tour</h2>
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Crear nuevo Tour</h1>
+      <p>Completa la información y publícalo para que aparezca en la app.</p>
+    </div>
 
-<form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="actions">
+      <a class="btn ghost" routerLink="/admin/tours">Ver tours</a>
+      <a class="btn ghost" routerLink="/admin">Dashboard</a>
+    </div>
+  </div>
 
-  <label>Nombre</label>
-  <input formControlName="nombre" />
+  <div class="card">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
 
-  <label>Descripción</label>
-  <textarea formControlName="descripcion"></textarea>
+      <div class="grid">
+        <!-- Nombre -->
+        <label class="field full">
+          <span>Nombre <b>*</b></span>
+          <input formControlName="nombre" placeholder="Tour Guatapé" />
+          <small class="hint error"
+            *ngIf="form.get('nombre')?.touched && form.get('nombre')?.invalid">
+            El nombre es obligatorio.
+          </small>
+        </label>
 
-  <label>Ciudad</label>
-  <input formControlName="ciudad" />
+        <!-- Ciudad -->
+        <label class="field">
+          <span>Ciudad</span>
+          <input formControlName="ciudad" placeholder="Guatapé" />
+        </label>
 
-  <label>País</label>
-  <input formControlName="pais" />
+        <!-- País -->
+        <label class="field">
+          <span>País</span>
+          <input formControlName="pais" placeholder="Colombia" />
+        </label>
 
-  <label>Imagen URL</label>
-  <input formControlName="imagenUrl" />
+        <!-- Precio -->
+        <label class="field">
+          <span>Precio (COP) <b>*</b></span>
+          <input type="number" formControlName="precio" placeholder="200000" />
+          <small class="hint error"
+            *ngIf="form.get('precio')?.touched && form.get('precio')?.invalid">
+            Ingresa un precio válido (mínimo 1).
+          </small>
+        </label>
 
-  <label>Precio</label>
-  <input type="number" formControlName="precio" />
+        <!-- Imagen -->
+        <label class="field full">
+          <span>Imagen URL</span>
+          <input formControlName="imagenUrl" placeholder="https://..." />
+          <small class="hint">Tip: usa una URL pública (https) para que cargue en producción.</small>
+        </label>
 
-  <label>Latitud</label>
-  <input type="number" formControlName="latitud" />
+          <!-- Preview imagen -->
+        <div class="preview full" *ngIf="form.get('imagenUrl')?.value">
+          <div class="preview-box">
+            <img [src]="form.get('imagenUrl')?.value" alt="Preview" (error)="onImageError($event)" />
+            <div class="preview-fallback">
+              Vista previa no disponible
+            </div>
+          </div>
+        </div>
 
-  <label>Longitud</label>
-  <input type="number" formControlName="longitud" />
+        <!-- Descripción -->
+        <label class="field full">
+          <span>Descripción</span>
+          <textarea rows="4" formControlName="descripcion"
+            placeholder="Visita a la piedra del Peñol, recorrido guiado, miradores, etc."></textarea>
+        </label>
 
-  <button routerLink="/admin"
-  type="submit" [disabled]="loading">
-    {{ loading ? 'Guardando...' : 'Crear Tour' }}
-  </button>
+        <!-- Coordenadas -->
+        <label class="field">
+          <span>Latitud</span>
+          <input type="number" formControlName="latitud" placeholder="6.233" />
+        </label>
 
-  <p *ngIf="error" style="color:red">{{ error }}</p>
-</form>
+        <label class="field">
+          <span>Longitud</span>
+          <input type="number" formControlName="longitud" placeholder="-75.158" />
+        </label>
+      </div>
+
+      <div class="footer">
+        <p class="server-error" *ngIf="error">{{ error }}</p>
+
+        <div class="footer-actions">
+          <a class="btn ghost" routerLink="/admin/tours">Cancelar</a>
+
+          <button class="btn primary"
+            type="submit"
+            [disabled]="form.invalid || loading">
+            <span *ngIf="!loading">Crear Tour</span>
+            <span *ngIf="loading">Guardando...</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+

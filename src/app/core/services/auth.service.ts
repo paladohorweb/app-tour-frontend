@@ -1,97 +1,96 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { API } from '../constants/api.constants';
 import { decodeJwt } from '../utils/jwt.utils';
+import { AuthUser } from '../models/auth-user.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-
   private readonly BASE_URL = API.BASE_URL + API.AUTH;
+  private readonly TOKEN_KEY = 'access_token';
 
-   private readonly TOKEN_KEY = 'access_token';
+  private readonly userSubject = new BehaviorSubject<AuthUser | null>(null);
+  readonly user$ = this.userSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
-
-  // ============================
-  // LOGIN
-  // ============================
-  login(payload: { email: string; password: string }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/login`, payload)
-      .pipe(
-        tap(res => {
-          this.setSession(res);
-        })
-      );
+  constructor(private http: HttpClient) {
+    // ✅ al refrescar la página, reconstruye el usuario desde el token
+    this.refreshUserFromToken();
   }
 
-  // ============================
-  // REGISTER
-  // ============================
-  register(payload: {
-    nombre: string;
-    email: string;
-    password: string;
-  }): Observable<any> {
+  login(payload: { email: string; password: string }): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/login`, payload).pipe(
+      tap(res => this.setSession(res))
+    );
+  }
+
+  register(payload: { nombre: string; email: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.BASE_URL}/register`, payload);
   }
 
-  // ============================
-  // TOKEN MANAGEMENT
-  // ============================
- private setSession(authResponse: any): void {
-  localStorage.setItem(this.TOKEN_KEY, authResponse.accessToken);
-  localStorage.setItem('refresh_token', authResponse.refreshToken);
-}
+  private setSession(authResponse: any): void {
+    localStorage.setItem(this.TOKEN_KEY, authResponse.accessToken);
+    localStorage.setItem('refresh_token', authResponse.refreshToken);
 
-   saveToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
-  }
-
- getAccessToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
-  }
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem('refresh_token');
-  }
-
-  isLoggedIn(): boolean {
-    return !!this.getAccessToken();
+    // ✅ actualiza estado UI
+    this.refreshUserFromToken();
   }
 
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem('refresh_token');
+    this.userSubject.next(null);
   }
-    isAuthenticated(): boolean {
+
+  getAccessToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  isAuthenticated(): boolean {
     return !!this.getAccessToken();
   }
 
-getUserRole(): 'ADMIN' | 'USER' | null {
-  const token = this.getAccessToken();
-  if (!token) return null;
+  /** ✅ robusto: soporta claim role o rol y soporta ROLE_ADMIN o ADMIN */
+  getUserRole(): 'ADMIN' | 'USER' | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
 
-  const payload: any = decodeJwt(token);
+    const payload: any = decodeJwt(token);
+    const raw = payload?.role ?? payload?.rol;
+    if (!raw || typeof raw !== 'string') return null;
 
-  // soporta ambos nombres de claim: role o rol
-  const raw = payload?.role ?? payload?.rol;
-  if (!raw || typeof raw !== 'string') return null;
-
-  // normaliza: ROLE_ADMIN -> ADMIN, ROLE_USER -> USER, ADMIN -> ADMIN
-  const normalized = raw.replace('ROLE_', '').toUpperCase();
-
-  if (normalized === 'ADMIN' || normalized === 'USER') {
-    return normalized as 'ADMIN' | 'USER';
+    const normalized = raw.replace('ROLE_', '').toUpperCase();
+    return (normalized === 'ADMIN' || normalized === 'USER') ? (normalized as any) : null;
   }
-
-  return null;
-}
 
   isAdmin(): boolean {
     return this.getUserRole() === 'ADMIN';
+  }
+
+  /** ✅ reconstruye usuario desde token (email + nombre si viene) */
+  refreshUserFromToken(): void {
+    const token = this.getAccessToken();
+    if (!token) {
+      this.userSubject.next(null);
+      return;
+    }
+
+    const payload: any = decodeJwt(token);
+
+    const email = payload?.sub ?? payload?.email ?? null;
+    const nombre = payload?.nombre ?? payload?.name ?? undefined;
+    const role = this.getUserRole() ?? undefined;
+
+    if (!email) {
+      this.userSubject.next(null);
+      return;
+    }
+
+    this.userSubject.next({ email, nombre, role });
+  }
+
+  /** útil para navbar */
+  get currentUser(): AuthUser | null {
+    return this.userSubject.value;
   }
 }
