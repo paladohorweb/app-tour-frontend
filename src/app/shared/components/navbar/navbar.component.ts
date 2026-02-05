@@ -7,8 +7,11 @@ import { RouterModule } from '@angular/router';
   imports: [RouterModule],
   template: `
   <nav class="nav">
-    <a routerLink="/">Tours</a>
+    <a routerLink="/tours">Tours</a>
       <a routerLink="/mapa">Mapa</a>
+       <a routerLink="/admin">Admin</a>
+<a routerLink="/admin/tours">Admin Tours</a>
+<a routerLink="/admin/crear">Crear Tour</a>
     <div class="actions">
       <a routerLink="/login">Login</a>
       <a routerLink="/register">Registro</a>

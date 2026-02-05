@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TourService } from '../../../../core/services/tour.service';
+import { Tour } from '../../../../core/models/tour.model';
 
 
 @Component({
@@ -10,7 +11,7 @@ import { TourService } from '../../../../core/services/tour.service';
 })
 export class AdminToursComponent implements OnInit {
 
-  tours: any[] = [];
+  tours: Tour[] = [];
   loading = true;
 
   constructor(private tourService: TourService) {}

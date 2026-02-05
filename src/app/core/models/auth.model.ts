@@ -6,7 +6,7 @@ export interface LoginRequest {
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
-  rol: 'USER' | 'ADMIN';
+  rol: 'ROLE_USER' | 'ROLE_ADMIN';
 }
 
 export interface RegisterRequest {
@@ -17,5 +17,5 @@ export interface RegisterRequest {
 export interface RegisterResponse {
   id: number;
   email: string;
-  rol: 'USER' | 'ADMIN';
+  rol: 'ROLE_USER' | 'ROLE_ADMIN';
 }

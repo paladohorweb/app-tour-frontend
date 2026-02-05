@@ -71,15 +71,24 @@ export class AuthService {
     return !!this.getAccessToken();
   }
 
-   getUserRole(): 'ADMIN' | 'USER' | null {
+getUserRole(): 'ADMIN' | 'USER' | null {
   const token = this.getAccessToken();
   if (!token) return null;
 
-  const payload = decodeJwt(token);
+  const payload: any = decodeJwt(token);
 
-  if (!payload?.rol) return null;
+  // soporta ambos nombres de claim: role o rol
+  const raw = payload?.role ?? payload?.rol;
+  if (!raw || typeof raw !== 'string') return null;
 
-  return payload.rol.replace('ROL_', '') as 'ADMIN' | 'USER';
+  // normaliza: ROLE_ADMIN -> ADMIN, ROLE_USER -> USER, ADMIN -> ADMIN
+  const normalized = raw.replace('ROLE_', '').toUpperCase();
+
+  if (normalized === 'ADMIN' || normalized === 'USER') {
+    return normalized as 'ADMIN' | 'USER';
+  }
+
+  return null;
 }
 
   isAdmin(): boolean {
