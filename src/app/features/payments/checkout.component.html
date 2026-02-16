@@ -1,13 +1,41 @@
-<div class="checkout">
+<div class="page">
 
-  <h2>Pago seguro</h2>
+  <div class="card">
+    <h1>Checkout</h1>
+    <p class="subtitle">Pago seguro con Stripe</p>
 
-  <div *ngIf="loading">Cargando pago...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
+    <div class="loading" *ngIf="loading">Cargando checkout...</div>
 
-  <form id="payment-form">
-    <div id="payment-element"></div>
-    <button type="submit">Pagar ahora</button>
-  </form>
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <div class="summary" *ngIf="!loading && tour">
+      <div class="row">
+        <span>Tour</span>
+        <strong>{{ tour.nombre }}</strong>
+      </div>
+
+      <div class="row">
+        <span>Ciudad</span>
+        <strong>{{ tour.ciudad }}, {{ tour.pais }}</strong>
+      </div>
+
+      <div class="row total">
+        <span>Total</span>
+        <strong>$ {{ tour.precio | number }}</strong>
+      </div>
+    </div>
+
+    <div id="payment-element" class="stripe-box" *ngIf="!loading && !error"></div>
+
+    <button class="btn primary"
+      (click)="pagar()"
+      [disabled]="loading || paying || !!error">
+      <span *ngIf="!paying">Pagar ahora</span>
+      <span *ngIf="paying">Procesando...</span>
+    </button>
+
+    <a class="btn ghost" routerLink="/tours">Volver</a>
+  </div>
 
 </div>
+

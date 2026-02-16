@@ -3,5 +3,6 @@ export const API = {
   AUTH: '/auth',
   TOURS: '/tours',
   ORDERS: '/orders',
+  RESERVAS: '/reservas',
   PAYMENTS: '/pagos'
 };

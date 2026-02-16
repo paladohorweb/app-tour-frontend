@@ -8,6 +8,7 @@ import { TourCreate } from '../models/tour-create.model';
 @Injectable({ providedIn: 'root' })
 export class TourService {
 
+
   private readonly URL = API.BASE_URL + API.TOURS;
 
   constructor(private http: HttpClient) {}
@@ -25,6 +26,10 @@ export class TourService {
       `${this.URL}/${id}/activo`,
       { activo }
     );
+  }
+
+   obtenerPorId(tourId: number): Observable<Tour> {
+    return this.http.get<Tour>(`${this.URL}/${tourId}`);
   }
 }
 
