@@ -1,9 +1,16 @@
 <section class="container">
   <h1 class="title">Explora Tours</h1>
 
-  <div class="grid" *ngIf="tours.length; else loadingTpl">
+  <p *ngIf="loading">Cargando tours...</p>
+  <p *ngIf="!loading && error" class="error">{{ error }}</p>
+
+  <p *ngIf="!loading && !error && tours.length === 0">
+    No hay tours para mostrar.
+  </p>
+
+  <div class="grid" *ngIf="!loading && !error && tours.length > 0">
     <article class="card" *ngFor="let tour of tours">
-      <img [src]="tour.imagenUrl" />
+      <img [src]="tour.imagenUrl || 'assets/placeholder.jpg'" alt="tour" />
 
       <div class="content">
         <h3>{{ tour.nombre }}</h3>
@@ -11,17 +18,11 @@
 
         <div class="meta">
           <span>{{ tour.ciudad }}, {{ tour.pais }}</span>
-          <strong>$ {{ tour.precio | number }}</strong>
+          <strong>$ {{ (tour.precio ?? 0) | number:'1.0-0' }}</strong>
         </div>
 
-        <a [routerLink]="['/checkout', tour.id]" class="btn">
-          Reservar
-        </a>
+        <a [routerLink]="['/checkout', tour.id]" class="btn">Reservar</a>
       </div>
     </article>
   </div>
-
-  <ng-template #loadingTpl>
-    <p>Cargando tours...</p>
-  </ng-template>
 </section>

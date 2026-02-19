@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 
 export interface CreateIntentRequest {
   reservaId: number;
-  monto: number; // minor units (COP: 2000 = $2.000)
+  //monto: number; // minor units (COP: 2000 = $2.000)
 }
 
 export interface CreateIntentResponse {

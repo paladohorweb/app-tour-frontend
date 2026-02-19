@@ -1,0 +1,43 @@
+<div class="page">
+  <div class="card">
+    <h1>Estado de tu pago</h1>
+    <p class="sub">Estamos confirmando tu transacción con Stripe.</p>
+
+    <div *ngIf="loading" class="loading">
+      Confirmando reserva...
+    </div>
+
+    <p *ngIf="error" class="error">{{ error }}</p>
+
+    <div *ngIf="!loading && reserva" class="box">
+      <div class="row">
+        <span>Reserva</span>
+        <strong>#{{ reserva.id }}</strong>
+      </div>
+
+      <div class="row">
+        <span>Tour</span>
+        <strong>{{ reserva.tourNombre }}</strong>
+      </div>
+
+      <div class="row">
+        <span>Total</span>
+        <strong>$ {{ reserva.monto | number }}</strong>
+      </div>
+
+      <div class="row">
+        <span>Estado</span>
+        <span class="badge" [ngClass]="badgeClass">{{ reserva.estado }}</span>
+      </div>
+
+      <p class="hint" *ngIf="reserva.estado === 'PENDIENTE'">
+        Esto puede tardar unos segundos mientras Stripe confirma el pago.
+      </p>
+
+      <div class="actions">
+        <a class="btn primary" routerLink="/tours">Volver a Tours</a>
+        <a class="btn ghost" routerLink="/admin" *ngIf="false">Admin</a>
+      </div>
+    </div>
+  </div>
+</div>
