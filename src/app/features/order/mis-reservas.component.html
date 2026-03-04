@@ -1,0 +1,74 @@
+<section class="page">
+  <header class="header">
+    <div>
+      <h1>Mis reservas</h1>
+      <p class="muted">Historial de reservas asociadas a tu cuenta.</p>
+    </div>
+
+    <div class="actions">
+      <a class="btn ghost" routerLink="/tours">Volver a tours</a>
+      <button class="btn" (click)="cargar()">Actualizar</button>
+    </div>
+  </header>
+
+  <div class="card" *ngIf="loading">
+    <p>Cargando reservas...</p>
+  </div>
+
+  <div class="card error" *ngIf="!loading && error">
+    <p>{{ error }}</p>
+  </div>
+
+  <div class="empty" *ngIf="!loading && !error && reservas.length === 0">
+    <h3>No tienes reservas aún</h3>
+    <p>Explora tours y crea tu primera reserva.</p>
+    <a class="btn" routerLink="/tours">Ver tours</a>
+  </div>
+
+  <div class="grid" *ngIf="!loading && !error && reservas.length">
+    <article class="item" *ngFor="let r of reservas">
+      <div class="top">
+        <div class="title">
+          <h3>{{ r.tourNombre }}</h3>
+          <span [class]="badgeClass(r.estado)">{{ r.estado }}</span>
+        </div>
+
+        <div class="price">
+          <span class="muted">Monto</span>
+          <strong>$ {{ r.monto | number }}</strong>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div>
+          <span class="muted">Reserva ID</span>
+          <div class="mono">#{{ r.id }}</div>
+        </div>
+
+        <div *ngIf="r.fechaCreacion">
+          <span class="muted">Fecha</span>
+          <div>{{ r.fechaCreacion | date:'medium' }}</div>
+        </div>
+
+        <div *ngIf="r.stripePaymentIntentId">
+          <span class="muted">PaymentIntent</span>
+          <div class="mono">{{ r.stripePaymentIntentId }}</div>
+        </div>
+      </div>
+
+      <!-- Si tu flujo permite pagar una reserva pendiente con un endpoint/ruta específica,
+           aquí puedes enlazar. Por ahora lo dejamos listo: -->
+      <div class="footer">
+        <a class="btn ghost" [routerLink]="['/tours']">Ver tours</a>
+
+        <!-- Si usas /checkout/:tourId y creas reserva dentro, no pagas por reservaId.
+             Si luego creas ruta /pago/:reservaId, activa esto: -->
+        <!--
+        <a class="btn" *ngIf="r.estado === 'PENDIENTE'" [routerLink]="['/pago', r.id]">
+          Pagar
+        </a>
+        -->
+      </div>
+    </article>
+  </div>
+</section>

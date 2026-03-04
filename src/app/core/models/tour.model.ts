@@ -1,5 +1,5 @@
 export interface Tour {
-activo: boolean 
+
   id: number;
   nombre: string;
   descripcion: string;
@@ -9,4 +9,5 @@ activo: boolean
   latitud: number;
   longitud: number;
   precio?: number;
+  activo: boolean 
 }

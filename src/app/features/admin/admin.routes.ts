@@ -5,26 +5,13 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     canActivate: [adminGuard],
-    children: [
-      {
-        path: '',
-        pathMatch: 'full',
-        loadComponent: () =>
-          import('./pages/admin-dashboard.component')
-            .then(m => m.AdminDashboardComponent)
-      },
-      {
-        path: 'tours',
-        loadComponent: () =>
-          import('./pages/tours/admin-tours.component')
-            .then(m => m.AdminToursComponent)
-      },
-      {
-        path: 'crear',
-        loadComponent: () =>
-          import('./pages/create-tour.component')
-            .then(m => m.CreateTourComponent)
-      }
-    ]
+    loadComponent: () =>
+      import('./pages/tours/admin-tours.component').then(m => m.AdminToursComponent)
+  },
+  {
+    path: 'crear',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./pages/create-tour.component').then(m => m.CreateTourComponent)
   }
 ];

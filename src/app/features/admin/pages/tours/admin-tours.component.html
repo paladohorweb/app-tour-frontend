@@ -1,22 +1,157 @@
-<div class="wrap">
-  <h2>Tours creados</h2>
+<section class="page">
+  <header class="header">
+    <div>
+      <h1>Admin · Tours</h1>
+      <p class="muted">Crea, edita, desactiva y elimina tours.</p>
+    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Ciudad</th>
-        <th>Precio</th>
-      </tr>
-    </thead>
+    <div class="actions">
+      <a class="btn ghost" routerLink="/tours">Vista usuario</a>
+      <a class="btn" routerLink="/admin/crear">Crear tour</a>
+      <button class="btn ghost" (click)="cargar()" [disabled]="loading">Actualizar</button>
+    </div>
+  </header>
 
-    <tbody>
-      <tr *ngFor="let t of tours">
-        <td>{{ t.nombre }}</td>
-        <td>{{ t.ciudad }}</td>
-        <td>$ {{ t.precio | number }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+  <div class="toolbar">
+    <input
+      class="search"
+      placeholder="Buscar por nombre, ciudad o país..."
+      [(ngModel)]="q"
+    />
 
+    <label class="switch">
+      <input type="checkbox" [(ngModel)]="showInactive" />
+      <span>Mostrar inactivos</span>
+    </label>
+
+    <button
+      class="btn ghost"
+      (click)="reactivarTodos()"
+      [disabled]="loading || !tours.length"
+    >
+      Reactivar todos
+    </button>
+  </div>
+
+  <div class="card" *ngIf="loading">
+    Cargando tours...
+  </div>
+
+  <div class="card error" *ngIf="!loading && errorGlobal">
+    {{ errorGlobal }}
+  </div>
+
+  <div class="card ok" *ngIf="!loading && actionMsg">
+    {{ actionMsg }}
+  </div>
+
+  <!-- SI NO HAY RESULTADOS -->
+  <div class="card" *ngIf="!loading && !errorGlobal && toursFiltrados.length === 0">
+    <strong>No hay tours para mostrar.</strong>
+    <p class="muted" style="margin:6px 0 0;">
+      Si desactivaste todos, activa <b>“Mostrar inactivos”</b> o usa <b>“Reactivar todos”</b>.
+    </p>
+  </div>
+
+  <!-- LISTA -->
+  <div class="grid" *ngIf="!loading && !errorGlobal && toursFiltrados.length > 0">
+    <article class="item" *ngFor="let t of toursFiltrados">
+      <img class="img" [src]="t.imagenUrl || 'assets/no-image.png'" alt="tour" />
+
+      <div class="body">
+        <div class="top">
+          <h3>{{ t.nombre }}</h3>
+
+          <span class="chip" [class.off]="!t.activo">
+            {{ t.activo ? 'ACTIVO' : 'INACTIVO' }}
+          </span>
+        </div>
+
+        <p class="desc">{{ t.descripcion }}</p>
+
+        <div class="meta">
+          <span class="muted">{{ t.ciudad }}, {{ t.pais }}</span>
+          <strong>$ {{ (t.precio || 0) | number }}</strong>
+        </div>
+
+        <div class="row">
+          <button class="btn ghost" (click)="abrirEditar(t)" [disabled]="isBusy(t)">
+            Editar
+          </button>
+
+          <button class="btn danger" (click)="eliminar(t)" [disabled]="isBusy(t)">
+            Eliminar
+          </button>
+
+          <button class="btn" (click)="toggleActivo(t)" [disabled]="isBusy(t)">
+            {{ t.activo ? 'Desactivar' : 'Activar' }}
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- MODAL EDITAR -->
+  <div class="backdrop" *ngIf="editing">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h2>Editar Tour</h2>
+          <p class="muted" style="margin:4px 0 0;">ID: {{ editing.id }}</p>
+        </div>
+        <button class="icon" (click)="cerrarEditar()">✕</button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="form-grid">
+          <label>
+            Nombre *
+            <input formControlName="nombre" />
+          </label>
+
+          <label>
+            Ciudad
+            <input formControlName="ciudad" />
+          </label>
+
+          <label>
+            País
+            <input formControlName="pais" />
+          </label>
+
+          <label>
+            Precio *
+            <input type="number" formControlName="precio" />
+          </label>
+
+          <label class="full">
+            Descripción
+            <textarea rows="4" formControlName="descripcion"></textarea>
+          </label>
+
+          <label class="full">
+            Imagen URL
+            <input formControlName="imagenUrl" />
+          </label>
+
+          <label>
+            Latitud
+            <input type="number" formControlName="latitud" />
+          </label>
+
+          <label>
+            Longitud
+            <input type="number" formControlName="longitud" />
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn ghost" (click)="cerrarEditar()">Cancelar</button>
+          <button type="submit" class="btn" [disabled]="saving || form.invalid">
+            {{ saving ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

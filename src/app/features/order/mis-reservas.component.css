@@ -1,0 +1,36 @@
+.page { max-width: 1100px; margin: 18px auto; padding: 0 16px; }
+.header { display:flex; justify-content:space-between; align-items:flex-end; gap: 12px; margin-bottom: 14px; }
+h1 { margin:0; font-size: 28px; }
+.muted { color: #6b7280; font-size: 14px; }
+.actions { display:flex; gap: 10px; align-items:center; }
+
+.card { border: 1px solid #e5e7eb; border-radius: 16px; padding: 14px; background: #fff; }
+.card.error { border-color: #fecaca; background: #fff1f2; color: #991b1b; }
+
+.empty { border: 1px dashed #d1d5db; border-radius: 16px; padding: 20px; background: #fff; text-align:center; }
+
+.grid { display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+.item { border: 1px solid #e5e7eb; border-radius: 16px; padding: 14px; background: #fff; }
+.top { display:flex; justify-content:space-between; gap: 12px; align-items:flex-start; }
+.title { display:flex; gap: 10px; align-items:center; flex-wrap: wrap; }
+.title h3 { margin:0; font-size: 18px; }
+.price { text-align:right; min-width: 140px; }
+.price strong { font-size: 18px; }
+
+.meta { margin-top: 12px; display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 900px) { .meta { grid-template-columns: 1fr; } }
+
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; }
+
+.footer { display:flex; justify-content:flex-end; gap: 10px; margin-top: 12px; }
+
+.btn { border: 0; border-radius: 12px; padding: 10px 12px; cursor: pointer; background: #111827; color: #fff; text-decoration: none; display:inline-flex; align-items:center; gap: 8px; }
+.btn.ghost { background: #fff; color: #111827; border: 1px solid #e5e7eb; }
+
+.badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; border: 1px solid #e5e7eb; }
+.badge.ok { background: #ecfdf5; border-color:#a7f3d0; color:#065f46; }
+.badge.warn { background: #fffbeb; border-color:#fde68a; color:#92400e; }
+.badge.cancel { background: #f3f4f6; border-color:#d1d5db; color:#374151; }
+.badge.fail { background: #fff1f2; border-color:#fecaca; color:#991b1b; }

@@ -12,6 +12,14 @@ export const routes: Routes = [
 
   { path: 'tours', component: TourListComponent },
 
+  {
+  path: 'mis-reservas',
+  loadComponent: () =>
+    import('./features/order/mis-reservas.component').then(m => m.MisReservasComponent)
+},
+
+
+
 {
   path: 'admin',
   loadChildren: () =>
