@@ -4,6 +4,8 @@ export const API = {
   TOURS: '/tours',
   ORDERS: '/orders',
   RESERVAS: '/reservas',
-  PAYMENTS: '/pagos'
+  PAYMENTS: '/pagos',
+  GUIA: '/guia',
+  ADMIN: '/admin',
 
 };

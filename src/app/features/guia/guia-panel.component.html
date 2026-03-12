@@ -1,0 +1,40 @@
+<section class="page">
+  <header class="header">
+    <div>
+      <h1>Guía · Mis reservas</h1>
+      <p class="muted">Gestiona los tours que tienes asignados.</p>
+    </div>
+    <button class="btn" (click)="cargar()">Actualizar</button>
+  </header>
+
+  <div class="card" *ngIf="loading">Cargando reservas...</div>
+  <div class="card error" *ngIf="!loading && error">{{ error }}</div>
+  <div class="card ok" *ngIf="!loading && actionMsg">{{ actionMsg }}</div>
+
+  <div class="grid" *ngIf="!loading && !error && reservas.length">
+    <article class="item" *ngFor="let r of reservas">
+      <div class="top">
+        <h3>{{ r.tourNombre }}</h3>
+        <span class="chip">{{ r.estado }}</span>
+      </div>
+
+      <p><strong>Cliente:</strong> {{ r.nombreCliente }}</p>
+      <p><strong>Email:</strong> {{ r.emailCliente }}</p>
+      <p><strong>Monto:</strong> $ {{ r.monto | number }}</p>
+
+      <div class="row">
+        <button class="btn" *ngIf="r.estado === 'PAGADA'" (click)="iniciar(r)">
+          Iniciar tour
+        </button>
+
+        <button class="btn success" *ngIf="r.estado === 'EN_CURSO'" (click)="finalizar(r)">
+          Finalizar tour
+        </button>
+      </div>
+    </article>
+  </div>
+
+  <div class="card" *ngIf="!loading && !error && !reservas.length">
+    No tienes tours asignados.
+  </div>
+</section>

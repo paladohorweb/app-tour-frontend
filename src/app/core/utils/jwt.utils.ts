@@ -1,6 +1,8 @@
-export function decodeJwt(token: string): any {
+export function decodeJwt(token: string): any | null {
   try {
-    return JSON.parse(atob(token.split('.')[1]));
+    const payload = token.split('.')[1];
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64));
   } catch {
     return null;
   }

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API } from '../constants/api.constants';
 
-export type EstadoReserva = 'PENDIENTE' | 'PAGADA' | 'CANCELADA' | 'FALLIDA';
+export type EstadoReserva = 'PENDIENTE' | 'PAGADA' | 'CANCELADA' | 'FALLIDA' | 'FINALIZADA' | 'EN_CURSO';
 
 export interface ReservaResponse {
   id: number;
@@ -21,6 +21,10 @@ export interface ReservaResponse {
 
   stripePaymentIntentId?: string | null;
   fechaCreacion?: string;
+
+  guiaId?: number | null;
+  guiaNombre?: string | null;
+  guiaEmail?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -39,5 +43,9 @@ export class ReservaService {
 
   mias(): Observable<ReservaResponse[]> {
     return this.http.get<ReservaResponse[]>(`${this.URL}/mias`);
+  }
+
+   cancelar(id: number): Observable<void> {
+    return this.http.patch<void>(`${this.URL}/${id}/cancelar`, {});
   }
 }

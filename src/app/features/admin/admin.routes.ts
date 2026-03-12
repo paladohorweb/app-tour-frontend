@@ -4,6 +4,11 @@ import { adminGuard } from '../../core/guards/role.guard';
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
+    redirectTo: 'tours',
+    pathMatch: 'full'
+  },
+  {
+    path: 'tours',
     canActivate: [adminGuard],
     loadComponent: () =>
       import('./pages/tours/admin-tours.component').then(m => m.AdminToursComponent)
@@ -13,5 +18,11 @@ export const ADMIN_ROUTES: Routes = [
     canActivate: [adminGuard],
     loadComponent: () =>
       import('./pages/create-tour.component').then(m => m.CreateTourComponent)
+  },
+  {
+    path: 'reservas',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./pages/reservas/admin-reservas.component').then(m => m.AdminReservasComponent)
   }
 ];

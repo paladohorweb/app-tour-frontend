@@ -51,7 +51,7 @@ export class AuthService {
   }
 
   /** ✅ robusto: soporta claim role o rol y soporta ROLE_ADMIN o ADMIN */
-  getUserRole(): 'ADMIN' | 'USER' | null {
+  getUserRole(): 'ADMIN' | 'USER' | 'GUIA' | null {
     const token = this.getAccessToken();
     if (!token) return null;
 
@@ -60,7 +60,7 @@ export class AuthService {
     if (!raw || typeof raw !== 'string') return null;
 
     const normalized = raw.replace('ROLE_', '').toUpperCase();
-    return (normalized === 'ADMIN' || normalized === 'USER') ? (normalized as any) : null;
+    return (normalized === 'ADMIN' || normalized === 'USER' || normalized === 'GUIA') ? (normalized as any) : null;
   }
 
   isAdmin(): boolean {
@@ -92,5 +92,9 @@ export class AuthService {
   /** útil para navbar */
   get currentUser(): AuthUser | null {
     return this.userSubject.value;
+  }
+
+   isGuia(): boolean {
+    return this.getUserRole() === 'GUIA';
   }
 }

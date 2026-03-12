@@ -1,0 +1,54 @@
+<section class="page">
+  <header class="header">
+    <div>
+      <h1>Admin · Reservas</h1>
+      <p class="muted">Visualiza reservas, estados y asigna guías.</p>
+    </div>
+    <button class="btn" (click)="cargarTodo()">Actualizar</button>
+  </header>
+
+  <div class="toolbar">
+    <input class="search" [(ngModel)]="filtro" placeholder="Buscar por tour, cliente, email o estado..." />
+
+    <select [(ngModel)]="estado" (change)="cargarTodo()">
+      <option value="">Todos</option>
+      <option value="PENDIENTE">PENDIENTE</option>
+      <option value="PAGADA">PAGADA</option>
+      <option value="EN_CURSO">EN_CURSO</option>
+      <option value="FINALIZADA">FINALIZADA</option>
+      <option value="CANCELADA">CANCELADA</option>
+      <option value="FALLIDA">FALLIDA</option>
+    </select>
+  </div>
+
+  <div class="card" *ngIf="loading">Cargando reservas...</div>
+  <div class="card error" *ngIf="!loading && error">{{ error }}</div>
+  <div class="card ok" *ngIf="!loading && actionMsg">{{ actionMsg }}</div>
+
+  <div class="grid" *ngIf="!loading && !error">
+    <article class="item" *ngFor="let r of reservasFiltradas">
+      <div class="top">
+        <h3>{{ r.tourNombre }}</h3>
+        <span class="chip">{{ r.estado }}</span>
+      </div>
+
+      <p><strong>Cliente:</strong> {{ r.nombreCliente }}</p>
+      <p><strong>Email:</strong> {{ r.emailCliente }}</p>
+      <p><strong>Monto:</strong> $ {{ r.monto | number }}</p>
+      <p><strong>Guía actual:</strong> {{ r.guiaNombre || 'Sin asignar' }}</p>
+
+      <div class="assign">
+        <select #guiaSel>
+          <option value="">Selecciona guía</option>
+          <option *ngFor="let g of guias" [value]="g.id">
+            {{ g.nombre }} · {{ g.email }}
+          </option>
+        </select>
+
+        <button class="btn" (click)="asignar(r.id, guiaSel.value)" [disabled]="r.estado !== 'PAGADA'">
+          Asignar guía
+        </button>
+      </div>
+    </article>
+  </div>
+</section>

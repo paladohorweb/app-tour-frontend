@@ -2,6 +2,7 @@ import { Routes } from "@angular/router";
 import { LoginComponent } from "./features/auth/login.component";
 import { RegisterComponent } from "./features/auth/register.component";
 import { TourListComponent } from "./features/tours/tour-list.component";
+import { guiaGuard } from "./core/guards/guia.guard";
 
 
 export const routes: Routes = [
@@ -17,9 +18,12 @@ export const routes: Routes = [
   loadComponent: () =>
     import('./features/order/mis-reservas.component').then(m => m.MisReservasComponent)
 },
-
-
-
+{
+    path: 'guia/panel',
+    canActivate: [guiaGuard],
+    loadComponent: () =>
+      import('./features/guia/guia-panel.component').then(m => m.GuiaPanelComponent)
+  },
 {
   path: 'admin',
   loadChildren: () =>
