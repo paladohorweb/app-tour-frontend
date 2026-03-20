@@ -2,13 +2,18 @@
   <header class="header">
     <div>
       <h1>Admin · Reservas</h1>
-      <p class="muted">Visualiza reservas, estados y asigna guías.</p>
+      <p class="muted">Visualiza reservas, filtra por estado y asigna guías.</p>
     </div>
+
     <button class="btn" (click)="cargarTodo()">Actualizar</button>
   </header>
 
   <div class="toolbar">
-    <input class="search" [(ngModel)]="filtro" placeholder="Buscar por tour, cliente, email o estado..." />
+    <input
+      class="search"
+      [(ngModel)]="filtro"
+      placeholder="Buscar por tour, cliente, email, estado o guía..."
+    />
 
     <select [(ngModel)]="estado" (change)="cargarTodo()">
       <option value="">Todos</option>
@@ -21,21 +26,40 @@
     </select>
   </div>
 
-  <div class="card" *ngIf="loading">Cargando reservas...</div>
-  <div class="card error" *ngIf="!loading && error">{{ error }}</div>
-  <div class="card ok" *ngIf="!loading && actionMsg">{{ actionMsg }}</div>
+  <div class="card" *ngIf="loading">
+    Cargando reservas...
+  </div>
 
-  <div class="grid" *ngIf="!loading && !error">
-    <article class="item" *ngFor="let r of reservasFiltradas">
+  <div class="card error" *ngIf="!loading && error">
+    {{ error }}
+  </div>
+
+  <div class="card ok" *ngIf="!loading && actionMsg">
+    {{ actionMsg }}
+  </div>
+
+  <div class="empty" *ngIf="!loading && !error && reservasFiltradas.length === 0">
+    <h3>No hay reservas para mostrar</h3>
+    <p>Prueba cambiando el filtro o el estado.</p>
+  </div>
+
+  <div class="grid" *ngIf="!loading && !error && reservasFiltradas.length > 0">
+    <article class="item" *ngFor="let r of reservasFiltradas; trackBy: trackByReserva">
       <div class="top">
         <h3>{{ r.tourNombre }}</h3>
-        <span class="chip">{{ r.estado }}</span>
+        <span [class]="estadoClase(r.estado)">
+          {{ r.estado }}
+        </span>
       </div>
 
-      <p><strong>Cliente:</strong> {{ r.nombreCliente }}</p>
-      <p><strong>Email:</strong> {{ r.emailCliente }}</p>
-      <p><strong>Monto:</strong> $ {{ r.monto | number }}</p>
-      <p><strong>Guía actual:</strong> {{ r.guiaNombre || 'Sin asignar' }}</p>
+      <div class="info">
+        <p><strong>Reserva:</strong> #{{ r.id }}</p>
+        <p><strong>Cliente:</strong> {{ r.nombreCliente || 'Sin nombre' }}</p>
+        <p><strong>Email:</strong> {{ r.emailCliente || 'Sin email' }}</p>
+        <p><strong>Monto:</strong> $ {{ r.monto | number }}</p>
+        <p><strong>Método pago:</strong> {{ r.metodoPago || 'No definido' }}</p>
+        <p><strong>Guía:</strong> {{ r.guiaNombre || 'Sin asignar' }}</p>
+      </div>
 
       <div class="assign">
         <select #guiaSel>
@@ -45,10 +69,17 @@
           </option>
         </select>
 
-        <button class="btn" (click)="asignar(r.id, guiaSel.value)" [disabled]="r.estado !== 'PAGADA'">
+        <button
+          class="btn"
+          (click)="asignar(r.id, guiaSel.value)"
+          [disabled]="!puedeAsignar(r)">
           Asignar guía
         </button>
       </div>
+
+      <p class="hint" *ngIf="r.estado !== 'PAGADA'">
+        Solo se puede asignar guía cuando la reserva está PAGADA.
+      </p>
     </article>
   </div>
 </section>

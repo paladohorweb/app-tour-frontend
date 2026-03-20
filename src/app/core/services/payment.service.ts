@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { API } from '../constants/api.constants';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { Observable } from 'rxjs';
+import { MetodoPago } from './reserva.service';
 
 export interface CreateIntentRequest {
   reservaId: number;
@@ -22,10 +23,10 @@ export class PaymentService {
   constructor(private http: HttpClient) {}
 
 
-  crearIntentoPago(reservaId: number): Observable<CreateIntentResponse> {
+  crearIntentoPago(reservaId: number, metodoPago: MetodoPago): Observable<CreateIntentResponse> {
     return this.http.post<CreateIntentResponse>(
       `${API.BASE_URL}${API.PAYMENTS}/crear-intent`,
-      { reservaId } // ✅ backend espera reservaId
+      { reservaId, metodoPago } // ✅ backend espera reservaId y metodoPago
     );
   }
 

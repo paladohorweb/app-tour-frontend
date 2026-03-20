@@ -27,14 +27,18 @@ export class AdminReservasComponent implements OnInit {
     this.cargarTodo();
   }
 
-  cargarTodo() {
+  cargarTodo(): void {
     this.loading = true;
     this.error = '';
     this.actionMsg = '';
 
     this.adminService.listarGuias().subscribe({
-      next: (guias) => this.guias = guias ?? [],
-      error: (err) => console.error(err)
+      next: (guias) => {
+        this.guias = guias ?? [];
+      },
+      error: (err) => {
+        console.error(err);
+      }
     });
 
     this.adminService.listarReservas(this.estado || undefined).subscribe({
@@ -52,17 +56,19 @@ export class AdminReservasComponent implements OnInit {
 
   get reservasFiltradas(): ReservaResponse[] {
     const term = this.filtro.trim().toLowerCase();
+
     if (!term) return this.reservas;
 
     return this.reservas.filter(r =>
       (r.tourNombre ?? '').toLowerCase().includes(term) ||
       (r.nombreCliente ?? '').toLowerCase().includes(term) ||
       (r.emailCliente ?? '').toLowerCase().includes(term) ||
-      (r.estado ?? '').toLowerCase().includes(term)
+      (r.estado ?? '').toLowerCase().includes(term) ||
+      (r.guiaNombre ?? '').toLowerCase().includes(term)
     );
   }
 
-  asignar(reservaId: number, guiaIdRaw: string) {
+  asignar(reservaId: number, guiaIdRaw: string): void {
     const guiaId = Number(guiaIdRaw);
     if (!guiaId) return;
 
@@ -79,5 +85,32 @@ export class AdminReservasComponent implements OnInit {
         this.error = err?.error?.message || 'No se pudo asignar el guía';
       }
     });
+  }
+
+  estadoClase(estado?: string): string {
+    switch (estado) {
+      case 'PENDIENTE':
+        return 'chip pendiente';
+      case 'PAGADA':
+        return 'chip pagada';
+      case 'EN_CURSO':
+        return 'chip curso';
+      case 'FINALIZADA':
+        return 'chip finalizada';
+      case 'CANCELADA':
+        return 'chip cancelada';
+      case 'FALLIDA':
+        return 'chip fallida';
+      default:
+        return 'chip';
+    }
+  }
+
+  puedeAsignar(reserva: ReservaResponse): boolean {
+    return reserva.estado === 'PAGADA';
+  }
+
+  trackByReserva(index: number, item: ReservaResponse): number {
+    return item.id;
   }
 }

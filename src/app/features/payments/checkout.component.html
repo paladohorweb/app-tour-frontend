@@ -1,41 +1,29 @@
-<div class="page">
+<section class="page">
 
-  <div class="card">
-    <h1>Checkout</h1>
-    <p class="subtitle">Pago seguro con Stripe</p>
+  <h1>Checkout</h1>
 
-    <div class="loading" *ngIf="loading">Cargando checkout...</div>
+  <div *ngIf="loading">Cargando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
 
-    <p class="error" *ngIf="error">{{ error }}</p>
+  <div *ngIf="!loading && tour">
 
-    <div class="summary" *ngIf="!loading && tour">
-      <div class="row">
-        <span>Tour</span>
-        <strong>{{ tour.nombre }}</strong>
-      </div>
+    <h2>{{ tour.nombre }}</h2>
+    <p>{{ tour.ciudad }}, {{ tour.pais }}</p>
+    <h3>$ {{ tour.precio }}</h3>
 
-      <div class="row">
-        <span>Ciudad</span>
-        <strong>{{ tour.ciudad }}, {{ tour.pais }}</strong>
-      </div>
-
-      <div class="row total">
-        <span>Total</span>
-        <strong>$ {{ tour.precio | number }}</strong>
-      </div>
+    <div class="field">
+      <label>Método de pago</label>
+      <select [(ngModel)]="metodoPago">
+        <option *ngFor="let m of metodos" [value]="m">{{ m }}</option>
+      </select>
     </div>
 
-    <div id="payment-element" class="stripe-box" *ngIf="!loading && !error"></div>
+    <div id="payment-element" *ngIf="metodoPago === 'TARJETA'"></div>
 
-    <button class="btn primary"
-      (click)="pagar()"
-      [disabled]="loading || paying || !!error">
-      <span *ngIf="!paying">Pagar ahora</span>
-      <span *ngIf="paying">Procesando...</span>
+    <button class="btn" (click)="pagar()" [disabled]="paying">
+      {{ paying ? 'Procesando...' : 'Pagar' }}
     </button>
 
-    <a class="btn ghost" routerLink="/tours">Volver</a>
   </div>
 
-</div>
-
+</section>

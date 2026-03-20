@@ -29,12 +29,17 @@
       </div>
     </div>
 
-    <form id="payment-form" (ngSubmit)="pagar()">
-      <div id="payment-element"></div>
+    <div class="field">
+      <label>Método de pago</label>
+      <select [(ngModel)]="metodoPago">
+        <option *ngFor="let m of metodos" [ngValue]="m">{{ m }}</option>
+      </select>
+    </div>
 
-      <button type="submit" class="btn" [disabled]="paying">
-        {{ paying ? 'Procesando...' : 'Pagar ahora' }}
-      </button>
-    </form>
+    <div id="payment-element" *ngIf="metodoPago === 'TARJETA'"></div>
+
+    <button type="button" class="btn" [disabled]="paying" (click)="pagar()">
+      {{ paying ? 'Procesando...' : 'Pagar ahora' }}
+    </button>
   </div>
 </section>

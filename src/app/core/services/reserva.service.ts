@@ -18,6 +18,7 @@ export interface ReservaResponse {
 
   monto: number;
   estado: EstadoReserva;
+  metodoPago?: MetodoPago;
 
   stripePaymentIntentId?: string | null;
   fechaCreacion?: string;
@@ -26,6 +27,8 @@ export interface ReservaResponse {
   guiaNombre?: string | null;
   guiaEmail?: string | null;
 }
+
+export type MetodoPago = 'TARJETA' | 'PSE' | 'EFECTIVO' |  'TRANSFERENCIA' | 'NEQUI' | 'DAVIPLATA';
 
 @Injectable({ providedIn: 'root' })
 export class ReservaService {
@@ -47,5 +50,9 @@ export class ReservaService {
 
    cancelar(id: number): Observable<void> {
     return this.http.patch<void>(`${this.URL}/${id}/cancelar`, {});
+  }
+
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.URL}/${id}`);
   }
 }
