@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import Swal from 'sweetalert2';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -13,12 +14,12 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class RegisterComponent {
   loading = false;
-  error: string | null = null;
 
   form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, Validators.minLength(4)]],
+    rol: ['USER' as 'USER' | 'GUIA', Validators.required]
   });
 
   constructor(
@@ -28,8 +29,6 @@ export class RegisterComponent {
   ) {}
 
   submit(): void {
-    this.error = null;
-
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -40,15 +39,19 @@ export class RegisterComponent {
     this.auth.register(this.form.getRawValue()).subscribe({
       next: () => {
         this.loading = false;
-
-        // ✅ después de registrarse, lo mandamos a login
-        this.router.navigate(['/login']);
+        Swal.fire({
+          icon: 'success',
+          title: 'Registro exitoso',
+          text: 'Tu cuenta fue creada correctamente'
+        }).then(() => this.router.navigate(['/login']));
       },
       error: (err) => {
         this.loading = false;
-        this.error =
-          err?.error?.message ||
-          'No se pudo crear la cuenta. Intenta con otro email.';
+        Swal.fire({
+          icon: 'error',
+          title: 'No se pudo registrar',
+          text: err?.error?.message || 'Verifica los datos'
+        });
       }
     });
   }

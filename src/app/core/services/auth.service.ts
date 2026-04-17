@@ -24,9 +24,9 @@ export class AuthService {
     );
   }
 
-  register(payload: { nombre: string; email: string; password: string }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/register`, payload);
-  }
+register(payload: { nombre: string; email: string; password: string; rol: 'USER' | 'GUIA' }): Observable<any> {
+  return this.http.post<any>(`${this.BASE_URL}/register`, payload);
+}
 
   private setSession(authResponse: any): void {
     localStorage.setItem(this.TOKEN_KEY, authResponse.accessToken);

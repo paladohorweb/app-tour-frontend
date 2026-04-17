@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import Swal from 'sweetalert2';
+
 import { PaymentService } from '../../core/services/payment.service';
 import { ReservaService, ReservaResponse, MetodoPago } from '../../core/services/reserva.service';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   standalone: true,
   selector: 'app-pago',
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink,FormsModule],
   templateUrl: './pago.component.html',
   styleUrls: ['./pago.component.css']
 })
@@ -22,10 +24,7 @@ export class PagoComponent implements OnInit {
   reserva?: ReservaResponse;
 
   metodoPago: MetodoPago = 'TARJETA';
-  metodos: MetodoPago[] = ['TARJETA', 'PSE', 'EFECTIVO', 'TRANSFERENCIA', 'NEQUI', 'DAVIPLATA'];
-
-  private stripe: any;
-  private elements: any;
+  metodos: MetodoPago[] = ['TARJETA', 'PSE', 'NEQUI', 'DAVIPLATA', 'TRANSFERENCIA', 'EFECTIVO'];
 
   constructor(
     private route: ActivatedRoute,
@@ -34,10 +33,12 @@ export class PagoComponent implements OnInit {
     private paymentService: PaymentService
   ) {}
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     try {
       const reservaId = Number(this.route.snapshot.paramMap.get('reservaId'));
-      if (!reservaId) throw new Error('reservaId inválido');
+      if (!reservaId) {
+        throw new Error('reservaId inválido');
+      }
 
       this.reserva = await firstValueFrom(this.reservaService.obtenerReserva(reservaId));
       this.loading = false;
@@ -49,54 +50,49 @@ export class PagoComponent implements OnInit {
     }
   }
 
-  async pagar() {
+  async pagar(): Promise<void> {
     if (!this.reserva) return;
 
     this.error = '';
     this.paying = true;
 
     try {
-      const intentRes: any = await firstValueFrom(
+      const res = await firstValueFrom(
         this.paymentService.crearIntentoPago(this.reserva.id, this.metodoPago)
       );
 
-      // Si es método manual/prueba, backend ya la marca pagada
-      if (this.metodoPago !== 'TARJETA') {
+      // Pago manual / simulado
+      if (res.provider === 'MANUAL') {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Pago registrado',
+          text: 'La reserva quedó pagada correctamente'
+        });
+
         this.router.navigate(['/order/success'], {
           queryParams: { reservaId: this.reserva.id }
         });
         return;
       }
 
-      const stripe = await this.paymentService.getStripe();
-      if (!stripe) throw new Error('Stripe no inicializó');
-
-      this.stripe = stripe;
-      this.elements = stripe.elements({ clientSecret: intentRes.clientSecret });
-
-      // limpia render previo si vuelves a intentar
-      const el = document.getElementById('payment-element');
-      if (el) el.innerHTML = '';
-
-      const paymentElement = this.elements.create('payment');
-      paymentElement.mount('#payment-element');
-
-      const { error } = await this.stripe.confirmPayment({
-        elements: this.elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/order/success?reservaId=${this.reserva.id}`
-        }
-      });
-
-      if (error) {
-        this.error = error.message ?? 'Error en el pago';
-        this.paying = false;
+      // Wompi
+      if (res.provider === 'WOMPI' && res.checkoutUrl) {
+        window.location.href = res.checkoutUrl;
+        return;
       }
+
+      throw new Error('No se recibió una respuesta válida del proveedor de pago');
 
     } catch (e: any) {
       console.error(e);
-      this.error = e?.error?.message || 'No se pudo iniciar el pago';
+      this.error = e?.error?.message || e?.message || 'No se pudo procesar el pago';
       this.paying = false;
+
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error de pago',
+        text: this.error
+      });
     }
   }
 }

@@ -1,29 +1,52 @@
-<section class="page">
+<div class="container py-4" *ngIf="!loading && tour">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      <div class="card card-soft">
+        <div class="card-body p-4">
+          <h2 class="fw-bold mb-2">Checkout</h2>
+          <p class="text-muted mb-4">{{ tour.nombre }} · {{ tour.ciudad }}, {{ tour.pais }}</p>
 
-  <h1>Checkout</h1>
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <div class="border rounded-4 p-3">
+                <small class="text-muted d-block">Tour</small>
+                <strong>{{ tour.nombre }}</strong>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="border rounded-4 p-3">
+                <small class="text-muted d-block">Precio</small>
+                <strong>$ {{ tour.precio | number }}</strong>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="border rounded-4 p-3">
+                <small class="text-muted d-block">Reserva</small>
+                <strong>#{{ reservaId }}</strong>
+              </div>
+            </div>
+          </div>
 
-  <div *ngIf="loading">Cargando...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
+          <div class="mb-4">
+            <label class="form-label">Método de pago</label>
+            <select class="form-select form-select-lg" [(ngModel)]="metodoPago">
+              <option *ngFor="let m of metodos" [ngValue]="m">{{ m }}</option>
+            </select>
+          </div>
 
-  <div *ngIf="!loading && tour">
+          <button class="btn btn-dark btn-lg w-100 btn-soft" (click)="pagar()" [disabled]="paying">
+            {{ paying ? 'Procesando...' : 'Continuar al pago' }}
+          </button>
 
-    <h2>{{ tour.nombre }}</h2>
-    <p>{{ tour.ciudad }}, {{ tour.pais }}</p>
-    <h3>$ {{ tour.precio }}</h3>
-
-    <div class="field">
-      <label>Método de pago</label>
-      <select [(ngModel)]="metodoPago">
-        <option *ngFor="let m of metodos" [value]="m">{{ m }}</option>
-      </select>
+          <div class="alert alert-danger mt-3" *ngIf="error">
+            {{ error }}
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div id="payment-element" *ngIf="metodoPago === 'TARJETA'"></div>
-
-    <button class="btn" (click)="pagar()" [disabled]="paying">
-      {{ paying ? 'Procesando...' : 'Pagar' }}
-    </button>
-
   </div>
+</div>
 
-</section>
+<div class="container py-5" *ngIf="loading">
+  Cargando checkout...
+</div>

@@ -1,2 +1,31 @@
 /* You can add global styles to this file, and also import other style files */
 @import "leaflet/dist/leaflet.css";
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+
+body {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.card-soft {
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
+}
+
+.btn-soft {
+  border-radius: .8rem;
+}
+
+.badge-soft {
+  border-radius: 999px;
+  padding: .45rem .8rem;
+  font-weight: 600;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem;
+}

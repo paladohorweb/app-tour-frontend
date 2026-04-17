@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ReservaService, ReservaResponse } from '../../core/services/reserva.service';
+import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
@@ -13,7 +14,6 @@ export class MisReservasComponent implements OnInit {
 
   loading = true;
   error = '';
-
   reservas: ReservaResponse[] = [];
 
   constructor(private reservaService: ReservaService) {}
@@ -39,28 +39,48 @@ export class MisReservasComponent implements OnInit {
     });
   }
 
-  cancelar(r: ReservaResponse) {
-    const ok = confirm(`¿Cancelar reserva #${r.id}?`);
-    if (!ok) return;
+  async cancelar(r: ReservaResponse) {
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: 'Cancelar reserva',
+      text: `¿Deseas cancelar la reserva #${r.id}?`,
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar'
+    });
+
+    if (!result.isConfirmed) return;
 
     this.reservaService.cancelar(r.id).subscribe({
-      next: () => this.cargar(),
-      error: (err) => {
+      next: async () => {
+        await Swal.fire('Cancelada', 'La reserva fue cancelada', 'success');
+        this.cargar();
+      },
+      error: async (err) => {
         console.error(err);
-        this.error = err?.error?.message || 'No se pudo cancelar';
+        await Swal.fire('Error', err?.error?.message || 'No se pudo cancelar', 'error');
       }
     });
   }
 
-  eliminar(r: ReservaResponse) {
-    const ok = confirm(`¿Eliminar reserva #${r.id}?`);
-    if (!ok) return;
+  async eliminar(r: ReservaResponse) {
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: 'Eliminar reserva',
+      text: `¿Deseas eliminar la reserva #${r.id}?`,
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar'
+    });
+
+    if (!result.isConfirmed) return;
 
     this.reservaService.eliminar(r.id).subscribe({
-      next: () => this.cargar(),
-      error: (err) => {
+      next: async () => {
+        await Swal.fire('Eliminada', 'La reserva fue eliminada', 'success');
+        this.cargar();
+      },
+      error: async (err) => {
         console.error(err);
-        this.error = err?.error?.message || 'No se pudo eliminar';
+        await Swal.fire('Error', err?.error?.message || 'No se pudo eliminar', 'error');
       }
     });
   }
@@ -73,15 +93,20 @@ export class MisReservasComponent implements OnInit {
     return ['PENDIENTE', 'CANCELADA', 'FALLIDA'].includes(r.estado);
   }
 
-  estadoClase(estado: string): string {
-    switch (estado) {
-      case 'PENDIENTE': return 'chip pendiente';
-      case 'PAGADA': return 'chip pagada';
-      case 'EN_CURSO': return 'chip curso';
-      case 'FINALIZADA': return 'chip finalizada';
-      case 'CANCELADA': return 'chip cancelada';
-      case 'FALLIDA': return 'chip fallida';
-      default: return 'chip';
+   estadoClase(estado: string | null | undefined): string {
+    switch ((estado || '').toUpperCase()) {
+      case 'PENDIENTE':
+        return 'badge bg-warning text-dark';
+      case 'CONFIRMADA':
+        return 'badge bg-info text-dark';
+      case 'PAGADA':
+        return 'badge bg-success';
+      case 'CANCELADA':
+        return 'badge bg-danger';
+      case 'RECHAZADA':
+        return 'badge bg-dark';
+      default:
+        return 'badge bg-secondary';
     }
   }
 }

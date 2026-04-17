@@ -19,9 +19,11 @@
     "@angular/platform-browser-dynamic": "^17.2.0",
     "@angular/router": "^17.2.0",
     "@stripe/stripe-js": "^8.7.0",
+    "bootstrap": "^5.3.8",
     "leaflet": "^1.9.4",
     "mapbox-gl": "^3.18.1",
     "rxjs": "~7.8.0",
+    "sweetalert2": "^11.26.24",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
   },

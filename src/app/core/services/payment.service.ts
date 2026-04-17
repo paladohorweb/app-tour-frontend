@@ -1,37 +1,27 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API } from '../constants/api.constants';
-import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { Observable } from 'rxjs';
 import { MetodoPago } from './reserva.service';
 
-export interface CreateIntentRequest {
-  reservaId: number;
-  //monto: number; // minor units (COP: 2000 = $2.000)
-}
-
 export interface CreateIntentResponse {
-  clientSecret: string;
+  clientSecret: string | null;
   reservaId: number;
+  provider: string;
+  checkoutUrl: string | null;
+  reference: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-  // ✅ Mejor: usa env o constants, pero por ahora fijo
-  private stripePromise = loadStripe('pk_test_TU_PUBLIC_KEY');
+  private readonly URL = `${API.BASE_URL}${API.PAYMENTS}`;
 
   constructor(private http: HttpClient) {}
 
-
   crearIntentoPago(reservaId: number, metodoPago: MetodoPago): Observable<CreateIntentResponse> {
-    return this.http.post<CreateIntentResponse>(
-      `${API.BASE_URL}${API.PAYMENTS}/crear-intent`,
-      { reservaId, metodoPago } // ✅ backend espera reservaId y metodoPago
-    );
-  }
-
-  async getStripe(): Promise<Stripe | null> {
-    return await this.stripePromise;
+    return this.http.post<CreateIntentResponse>(`${this.URL}/crear-intent`, {
+      reservaId,
+      metodoPago
+    });
   }
 }
-

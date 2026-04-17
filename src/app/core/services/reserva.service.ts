@@ -26,6 +26,10 @@ export interface ReservaResponse {
   guiaId?: number | null;
   guiaNombre?: string | null;
   guiaEmail?: string | null;
+  paymentProvider?: string | null;
+externalPaymentId?: string | null;
+paymentRedirectUrl?: string | null;
+paymentReference?: string | null;
 }
 
 export type MetodoPago = 'TARJETA' | 'PSE' | 'EFECTIVO' |  'TRANSFERENCIA' | 'NEQUI' | 'DAVIPLATA';

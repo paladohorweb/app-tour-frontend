@@ -1,45 +1,62 @@
-<section class="wrap">
-  <header class="header">
-    <div>
-      <h1>Pagar reserva</h1>
-      <p class="muted" *ngIf="reserva">Reserva #{{ reserva.id }} · {{ reserva.tourNombre }}</p>
-    </div>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
 
-    <a class="btn ghost" routerLink="/mis-reservas">Volver</a>
-  </header>
-
-  <div class="card" *ngIf="loading">Preparando pago...</div>
-  <div class="card error" *ngIf="!loading && error">{{ error }}</div>
-
-  <div class="card" *ngIf="!loading && !error && reserva">
-    <div class="summary">
-      <div>
-        <span class="muted">Tour</span>
-        <strong>{{ reserva.tourNombre }}</strong>
+      <div class="card card-soft p-4" *ngIf="loading">
+        Cargando información de la reserva...
       </div>
 
-      <div>
-        <span class="muted">Monto</span>
-        <strong>$ {{ reserva.monto | number }}</strong>
+      <div class="card card-soft p-4 border-danger" *ngIf="!loading && error">
+        <h4 class="text-danger fw-bold">No se pudo cargar el pago</h4>
+        <p class="mb-0">{{ error }}</p>
       </div>
 
-      <div>
-        <span class="muted">Estado</span>
-        <strong>{{ reserva.estado }}</strong>
+      <div class="card card-soft p-4" *ngIf="!loading && !error && reserva">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+          <div>
+            <h2 class="fw-bold mb-1">Pagar reserva</h2>
+            <p class="text-muted mb-0">Reserva #{{ reserva.id }} · {{ reserva.tourNombre }}</p>
+          </div>
+
+          <a routerLink="/mis-reservas" class="btn btn-outline-dark btn-soft">
+            Volver
+          </a>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="border rounded-4 p-3 h-100">
+              <small class="text-muted d-block">Tour</small>
+              <strong>{{ reserva.tourNombre }}</strong>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="border rounded-4 p-3 h-100">
+              <small class="text-muted d-block">Monto</small>
+              <strong>$ {{ reserva.monto | number }}</strong>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="border rounded-4 p-3 h-100">
+              <small class="text-muted d-block">Estado</small>
+              <strong>{{ reserva.estado }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Método de pago</label>
+          <select class="form-select form-select-lg" [(ngModel)]="metodoPago">
+            <option *ngFor="let m of metodos" [ngValue]="m">{{ m }}</option>
+          </select>
+        </div>
+
+        <button class="btn btn-dark btn-lg w-100 btn-soft" [disabled]="paying" (click)="pagar()">
+          {{ paying ? 'Procesando...' : 'Continuar al pago' }}
+        </button>
       </div>
     </div>
-
-    <div class="field">
-      <label>Método de pago</label>
-      <select [(ngModel)]="metodoPago">
-        <option *ngFor="let m of metodos" [ngValue]="m">{{ m }}</option>
-      </select>
-    </div>
-
-    <div id="payment-element" *ngIf="metodoPago === 'TARJETA'"></div>
-
-    <button type="button" class="btn" [disabled]="paying" (click)="pagar()">
-      {{ paying ? 'Procesando...' : 'Pagar ahora' }}
-    </button>
   </div>
-</section>
+</div>
