@@ -24,7 +24,7 @@ export class AuthService {
     );
   }
 
-register(payload: { nombre: string; email: string; password: string; rol: 'USER' | 'GUIA' }): Observable<any> {
+register(payload: { nombre: string; email: string; password: string; rol: 'ROLE_USER' | 'ROLE_GUIA' }) {
   return this.http.post<any>(`${this.BASE_URL}/register`, payload);
 }
 

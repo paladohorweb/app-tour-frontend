@@ -1,60 +1,43 @@
-<div class="auth-page">
-  <div class="auth-card">
-    <div class="brand">
-      <div class="logo">T</div>
-      <div class="brand-text">
-        <h1>TourApp</h1>
-        <p>Inicia sesión para continuar</p>
+<div class="container py-5">
+  <div class="row justify-content-center align-items-center min-vh-75">
+    <div class="col-12 col-md-8 col-lg-5">
+      <div class="card card-soft">
+        <div class="card-body p-4 p-lg-5">
+          <div class="text-center mb-4">
+            <h2 class="fw-bold mb-2">Iniciar sesión</h2>
+            <p class="text-muted mb-0">Accede a tu cuenta para continuar</p>
+          </div>
+
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            <div class="mb-3">
+              <label class="form-label">Correo electrónico</label>
+              <input
+                type="email"
+                class="form-control form-control-lg"
+                formControlName="email"
+                placeholder="correo@ejemplo.com">
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Contraseña</label>
+              <input
+                type="password"
+                class="form-control form-control-lg"
+                formControlName="password"
+                placeholder="********">
+            </div>
+
+            <button class="btn btn-dark btn-lg w-100 btn-soft" [disabled]="loading">
+              {{ loading ? 'Ingresando...' : 'Entrar' }}
+            </button>
+          </form>
+
+          <div class="text-center mt-4">
+            <span class="text-muted">¿No tienes cuenta?</span>
+            <a routerLink="/register" class="text-decoration-none ms-1 fw-semibold">Regístrate</a>
+          </div>
+        </div>
       </div>
     </div>
-
-    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
-      <label class="field">
-        <span>Email</span>
-        <input type="email" formControlName="email" placeholder="jorge@mail.com" autocomplete="email" />
-        <small class="hint" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
-          Ingresa un email válido
-        </small>
-      </label>
-
-      <label class="field">
-        <span>Contraseña</span>
-        <input type="password" formControlName="password" placeholder="••••••••" autocomplete="current-password" />
-        <small class="hint" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
-          La contraseña es obligatoria
-        </small>
-      </label>
-
-      <button class="btn primary" type="submit" [disabled]="form.invalid || loading">
-        <span *ngIf="!loading">Entrar</span>
-        <span *ngIf="loading">Ingresando…</span>
-      </button>
-
-      <p class="error" *ngIf="error">{{ error }}</p>
-
-      <div class="divider">
-        <span>o</span>
-      </div>
-
-      <a class="btn ghost" routerLink="/register">Crear cuenta</a>
-
-      <p class="footer">
-        Al continuar aceptas nuestros <a href="#" (click)="$event.preventDefault()">términos</a>.
-      </p>
-    </form>
-  </div>
-
-  <div class="auth-side">
-    <h2>Descubre experiencias</h2>
-    <p>
-      Reserva tours, mira ubicaciones en el mapa y paga con Stripe.
-      Todo en una sola plataforma.
-    </p>
-
-    <ul class="bullets">
-      <li>✅ Tours curados por ciudad</li>
-      <li>✅ Checkout seguro con Stripe</li>
-      <li>✅ Panel Admin para gestionar tours</li>
-    </ul>
   </div>
 </div>

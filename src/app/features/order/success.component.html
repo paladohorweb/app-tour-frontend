@@ -1,42 +1,63 @@
-<div class="page">
-  <div class="card">
-    <h1>Estado de tu pago</h1>
-    <p class="sub">Estamos confirmando tu transacción con Stripe.</p>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-7">
 
-    <div *ngIf="loading" class="loading">
-      Confirmando reserva...
-    </div>
-
-    <p *ngIf="error" class="error">{{ error }}</p>
-
-    <div *ngIf="!loading && reserva" class="box">
-      <div class="row">
-        <span>Reserva</span>
-        <strong>#{{ reserva.id }}</strong>
+      <div class="card card-soft p-4" *ngIf="loading">
+        Consultando estado de la reserva...
       </div>
 
-      <div class="row">
-        <span>Tour</span>
-        <strong>{{ reserva.tourNombre }}</strong>
+      <div class="card card-soft p-4 border-danger" *ngIf="!loading && error">
+        <h3 class="text-danger fw-bold">No se pudo cargar la reserva</h3>
+        <p class="mb-0">{{ error }}</p>
       </div>
 
-      <div class="row">
-        <span>Total</span>
-        <strong>$ {{ reserva.monto | number }}</strong>
-      </div>
+      <div class="card card-soft p-4" *ngIf="!loading && reserva">
+        <div class="text-center mb-4">
+          <div class="display-6 mb-3">✅</div>
+          <h2 class="fw-bold">Estado de tu reserva</h2>
+          <p class="text-muted">Aquí puedes validar cómo quedó tu proceso de pago</p>
+        </div>
 
-      <div class="row">
-        <span>Estado</span>
-        <span class="badge" [ngClass]="badgeClass">{{ reserva.estado }}</span>
-      </div>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div class="border rounded-4 p-3 h-100">
+              <small class="text-muted d-block">Reserva</small>
+              <strong>#{{ reserva.id }}</strong>
+            </div>
+          </div>
 
-      <p class="hint" *ngIf="reserva.estado === 'PENDIENTE'">
-        Esto puede tardar unos segundos mientras Stripe confirma el pago.
-      </p>
+          <div class="col-md-6">
+            <div class="border rounded-4 p-3 h-100">
+              <small class="text-muted d-block">Tour</small>
+              <strong>{{ reserva.tourNombre }}</strong>
+            </div>
+          </div>
 
-      <div class="actions">
-        <a class="btn primary" routerLink="/tours">Volver a Tours</a>
-        <a class="btn ghost" routerLink="/admin" *ngIf="false">Admin</a>
+          <div class="col-md-6">
+            <div class="border rounded-4 p-3 h-100">
+              <small class="text-muted d-block">Monto</small>
+              <strong>$ {{ reserva.monto | number }}</strong>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="border rounded-4 p-3 h-100">
+              <small class="text-muted d-block">Método de pago</small>
+              <strong>{{ reserva.metodoPago || 'No definido' }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <span class="badge badge-soft fs-6" [class]="badgeClass(reserva.estado)">
+            {{ reserva.estado }}
+          </span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+          <a routerLink="/mis-reservas" class="btn btn-dark btn-soft">Ir a mis reservas</a>
+          <a routerLink="/tours" class="btn btn-outline-dark btn-soft">Seguir explorando</a>
+        </div>
       </div>
     </div>
   </div>

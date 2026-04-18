@@ -19,7 +19,7 @@ export class RegisterComponent {
     nombre: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(4)]],
-    rol: ['USER' as 'USER' | 'GUIA', Validators.required]
+    rol: ['ROLE_USER' as 'ROLE_USER' | 'ROLE_GUIA', Validators.required]
   });
 
   constructor(

@@ -1,0 +1,51 @@
+.app-navbar {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+.navbar-brand {
+  letter-spacing: .3px;
+}
+
+.nav-link {
+  color: rgba(255,255,255,.9) !important;
+  font-weight: 500;
+  border-radius: .75rem;
+  padding-inline: .85rem !important;
+}
+
+.nav-link:hover {
+  background: rgba(255,255,255,.08);
+  color: #fff !important;
+}
+
+.btn-soft {
+  border-radius: .85rem;
+}
+
+.user-box {
+  min-width: 0;
+}
+
+.user-email {
+  max-width: 240px;
+  color: rgba(255,255,255,.9);
+  font-size: .95rem;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-link {
+    padding-block: .8rem !important;
+  }
+
+  .user-email {
+    max-width: 100%;
+  }
+}

@@ -1,74 +1,47 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Subscription, switchMap, timer } from 'rxjs';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { ReservaService, ReservaResponse } from '../../core/services/reserva.service';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './success.component.html',
   styleUrls: ['./success.component.css']
 })
-export class SuccessComponent implements OnInit, OnDestroy {
-
-  reservaId?: number;
-
+export class SuccessComponent implements OnInit {
   loading = true;
   error = '';
   reserva?: ReservaResponse;
-
-  private sub?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
     private reservaService: ReservaService
   ) {}
 
-  ngOnInit(): void {
-    this.reservaId = Number(this.route.snapshot.queryParamMap.get('reservaId'));
+  async ngOnInit(): Promise<void> {
+    try {
+      const reservaId = Number(this.route.snapshot.queryParamMap.get('reservaId'));
+      if (!reservaId) throw new Error('reservaId inválido');
 
-    if (!this.reservaId) {
+      this.reserva = await firstValueFrom(this.reservaService.obtenerReserva(reservaId));
       this.loading = false;
-      this.error = 'No se encontró reservaId en la URL.';
-      return;
+    } catch (e: any) {
+      console.error(e);
+      this.error = e?.error?.message || e?.message || 'No se pudo consultar la reserva';
+      this.loading = false;
     }
-
-    // Polling: cada 2s por 20s máximo (10 intentos)
-    this.sub = timer(0, 2000).pipe(
-      switchMap(() => this.reservaService.obtenerReserva(this.reservaId!))
-    ).subscribe({
-      next: (res) => {
-        this.reserva = res;
-        this.loading = false;
-
-        // si ya llegó a estado final, detenemos polling
-        if (res.estado === 'PAGADA' || res.estado === 'FALLIDA' || res.estado === 'CANCELADA') {
-          this.sub?.unsubscribe();
-        }
-      },
-      error: (err) => {
-        console.error(err);
-        this.loading = false;
-        this.error = err?.error?.message || 'No se pudo consultar la reserva.';
-      }
-    });
-
-    // detener polling a los 20s aunque siga pendiente
-    setTimeout(() => this.sub?.unsubscribe(), 20000);
   }
 
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
-  }
-
-  get badgeClass(): string {
-    const e = this.reserva?.estado;
-    if (e === 'PAGADA') return 'ok';
-    if (e === 'PENDIENTE') return 'warn';
-    if (e === 'FALLIDA') return 'err';
-    if (e === 'CANCELADA') return 'muted';
-    return 'muted';
+  badgeClass(estado?: string): string {
+    switch (estado) {
+      case 'PAGADA': return 'bg-success-subtle text-success';
+      case 'PENDIENTE': return 'bg-warning-subtle text-warning-emphasis';
+      case 'FINALIZADA': return 'bg-info-subtle text-info-emphasis';
+      case 'CANCELADA': return 'bg-secondary-subtle text-secondary-emphasis';
+      case 'FALLIDA': return 'bg-danger-subtle text-danger-emphasis';
+      default: return 'bg-light text-dark';
+    }
   }
 }
-
