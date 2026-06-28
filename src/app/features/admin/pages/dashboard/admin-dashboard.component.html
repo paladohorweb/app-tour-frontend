@@ -1,0 +1,161 @@
+<section class="admin-dashboard">
+  <div class="container py-4">
+
+    <div class="dashboard-hero card-soft mb-4">
+      <div>
+        <span class="section-tag">Administrador</span>
+        <h1>Centro de control turístico</h1>
+        <p>Gestiona tours, reservas, ingresos y operación de guías desde un solo lugar.</p>
+      </div>
+
+      <div class="hero-actions">
+        <a routerLink="/admin/crear" class="btn btn-light btn-soft">
+          Crear tour
+        </a>
+        <a routerLink="/admin/reservas" class="btn btn-outline-light btn-soft">
+          Ver reservas
+        </a>
+      </div>
+    </div>
+
+    <div class="alert alert-danger rounded-4" *ngIf="error">
+      {{ error }}
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-6 col-xl-3">
+        <div class="kpi-card">
+          <span>Tours creados</span>
+          <strong>{{ totalTours }}</strong>
+          <small>{{ toursActivos }} activos</small>
+        </div>
+      </div>
+
+      <div class="col-6 col-xl-3">
+        <div class="kpi-card warning">
+          <span>Reservas pendientes</span>
+          <strong>{{ pendientes }}</strong>
+          <small>Por pagar o confirmar</small>
+        </div>
+      </div>
+
+      <div class="col-6 col-xl-3">
+        <div class="kpi-card success">
+          <span>Reservas pagadas</span>
+          <strong>{{ pagadas }}</strong>
+          <small>Listas para asignar guía</small>
+        </div>
+      </div>
+
+      <div class="col-6 col-xl-3">
+        <div class="kpi-card money">
+          <span>Ingresos estimados</span>
+          <strong>$ {{ ingresosEstimados | number }}</strong>
+          <small>Pagadas/en curso/finalizadas</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-12 col-xl-8">
+        <div class="card card-soft border-0 h-100">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+              <div>
+                <h4 class="fw-bold mb-1">Reservas recientes</h4>
+                <p class="text-muted mb-0">Últimas reservas generadas por los usuarios.</p>
+              </div>
+
+              <a routerLink="/admin/reservas" class="btn btn-outline-dark btn-soft">
+                Gestionar
+              </a>
+            </div>
+
+            <div *ngIf="loading" class="text-center py-4">
+              <div class="spinner-border text-dark"></div>
+              <p class="text-muted mt-2 mb-0">Cargando información...</p>
+            </div>
+
+            <div class="table-responsive" *ngIf="!loading && reservasRecientes.length">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Tour</th>
+                    <th>Estado</th>
+                    <th>Monto</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let r of reservasRecientes">
+                    <td>
+                      <div class="fw-semibold">{{ r.nombreCliente || 'Sin nombre' }}</div>
+                      <small class="text-muted">{{ r.emailCliente }}</small>
+                    </td>
+                    <td class="fw-semibold">{{ r.tourNombre }}</td>
+                    <td>
+                      <span [class]="estadoClass(r.estado)">
+                        {{ r.estado }}
+                      </span>
+                    </td>
+                    <td>$ {{ r.monto | number }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="empty-state" *ngIf="!loading && !reservasRecientes.length">
+              <h5>No hay reservas todavía</h5>
+              <p>Cuando los usuarios reserven tours, aparecerán aquí.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-xl-4">
+        <div class="card card-soft border-0 h-100">
+          <div class="card-body p-4">
+            <h4 class="fw-bold mb-3">Acciones rápidas</h4>
+
+            <div class="quick-actions">
+              <a routerLink="/admin/crear" class="quick-action">
+                <span>➕</span>
+                <div>
+                  <strong>Crear tour</strong>
+                  <small>Publica una nueva experiencia turística.</small>
+                </div>
+              </a>
+
+              <a routerLink="/admin/tours" class="quick-action">
+                <span>🧭</span>
+                <div>
+                  <strong>Administrar tours</strong>
+                  <small>Edita, activa o elimina experiencias.</small>
+                </div>
+              </a>
+
+              <a routerLink="/admin/reservas" class="quick-action">
+                <span>📋</span>
+                <div>
+                  <strong>Gestionar reservas</strong>
+                  <small>Revisa pagos, estados y asigna guías.</small>
+                </div>
+              </a>
+
+              <a routerLink="/mapa" class="quick-action">
+                <span>📍</span>
+                <div>
+                  <strong>Ver mapa</strong>
+                  <small>Ubicación visual de tours activos.</small>
+                </div>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

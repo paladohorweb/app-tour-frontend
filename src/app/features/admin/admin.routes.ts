@@ -4,8 +4,14 @@ import { adminGuard } from '../../core/guards/role.guard';
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: 'tours',
+    redirectTo: 'dashboard',
     pathMatch: 'full'
+  },
+  {
+    path: 'dashboard',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./pages/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
   },
   {
     path: 'tours',

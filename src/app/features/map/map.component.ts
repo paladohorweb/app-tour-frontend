@@ -1,101 +1,132 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
-import { Subscription } from 'rxjs';
+import { RouterLink } from '@angular/router';
 import { TourService } from '../../core/services/tour.service';
+import { Tour } from '../../core/models/tour.model';
 
 @Component({
   standalone: true,
   selector: 'app-map',
-  imports: [CommonModule],
-  template: `
-    <div class="map-wrap">
-      <div id="map"></div>
-      <button class="refresh" (click)="reload()">Actualizar</button>
-    </div>
-  `,
-  styles: [`
-    .map-wrap { position: relative; height: calc(100vh - 0px); }
-    #map { height: 100%; width: 100%; }
-    .refresh{
-      position:absolute; right:16px; top:16px;
-      padding:10px 12px; border-radius:12px; border:0;
-      background:#111; color:#fff; cursor:pointer;
-      box-shadow:0 8px 20px rgba(0,0,0,.18);
-    }
-  `]
+  imports: [CommonModule, RouterLink],
+  templateUrl: './map.component.html',
+  styleUrls: ['./map.component.css']
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
   private map!: L.Map;
-  private markersLayer = L.layerGroup();
-  private sub?: Subscription;
+  private markers = new Map<number, L.Marker>();
+
+  tours: Tour[] = [];
+  selectedTour?: Tour;
 
   constructor(private tourService: TourService) {}
 
   ngAfterViewInit(): void {
-    this.initMap();
-    this.reload();
+    setTimeout(() => {
+      this.initMap();
+      this.loadTours();
+    }, 100);
   }
 
   ngOnDestroy(): void {
-    this.sub?.unsubscribe();
-    this.map?.remove();
+    if (this.map) this.map.remove();
   }
 
   private initMap(): void {
-    this.map = L.map('map', { zoomControl: true }).setView([4.5709, -74.2973], 6);
+    this.map = L.map('map', {
+      zoomControl: false
+    }).setView([4.5709, -74.2973], 6);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.control.zoom({ position: 'bottomright' }).addTo(this.map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap'
     }).addTo(this.map);
-
-    this.markersLayer.addTo(this.map);
-
-    // ✅ FIX clásico en SPA: el mapa a veces se ve “gris” o cortado
-    setTimeout(() => this.map.invalidateSize(), 0);
   }
 
-  reload(): void {
-    this.sub?.unsubscribe();
+  private loadTours(): void {
+    this.tourService.listar().subscribe({
+      next: (res) => {
+        this.tours = (res ?? []).filter(t => t.latitud && t.longitud);
 
-    // Limpia marcadores anteriores
-    this.markersLayer.clearLayers();
+        const bounds = L.latLngBounds([]);
 
-    this.sub = this.tourService.listar().subscribe({
-      next: (tours) => {
-        const bounds: L.LatLngBounds[] = [];
+        this.tours.forEach(tour => {
+          const latlng: L.LatLngExpression = [tour.latitud!, tour.longitud!];
+          bounds.extend(latlng);
 
-        for (const tour of tours) {
-          // ✅ No uses "if (lat && lng)" -> 0 rompe
-          if (tour.latitud == null || tour.longitud == null) continue;
+          const marker = L.marker(latlng, {
+            icon: this.createMarkerIcon(false)
+          }).addTo(this.map);
 
-          const lat = Number(tour.latitud);
-          const lng = Number(tour.longitud);
+          marker.bindPopup(this.createPopup(tour));
 
-          if (Number.isNaN(lat) || Number.isNaN(lng)) continue;
+          marker.on('click', () => {
+            this.selectTour(tour);
+          });
 
-          const marker = L.marker([lat, lng]).bindPopup(`
-            <strong>${tour.nombre ?? ''}</strong><br/>
-            ${tour.ciudad ?? ''}${tour.pais ? ', ' + tour.pais : ''}<br/>
-            💲 ${tour.precio ?? ''}
-          `);
+          this.markers.set(tour.id, marker);
+        });
 
-          marker.addTo(this.markersLayer);
-          bounds.push(L.latLngBounds([ [lat, lng], [lat, lng] ]));
+        if (this.tours.length) {
+          this.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 9 });
         }
 
-        // ✅ Si hay marcadores, encuadra el mapa para verlos todos
-        if (this.markersLayer.getLayers().length > 0) {
-          const group = L.featureGroup(this.markersLayer.getLayers() as any);
-          this.map.fitBounds(group.getBounds().pad(0.2));
-        } else {
-          // si no hay marcadores, vuelve a Colombia
-          this.map.setView([4.5709, -74.2973], 6);
-        }
+        setTimeout(() => this.map.invalidateSize(), 200);
       },
-      error: (err) => {
-        console.error('Error cargando tours mapa', err);
-      }
+      error: (err) => console.error('MAP ERROR', err)
     });
+  }
+
+  selectTour(tour: Tour): void {
+    this.selectedTour = tour;
+
+    this.markers.forEach((marker, id) => {
+      marker.setIcon(this.createMarkerIcon(id === tour.id));
+    });
+
+    const marker = this.markers.get(tour.id);
+
+    if (marker && tour.latitud && tour.longitud) {
+      this.map.flyTo([tour.latitud, tour.longitud], 13, {
+        duration: 0.9
+      });
+
+      setTimeout(() => marker.openPopup(), 450);
+    }
+  }
+
+  centerColombia(): void {
+    this.map.flyTo([4.5709, -74.2973], 6, { duration: 0.8 });
+  }
+
+  private createMarkerIcon(active: boolean): L.DivIcon {
+    return L.divIcon({
+      className: active ? 'tour-marker active' : 'tour-marker',
+      html: `
+        <div class="marker-shell">
+          <div class="marker-dot">
+            <span>🧭</span>
+          </div>
+          <div class="marker-pulse"></div>
+        </div>
+      `,
+      iconSize: [48, 48],
+      iconAnchor: [24, 42],
+      popupAnchor: [0, -38]
+    });
+  }
+
+  private createPopup(tour: Tour): string {
+    return `
+      <div class="tour-popup">
+        <img src="${tour.imagenUrl || 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop'}" />
+        <div class="tour-popup-body">
+          <strong>${tour.nombre}</strong>
+          <p>${tour.ciudad}, ${tour.pais}</p>
+          <span>$ ${Number(tour.precio).toLocaleString('es-CO')}</span>
+        </div>
+      </div>
+    `;
   }
 }

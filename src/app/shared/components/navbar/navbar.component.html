@@ -32,17 +32,19 @@
           <a class="nav-link" routerLink="/mapa">Mapa</a>
         </li>
 
-        <li class="nav-item" *ngIf="auth.isAuthenticated()">
+        <!-- <li class="nav-item" *ngIf="auth.isAuthenticated()">
           <a class="nav-link" routerLink="/mis-reservas">Mis reservas</a>
-        </li>
+        </li> -->
 
         <li class="nav-item" *ngIf="auth.isAdmin()">
-          <a class="nav-link" routerLink="/admin/tours">Admin tours</a>
-        </li>
+  <a class="nav-link" routerLink="/admin/dashboard">
+    Administración
+  </a>
+</li>
 
-        <li class="nav-item" *ngIf="auth.isAdmin()">
+        <!-- <li class="nav-item" *ngIf="auth.isAdmin()">
           <a class="nav-link" routerLink="/admin/reservas">Admin reservas</a>
-        </li>
+        </li> -->
 
         <li class="nav-item" *ngIf="auth.isGuia()">
           <a class="nav-link" routerLink="/guia/panel">Panel guía</a>
@@ -99,9 +101,9 @@
               Mis reservas
             </a>
 
-            <a class="user-menu-item" routerLink="/admin/tours" *ngIf="auth.isAdmin()">
-              Admin tours
-            </a>
+           <a class="user-menu-item" routerLink="/admin/dashboard" *ngIf="auth.isAdmin()">
+  Panel administrativo
+</a>
 
             <a class="user-menu-item" routerLink="/admin/reservas" *ngIf="auth.isAdmin()">
               Admin reservas

@@ -1,0 +1,64 @@
+<section class="map-page">
+
+  <aside class="map-sidebar">
+    <div class="sidebar-header">
+      <span class="section-tag">Mapa turístico</span>
+      <h1>Tours cerca de tu próxima experiencia</h1>
+      <p>
+        Selecciona un tour y visualiza su ubicación exacta en el mapa.
+      </p>
+    </div>
+
+    <div class="sidebar-actions">
+      <button class="btn btn-dark btn-soft w-100" (click)="centerColombia()">
+        Centrar Colombia
+      </button>
+    </div>
+
+    <div class="selected-card" *ngIf="selectedTour">
+      <img [src]="selectedTour.imagenUrl" [alt]="selectedTour.nombre">
+
+      <div>
+        <small>Tour seleccionado</small>
+        <h3>{{ selectedTour.nombre }}</h3>
+        <p>{{ selectedTour.ciudad }}, {{ selectedTour.pais }}</p>
+        <strong>$ {{ selectedTour.precio | number }}</strong>
+
+        <a [routerLink]="['/checkout', selectedTour.id]" class="btn btn-primary btn-soft w-100 mt-3">
+          Reservar ahora
+        </a>
+      </div>
+    </div>
+
+    <div class="tour-list">
+      <article
+        class="tour-item"
+        *ngFor="let tour of tours"
+        [class.active]="selectedTour?.id === tour.id"
+        (click)="selectTour(tour)">
+
+        <img [src]="tour.imagenUrl" [alt]="tour.nombre">
+
+        <div class="tour-info">
+          <h3>{{ tour.nombre }}</h3>
+          <p>{{ tour.ciudad }}, {{ tour.pais }}</p>
+          <strong>$ {{ tour.precio | number }}</strong>
+        </div>
+
+        <span class="tour-arrow">›</span>
+      </article>
+    </div>
+  </aside>
+
+  <div class="map-content">
+    <div class="map-top-card">
+      <div>
+        <strong>{{ tours.length }} tours disponibles</strong>
+        <span>Explora experiencias en el mapa</span>
+      </div>
+    </div>
+
+    <div id="map"></div>
+  </div>
+
+</section>

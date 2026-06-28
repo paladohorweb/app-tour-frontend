@@ -2,272 +2,404 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import {
-  ReactiveFormsModule,
   FormBuilder,
-  Validators,
-  FormsModule
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
+import Swal from 'sweetalert2';
 
-import { TourService } from '../../../../core/services/tour.service';
 import { Tour } from '../../../../core/models/tour.model';
 import { TourCreate } from '../../../../core/models/tour-create.model';
+import { TourService } from '../../../../core/services/tour.service';
+
+type EstadoFiltro = 'TODOS' | 'ACTIVOS' | 'INACTIVOS';
+type OrdenTours = 'RECIENTES' | 'NOMBRE' | 'PRECIO_ASC' | 'PRECIO_DESC';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule, FormsModule],
+  selector: 'app-admin-tours',
+  imports: [CommonModule, RouterLink, FormsModule, ReactiveFormsModule],
   templateUrl: './admin-tours.component.html',
   styleUrls: ['./admin-tours.component.css']
 })
 export class AdminToursComponent implements OnInit {
-  loading = true;
+  readonly fallbackImage =
+    'https://placehold.co/900x560/e2e8f0/475569?text=TurismoApp';
 
-  // mensajes UI
-  errorGlobal = '';
-  actionMsg = '';
-
-  // search + filter
-  q = '';
-  showInactive = false;
-
-  // data
   tours: Tour[] = [];
 
-  // modal edit
-  editing: Tour | null = null;
-  saving = false;
+  loading = true;
+  error = '';
 
-  // para deshabilitar botones por tour
-  private busyIds = new Set<number>();
+  busqueda = '';
+  estadoFiltro: EstadoFiltro = 'TODOS';
+  orden: OrdenTours = 'RECIENTES';
 
-  form = this.fb.nonNullable.group({
+  editando: Tour | null = null;
+  guardando = false;
+  accionandoId: number | null = null;
+  previewError = false;
+
+  readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
-    descripcion: [''],
-    ciudad: [''],
-    pais: [''],
-    imagenUrl: [''],
-    latitud: this.fb.control<number | null>(null),
-    longitud: this.fb.control<number | null>(null),
-    precio: this.fb.nonNullable.control(0, [Validators.required, Validators.min(1)])
+    descripcion: ['', [Validators.maxLength(1000)]],
+    ciudad: ['', [Validators.required, Validators.minLength(2)]],
+    pais: ['Colombia', [Validators.required, Validators.minLength(2)]],
+    imagenUrl: ['', [Validators.maxLength(1000)]],
+    precio: this.fb.nonNullable.control(0, [
+      Validators.required,
+      Validators.min(1)
+    ]),
+    latitud: this.fb.control<number | null>(null, [
+      Validators.min(-90),
+      Validators.max(90)
+    ]),
+    longitud: this.fb.control<number | null>(null, [
+      Validators.min(-180),
+      Validators.max(180)
+    ])
   });
 
-  constructor(private tourService: TourService, private fb: FormBuilder) {}
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly tourService: TourService
+  ) {}
 
   ngOnInit(): void {
-    this.cargar();
+    this.cargarTours();
   }
 
-  cargar(): void {
+  cargarTours(): void {
     this.loading = true;
-    this.errorGlobal = '';
-    this.actionMsg = '';
+    this.error = '';
 
     this.tourService.listarAdmin().subscribe({
-      next: (res) => {
-        this.tours = res ?? [];
+      next: (tours) => {
+        this.tours = tours ?? [];
         this.loading = false;
       },
       error: (err) => {
-        console.error(err);
-        this.errorGlobal = err?.error?.message || 'No se pudieron cargar los tours';
+        console.error('Error cargando tours:', err);
+        this.error =
+          err?.error?.message || 'No fue posible cargar los tours.';
         this.loading = false;
       }
     });
   }
 
-  // ======== filtro + búsqueda ========
   get toursFiltrados(): Tour[] {
-    const term = this.q.trim().toLowerCase();
+    const texto = this.busqueda.trim().toLowerCase();
 
-    let base = this.showInactive ? this.tours : this.tours.filter(t => !!t.activo);
+    let resultado = [...this.tours];
 
-    if (!term) return base;
+    if (this.estadoFiltro === 'ACTIVOS') {
+      resultado = resultado.filter((tour) => tour.activo);
+    }
 
-    return base.filter(t =>
-      (t.nombre ?? '').toLowerCase().includes(term) ||
-      (t.ciudad ?? '').toLowerCase().includes(term) ||
-      (t.pais ?? '').toLowerCase().includes(term)
-    );
-  }
+    if (this.estadoFiltro === 'INACTIVOS') {
+      resultado = resultado.filter((tour) => !tour.activo);
+    }
 
-  // ======== modal editar ========
-  abrirEditar(t: Tour): void {
-    this.errorGlobal = '';
-    this.actionMsg = '';
-    this.editing = t;
+    if (texto) {
+      resultado = resultado.filter((tour) =>
+        [
+          tour.nombre,
+          tour.descripcion,
+          tour.ciudad,
+          tour.pais
+        ]
+          .filter(Boolean)
+          .some((valor) => valor.toLowerCase().includes(texto))
+      );
+    }
 
-    this.form.patchValue({
-      nombre: t.nombre ?? '',
-      descripcion: t.descripcion ?? '',
-      ciudad: t.ciudad ?? '',
-      pais: t.pais ?? '',
-      imagenUrl: t.imagenUrl ?? '',
-      latitud: t.latitud ?? null,
-      longitud: t.longitud ?? null,
-      precio: (t.precio ?? 0) as number
+    return resultado.sort((a, b) => {
+      switch (this.orden) {
+        case 'NOMBRE':
+          return a.nombre.localeCompare(b.nombre);
+
+        case 'PRECIO_ASC':
+          return Number(a.precio ?? 0) - Number(b.precio ?? 0);
+
+        case 'PRECIO_DESC':
+          return Number(b.precio ?? 0) - Number(a.precio ?? 0);
+
+        default:
+          return b.id - a.id;
+      }
     });
   }
 
+  get totalTours(): number {
+    return this.tours.length;
+  }
+
+  get toursActivos(): number {
+    return this.tours.filter((tour) => tour.activo).length;
+  }
+
+  get toursInactivos(): number {
+    return this.tours.filter((tour) => !tour.activo).length;
+  }
+
+  get coordenadasIncompletas(): boolean {
+    const { latitud, longitud } = this.form.getRawValue();
+
+    const tieneLatitud = latitud !== null;
+    const tieneLongitud = longitud !== null;
+
+    return tieneLatitud !== tieneLongitud;
+  }
+
+  abrirEditar(tour: Tour): void {
+    this.error = '';
+    this.previewError = false;
+    this.editando = tour;
+
+    this.form.reset({
+      nombre: tour.nombre ?? '',
+      descripcion: tour.descripcion ?? '',
+      ciudad: tour.ciudad ?? '',
+      pais: tour.pais ?? 'Colombia',
+      imagenUrl: tour.imagenUrl ?? '',
+      precio: Number(tour.precio ?? 0),
+      latitud: tour.latitud ?? null,
+      longitud: tour.longitud ?? null
+    });
+
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+  }
+
   cerrarEditar(): void {
-    this.editing = null;
-    this.saving = false;
+    if (this.guardando) {
+      return;
+    }
+
+    this.editando = null;
+    this.previewError = false;
 
     this.form.reset({
       nombre: '',
       descripcion: '',
       ciudad: '',
-      pais: '',
+      pais: 'Colombia',
       imagenUrl: '',
+      precio: 0,
       latitud: null,
-      longitud: null,
-      precio: 0
+      longitud: null
     });
   }
 
-  guardar(): void {
-    if (!this.editing) return;
+  guardarCambios(): void {
+    if (!this.editando) {
+      return;
+    }
 
-    this.errorGlobal = '';
-    this.actionMsg = '';
-
-    if (this.form.invalid) {
+    if (this.form.invalid || this.coordenadasIncompletas) {
       this.form.markAllAsTouched();
-      return;
-    }
 
-    this.saving = true;
-
-    // DTO exacto que espera tu backend (TourRequestDTO)
-    const dto: TourCreate = this.form.getRawValue();
-
-    this.tourService.actualizar(this.editing.id, dto).subscribe({
-      next: (updated) => {
-        this.tours = this.tours.map(x => (x.id === updated.id ? updated : x));
-        this.actionMsg = 'Tour actualizado ✅';
-        this.saving = false;
-        this.cerrarEditar();
-      },
-      error: (err) => {
-        console.error(err);
-        this.errorGlobal = err?.error?.message || 'Error actualizando tour';
-        this.saving = false;
-      }
-    });
-  }
-
-  // ======== activación ========
-  toggleActivo(t: Tour): void {
-    this.errorGlobal = '';
-    this.actionMsg = '';
-
-    this.busyIds.add(t.id);
-
-    const nuevo = !t.activo;
-
-    this.tourService.toggleActivo(t.id, nuevo).subscribe({
-      next: () => {
-        this.tours = this.tours.map(x => (x.id === t.id ? { ...x, activo: nuevo } : x));
-        this.actionMsg = nuevo ? 'Tour activado ✅' : 'Tour desactivado ✅';
-        this.busyIds.delete(t.id);
-      },
-      error: (err) => {
-        console.error(err);
-        this.errorGlobal = err?.error?.message || 'No se pudo cambiar el estado del tour';
-        this.busyIds.delete(t.id);
-      }
-    });
-  }
-
-  // ======== eliminar ========
-  // Nota: en tu BD te falló por FK de reservas.
-  // En apps reales: NO se elimina, se desactiva.
-  eliminar(t: Tour): void {
-    this.errorGlobal = '';
-    this.actionMsg = '';
-
-    // Si quieres que "Eliminar" sea realmente desactivar (recomendado):
-    // puedes comentar el delete real y llamar toggleActivo(false).
-    // Por ahora: intentamos delete; si falla por FK -> desactivamos.
-    const ok = confirm(`¿Eliminar "${t.nombre}"?\n\nSi tiene reservas, se desactivará automáticamente.`);
-    if (!ok) return;
-
-    this.busyIds.add(t.id);
-
-    this.tourService.eliminar(t.id).subscribe({
-      next: () => {
-        this.tours = this.tours.filter(x => x.id !== t.id);
-        this.actionMsg = 'Tour eliminado ✅';
-        this.busyIds.delete(t.id);
-      },
-      error: (err) => {
-        console.error(err);
-
-        // Si falla por FK (tiene reservas), hacemos soft delete: desactivar
-        const msg = (err?.error?.message || '').toString().toLowerCase();
-        const isFk =
-          msg.includes('foreign key') ||
-          msg.includes('constraint') ||
-          msg.includes('cannot delete') ||
-          err?.status === 409 ||
-          err?.status === 500;
-
-        if (isFk) {
-          this.tourService.toggleActivo(t.id, false).subscribe({
-            next: () => {
-              this.tours = this.tours.map(x => (x.id === t.id ? { ...x, activo: false } : x));
-              this.actionMsg = 'No se puede eliminar (tiene reservas). Se desactivó ✅';
-              this.busyIds.delete(t.id);
-            },
-            error: (e2) => {
-              console.error(e2);
-              this.errorGlobal =
-                e2?.error?.message ||
-                'No se pudo eliminar ni desactivar el tour';
-              this.busyIds.delete(t.id);
-            }
-          });
-          return;
-        }
-
-        this.errorGlobal = err?.error?.message || 'Error eliminando tour';
-        this.busyIds.delete(t.id);
-      }
-    });
-  }
-
-  // ======== util ========
-  isBusy(t: Tour): boolean {
-    return this.busyIds.has(t.id) || this.saving || this.loading;
-  }
-
-  // ======== reactivar todos ========
-  reactivarTodos(): void {
-    this.errorGlobal = '';
-    this.actionMsg = '';
-
-    const inactivos = this.tours.filter(t => !t.activo);
-    if (!inactivos.length) {
-      this.actionMsg = 'No hay tours inactivos.';
-      return;
-    }
-
-    const ok = confirm(`Vas a activar ${inactivos.length} tours. ¿Continuar?`);
-    if (!ok) return;
-
-    inactivos.forEach(t => {
-      this.busyIds.add(t.id);
-      this.tourService.toggleActivo(t.id, true).subscribe({
-        next: () => {
-          this.tours = this.tours.map(x => (x.id === t.id ? { ...x, activo: true } : x));
-          this.busyIds.delete(t.id);
-        },
-        error: (err) => {
-          console.error(err);
-          this.busyIds.delete(t.id);
-        }
+      Swal.fire({
+        icon: 'warning',
+        title: 'Revisa la información',
+        text: this.coordenadasIncompletas
+          ? 'Debes registrar latitud y longitud juntas, o dejar ambas vacías.'
+          : 'Completa correctamente los campos obligatorios.'
       });
+
+      return;
+    }
+
+    const valores = this.form.getRawValue();
+
+    const dto: TourCreate = {
+      nombre: valores.nombre.trim(),
+      descripcion: valores.descripcion.trim(),
+      ciudad: valores.ciudad.trim(),
+      pais: valores.pais.trim(),
+      imagenUrl: valores.imagenUrl.trim(),
+      precio: Number(valores.precio),
+      latitud: valores.latitud,
+      longitud: valores.longitud
+    };
+
+    this.guardando = true;
+
+    this.tourService.actualizar(this.editando.id, dto).subscribe({
+      next: async (tourActualizado) => {
+        this.tours = this.tours.map((tour) =>
+          tour.id === tourActualizado.id ? tourActualizado : tour
+        );
+
+        this.guardando = false;
+        this.cerrarEditar();
+
+        await Swal.fire({
+          icon: 'success',
+          title: 'Tour actualizado',
+          text: 'Los cambios fueron guardados correctamente.',
+          timer: 1600,
+          showConfirmButton: false
+        });
+      },
+      error: async (err) => {
+        console.error('Error actualizando tour:', err);
+        this.guardando = false;
+
+        await Swal.fire({
+          icon: 'error',
+          title: 'No se pudo actualizar el tour',
+          text:
+            err?.error?.message ||
+            'Ocurrió un error al guardar los cambios.'
+        });
+      }
+    });
+  }
+
+  async cambiarEstado(tour: Tour): Promise<void> {
+    const activar = !tour.activo;
+
+    const confirmacion = await Swal.fire({
+      icon: 'question',
+      title: activar ? '¿Activar tour?' : '¿Desactivar tour?',
+      html: `
+        <p>Vas a ${activar ? 'activar' : 'desactivar'}:</p>
+        <strong>${this.escapeHtml(tour.nombre)}</strong>
+      `,
+      showCancelButton: true,
+      confirmButtonText: activar ? 'Sí, activar' : 'Sí, desactivar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: activar ? '#15803d' : '#b45309'
     });
 
-    this.actionMsg = 'Reactivando tours... ✅';
-    this.showInactive = true;
+    if (!confirmacion.isConfirmed) {
+      return;
+    }
+
+    this.accionandoId = tour.id;
+
+    this.tourService.toggleActivo(tour.id, activar).subscribe({
+      next: async () => {
+        this.tours = this.tours.map((item) =>
+          item.id === tour.id ? { ...item, activo: activar } : item
+        );
+
+        this.accionandoId = null;
+
+        await Swal.fire({
+          icon: 'success',
+          title: activar ? 'Tour activado' : 'Tour desactivado',
+          text: activar
+            ? 'El tour vuelve a estar disponible para los usuarios.'
+            : 'El tour ya no se mostrará en el catálogo público.',
+          timer: 1600,
+          showConfirmButton: false
+        });
+      },
+      error: async (err) => {
+        console.error('Error cambiando estado:', err);
+        this.accionandoId = null;
+
+        await Swal.fire({
+          icon: 'error',
+          title: 'No se pudo cambiar el estado',
+          text: err?.error?.message || 'Intenta nuevamente.'
+        });
+      }
+    });
+  }
+
+  async eliminarTour(tour: Tour): Promise<void> {
+    if (tour.activo) {
+      await Swal.fire({
+        icon: 'info',
+        title: 'Primero desactiva el tour',
+        text:
+          'Por seguridad, un tour activo no puede eliminarse directamente. Desactívalo primero.'
+      });
+
+      return;
+    }
+
+    const confirmacion = await Swal.fire({
+      icon: 'warning',
+      title: '¿Eliminar tour definitivamente?',
+      html: `
+        <p>Vas a eliminar:</p>
+        <strong>${this.escapeHtml(tour.nombre)}</strong>
+        <p class="mt-3 text-muted">
+          Esta acción puede ser rechazada si el tour tiene reservas asociadas.
+        </p>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#b91c1c',
+      reverseButtons: true
+    });
+
+    if (!confirmacion.isConfirmed) {
+      return;
+    }
+
+    this.accionandoId = tour.id;
+
+    this.tourService.eliminar(tour.id).subscribe({
+      next: async () => {
+        this.tours = this.tours.filter((item) => item.id !== tour.id);
+        this.accionandoId = null;
+
+        await Swal.fire({
+          icon: 'success',
+          title: 'Tour eliminado',
+          text: 'El tour fue eliminado correctamente.',
+          timer: 1600,
+          showConfirmButton: false
+        });
+      },
+      error: async (err) => {
+        console.error('Error eliminando tour:', err);
+        this.accionandoId = null;
+
+        await Swal.fire({
+          icon: 'error',
+          title: 'No se puede eliminar el tour',
+          text:
+            err?.error?.message ||
+            'El tour puede tener reservas asociadas. Déjalo desactivado.'
+        });
+      }
+    });
+  }
+
+  onImageError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+
+    if (image.src !== this.fallbackImage) {
+      image.src = this.fallbackImage;
+    }
+  }
+
+  onPreviewError(): void {
+    this.previewError = true;
+  }
+
+  trackByTour(_: number, tour: Tour): number {
+    return tour.id;
+  }
+
+  esAccionando(tour: Tour): boolean {
+    return this.accionandoId === tour.id;
+  }
+
+  private escapeHtml(valor: string): string {
+    return valor
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 }

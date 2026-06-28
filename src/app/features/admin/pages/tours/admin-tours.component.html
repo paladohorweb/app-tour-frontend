@@ -1,157 +1,414 @@
-<section class="page">
-  <header class="header">
-    <div>
-      <h1>Admin · Tours</h1>
-      <p class="muted">Crea, edita, desactiva y elimina tours.</p>
-    </div>
+<section class="admin-tours-page">
+  <div class="container py-4 py-lg-5">
 
-    <div class="actions">
-      <a class="btn ghost" routerLink="/tours">Vista usuario</a>
-      <a class="btn" routerLink="/admin/crear">Crear tour</a>
-      <button class="btn ghost" (click)="cargar()" [disabled]="loading">Actualizar</button>
-    </div>
-  </header>
+    <section class="page-hero mb-4">
+      <div>
+        <span class="hero-tag">Administración turística</span>
+        <h1>Gestión de tours</h1>
+        <p>
+          Crea, edita, activa, desactiva y controla las experiencias
+          disponibles en el catálogo y mapa turístico.
+        </p>
+      </div>
 
-  <div class="toolbar">
-    <input
-      class="search"
-      placeholder="Buscar por nombre, ciudad o país..."
-      [(ngModel)]="q"
-    />
-
-    <label class="switch">
-      <input type="checkbox" [(ngModel)]="showInactive" />
-      <span>Mostrar inactivos</span>
-    </label>
-
-    <button
-      class="btn ghost"
-      (click)="reactivarTodos()"
-      [disabled]="loading || !tours.length"
-    >
-      Reactivar todos
-    </button>
-  </div>
-
-  <div class="card" *ngIf="loading">
-    Cargando tours...
-  </div>
-
-  <div class="card error" *ngIf="!loading && errorGlobal">
-    {{ errorGlobal }}
-  </div>
-
-  <div class="card ok" *ngIf="!loading && actionMsg">
-    {{ actionMsg }}
-  </div>
-
-  <!-- SI NO HAY RESULTADOS -->
-  <div class="card" *ngIf="!loading && !errorGlobal && toursFiltrados.length === 0">
-    <strong>No hay tours para mostrar.</strong>
-    <p class="muted" style="margin:6px 0 0;">
-      Si desactivaste todos, activa <b>“Mostrar inactivos”</b> o usa <b>“Reactivar todos”</b>.
-    </p>
-  </div>
-
-  <!-- LISTA -->
-  <div class="grid" *ngIf="!loading && !errorGlobal && toursFiltrados.length > 0">
-    <article class="item" *ngFor="let t of toursFiltrados">
-      <img class="img" [src]="t.imagenUrl || 'assets/no-image.png'" alt="tour" />
-
-      <div class="body">
-        <div class="top">
-          <h3>{{ t.nombre }}</h3>
-
-          <span class="chip" [class.off]="!t.activo">
-            {{ t.activo ? 'ACTIVO' : 'INACTIVO' }}
+      <div class="hero-actions">
+        <button
+          type="button"
+          class="btn btn-outline-light btn-soft"
+          (click)="cargarTours()"
+          [disabled]="loading">
+          <span *ngIf="!loading">Actualizar</span>
+          <span *ngIf="loading">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Cargando...
           </span>
-        </div>
+        </button>
 
-        <p class="desc">{{ t.descripcion }}</p>
-
-        <div class="meta">
-          <span class="muted">{{ t.ciudad }}, {{ t.pais }}</span>
-          <strong>$ {{ (t.precio || 0) | number }}</strong>
-        </div>
-
-        <div class="row">
-          <button class="btn ghost" (click)="abrirEditar(t)" [disabled]="isBusy(t)">
-            Editar
-          </button>
-
-          <button class="btn danger" (click)="eliminar(t)" [disabled]="isBusy(t)">
-            Eliminar
-          </button>
-
-          <button class="btn" (click)="toggleActivo(t)" [disabled]="isBusy(t)">
-            {{ t.activo ? 'Desactivar' : 'Activar' }}
-          </button>
-        </div>
+        <a routerLink="/admin/crear" class="btn btn-light btn-soft fw-semibold">
+          Crear tour
+        </a>
       </div>
-    </article>
-  </div>
+    </section>
 
-  <!-- MODAL EDITAR -->
-  <div class="backdrop" *ngIf="editing">
-    <div class="modal">
-      <div class="modal-head">
-        <div>
-          <h2>Editar Tour</h2>
-          <p class="muted" style="margin:4px 0 0;">ID: {{ editing.id }}</p>
-        </div>
-        <button class="icon" (click)="cerrarEditar()">✕</button>
-      </div>
-
-      <form [formGroup]="form" (ngSubmit)="guardar()">
-        <div class="form-grid">
-          <label>
-            Nombre *
-            <input formControlName="nombre" />
-          </label>
-
-          <label>
-            Ciudad
-            <input formControlName="ciudad" />
-          </label>
-
-          <label>
-            País
-            <input formControlName="pais" />
-          </label>
-
-          <label>
-            Precio *
-            <input type="number" formControlName="precio" />
-          </label>
-
-          <label class="full">
-            Descripción
-            <textarea rows="4" formControlName="descripcion"></textarea>
-          </label>
-
-          <label class="full">
-            Imagen URL
-            <input formControlName="imagenUrl" />
-          </label>
-
-          <label>
-            Latitud
-            <input type="number" formControlName="latitud" />
-          </label>
-
-          <label>
-            Longitud
-            <input type="number" formControlName="longitud" />
-          </label>
-        </div>
-
-        <div class="modal-actions">
-          <button type="button" class="btn ghost" (click)="cerrarEditar()">Cancelar</button>
-          <button type="submit" class="btn" [disabled]="saving || form.invalid">
-            {{ saving ? 'Guardando...' : 'Guardar cambios' }}
-          </button>
-        </div>
-      </form>
+    <div class="alert alert-danger rounded-4" *ngIf="error">
+      {{ error }}
     </div>
+
+    <section class="row g-3 mb-4">
+      <div class="col-4">
+        <article class="summary-card">
+          <span>Total</span>
+          <strong>{{ totalTours }}</strong>
+        </article>
+      </div>
+
+      <div class="col-4">
+        <article class="summary-card summary-active">
+          <span>Activos</span>
+          <strong>{{ toursActivos }}</strong>
+        </article>
+      </div>
+
+      <div class="col-4">
+        <article class="summary-card summary-inactive">
+          <span>Inactivos</span>
+          <strong>{{ toursInactivos }}</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="card card-soft border-0 mb-4">
+      <div class="card-body p-3 p-lg-4">
+        <div class="row g-3">
+          <div class="col-12 col-lg-6">
+            <label class="form-label fw-semibold">Buscar tours</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="busqueda"
+              placeholder="Nombre, ciudad, país o descripción..."
+            >
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <label class="form-label fw-semibold">Estado</label>
+            <select class="form-select" [(ngModel)]="estadoFiltro">
+              <option value="TODOS">Todos</option>
+              <option value="ACTIVOS">Activos</option>
+              <option value="INACTIVOS">Inactivos</option>
+            </select>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <label class="form-label fw-semibold">Ordenar</label>
+            <select class="form-select" [(ngModel)]="orden">
+              <option value="RECIENTES">Más recientes</option>
+              <option value="NOMBRE">Nombre A-Z</option>
+              <option value="PRECIO_ASC">Menor precio</option>
+              <option value="PRECIO_DESC">Mayor precio</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card card-soft border-0" *ngIf="loading">
+      <div class="card-body py-5 text-center">
+        <div class="spinner-border text-dark mb-3"></div>
+        <p class="mb-0">Cargando tours administrativos...</p>
+      </div>
+    </section>
+
+    <section
+      class="empty-state"
+      *ngIf="!loading && !error && toursFiltrados.length === 0">
+      <div class="empty-icon">🧭</div>
+      <h2>No hay tours para mostrar</h2>
+      <p>
+        Crea una experiencia nueva o cambia los filtros de búsqueda.
+      </p>
+      <a routerLink="/admin/crear" class="btn btn-dark btn-soft">
+        Crear nuevo tour
+      </a>
+    </section>
+
+    <section
+      class="row g-4"
+      *ngIf="!loading && !error && toursFiltrados.length > 0">
+
+      <div
+        class="col-12 col-md-6 col-xl-4"
+        *ngFor="let tour of toursFiltrados; trackBy: trackByTour">
+
+        <article class="tour-card card card-soft border-0 h-100">
+          <div class="tour-image-container">
+            <img
+              class="tour-image"
+              [src]="tour.imagenUrl || fallbackImage"
+              [alt]="tour.nombre"
+              (error)="onImageError($event)"
+            >
+
+            <span
+              class="tour-status"
+              [class.status-active]="tour.activo"
+              [class.status-inactive]="!tour.activo">
+              {{ tour.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+
+            <span class="tour-price">
+              $ {{ (tour.precio || 0) | number }}
+            </span>
+          </div>
+
+          <div class="card-body p-4 d-flex flex-column">
+            <div class="tour-location">
+              📍 {{ tour.ciudad || 'Ciudad no definida' }},
+              {{ tour.pais || 'País no definido' }}
+            </div>
+
+            <h2 class="tour-title">{{ tour.nombre }}</h2>
+
+            <p class="tour-description">
+              {{ tour.descripcion || 'Este tour aún no tiene una descripción.' }}
+            </p>
+
+            <div class="tour-map-status">
+              <span
+                *ngIf="tour.latitud !== null && tour.latitud !== undefined &&
+                       tour.longitud !== null && tour.longitud !== undefined">
+                ✓ Ubicación configurada
+              </span>
+
+              <span
+                *ngIf="tour.latitud === null || tour.latitud === undefined ||
+                       tour.longitud === null || tour.longitud === undefined">
+                ⚠ Sin ubicación en el mapa
+              </span>
+            </div>
+
+            <div class="tour-actions mt-auto">
+              <button
+                type="button"
+                class="btn btn-outline-dark btn-soft flex-fill"
+                (click)="abrirEditar(tour)"
+                [disabled]="esAccionando(tour)">
+                Editar
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-soft flex-fill"
+                [class.btn-warning]="tour.activo"
+                [class.btn-success]="!tour.activo"
+                (click)="cambiarEstado(tour)"
+                [disabled]="esAccionando(tour)">
+                <span *ngIf="!esAccionando(tour)">
+                  {{ tour.activo ? 'Desactivar' : 'Activar' }}
+                </span>
+
+                <span *ngIf="esAccionando(tour)">
+                  <span class="spinner-border spinner-border-sm"></span>
+                </span>
+              </button>
+            </div>
+
+            <button
+              *ngIf="!tour.activo"
+              type="button"
+              class="delete-button mt-3"
+              (click)="eliminarTour(tour)"
+              [disabled]="esAccionando(tour)">
+              Eliminar definitivamente
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
   </div>
 </section>
+
+<div
+  class="modal-backdrop-custom"
+  *ngIf="editando"
+  (click)="cerrarEditar()">
+
+  <section
+    class="modal-custom"
+    role="dialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()">
+
+    <header class="modal-header-custom">
+      <div>
+        <span class="modal-tag">Edición de tour</span>
+        <h2>{{ editando.nombre }}</h2>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        aria-label="Cerrar"
+        (click)="cerrarEditar()"
+        [disabled]="guardando">
+        ×
+      </button>
+    </header>
+
+    <form [formGroup]="form" (ngSubmit)="guardarCambios()">
+      <div class="modal-body-custom">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-semibold">
+              Nombre <span class="text-danger">*</span>
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="nombre"
+              [class.is-invalid]="form.controls.nombre.touched && form.controls.nombre.invalid"
+            >
+
+            <div class="invalid-feedback">
+              El nombre es obligatorio y debe tener mínimo 3 caracteres.
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold">
+              Ciudad <span class="text-danger">*</span>
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="ciudad"
+              [class.is-invalid]="form.controls.ciudad.touched && form.controls.ciudad.invalid"
+            >
+
+            <div class="invalid-feedback">
+              Ingresa una ciudad válida.
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold">
+              País <span class="text-danger">*</span>
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="pais"
+              [class.is-invalid]="form.controls.pais.touched && form.controls.pais.invalid"
+            >
+
+            <div class="invalid-feedback">
+              Ingresa un país válido.
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold">
+              Precio COP <span class="text-danger">*</span>
+            </label>
+
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+
+              <input
+                type="number"
+                min="1"
+                class="form-control"
+                formControlName="precio"
+                [class.is-invalid]="form.controls.precio.touched && form.controls.precio.invalid"
+              >
+            </div>
+
+            <div
+              class="invalid-feedback d-block"
+              *ngIf="form.controls.precio.touched && form.controls.precio.invalid">
+              El precio debe ser mayor a cero.
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold">Imagen URL</label>
+            <input
+              type="url"
+              class="form-control"
+              formControlName="imagenUrl"
+              placeholder="https://..."
+              (input)="previewError = false"
+            >
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-semibold">Descripción</label>
+            <textarea
+              rows="4"
+              class="form-control"
+              formControlName="descripcion"
+              placeholder="Describe el recorrido y la experiencia."
+            ></textarea>
+          </div>
+
+          <div class="col-12">
+            <div class="coordinates-box">
+              <div>
+                <strong>Ubicación en mapa</strong>
+                <small>Latitud y longitud deben registrarse juntas.</small>
+              </div>
+
+              <span>Opcional</span>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold">Latitud</label>
+            <input
+              type="number"
+              step="any"
+              class="form-control"
+              formControlName="latitud"
+              placeholder="Ej: 6.2442"
+              [class.is-invalid]="form.controls.latitud.touched && form.controls.latitud.invalid"
+            >
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold">Longitud</label>
+            <input
+              type="number"
+              step="any"
+              class="form-control"
+              formControlName="longitud"
+              placeholder="Ej: -75.5812"
+              [class.is-invalid]="form.controls.longitud.touched && form.controls.longitud.invalid"
+            >
+          </div>
+
+          <div class="col-12" *ngIf="coordenadasIncompletas">
+            <div class="alert alert-warning mb-0 py-2">
+              Debes ingresar ambas coordenadas o dejar las dos vacías.
+            </div>
+          </div>
+
+          <div
+            class="col-12"
+            *ngIf="form.controls.imagenUrl.value && !previewError">
+            <div class="image-preview">
+              <img
+                [src]="form.controls.imagenUrl.value"
+                alt="Vista previa"
+                (error)="onPreviewError()"
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="modal-footer-custom">
+        <button
+          type="button"
+          class="btn btn-outline-dark btn-soft"
+          (click)="cerrarEditar()"
+          [disabled]="guardando">
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-dark btn-soft px-4"
+          [disabled]="guardando">
+          <span *ngIf="!guardando">Guardar cambios</span>
+          <span *ngIf="guardando">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Guardando...
+          </span>
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>
