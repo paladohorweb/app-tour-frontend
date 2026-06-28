@@ -1,0 +1,185 @@
+<section class="landing-page">
+
+  <!-- HERO -->
+  <section class="hero-section">
+    <div class="container py-5">
+      <div class="row align-items-center g-4 min-vh-75">
+        <div class="col-12 col-lg-6">
+          <span class="hero-badge">Turismo profesional · Reservas · Guías · Experiencias</span>
+          <h1 class="hero-title mt-3">
+            Descubre Colombia con una experiencia turística
+            <span class="text-gradient">moderna, segura y profesional</span>
+          </h1>
+          <p class="hero-text mt-3">
+            Gestiona tours, reservas y pagos en una plataforma pensada para viajeros,
+            administradores y guías turísticos.
+          </p>
+
+          <div class="d-flex flex-wrap gap-3 mt-4">
+            <a routerLink="/tours" class="btn btn-dark btn-lg btn-soft px-4">
+              Explorar tours
+            </a>
+            <a routerLink="/register" class="btn btn-outline-dark btn-lg btn-soft px-4">
+              Crear cuenta
+            </a>
+          </div>
+
+          <div class="hero-stats mt-4">
+            <div class="stat-box">
+              <strong>+Experiencias</strong>
+              <span>Tours organizados</span>
+            </div>
+            <div class="stat-box">
+              <strong>Pagos</strong>
+              <span>Adaptados a Colombia</span>
+            </div>
+            <div class="stat-box">
+              <strong>Soporte</strong>
+              <span>Para admin, usuario y guía</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="hero-visual card-soft p-3">
+            <img
+              src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop"
+              alt="Turismo"
+              class="img-fluid hero-image"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFICIOS -->
+  <section class="py-5">
+    <div class="container">
+      <div class="section-head text-center mb-5">
+        <span class="section-tag">¿Por qué elegir la plataforma?</span>
+        <h2 class="section-title mt-2">Una solución seria para el turismo moderno</h2>
+        <p class="section-text">
+          Diseñada para ofrecer una experiencia clara, visual y profesional.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-3" *ngFor="let item of beneficios">
+          <div class="card card-soft h-100 border-0 feature-card">
+            <div class="card-body p-4">
+              <div class="feature-icon">{{ item.icono }}</div>
+              <h5 class="fw-bold mt-3">{{ item.titulo }}</h5>
+              <p class="text-muted mb-0">{{ item.texto }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="py-5 bg-light-subtle">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-6">
+          <span class="section-tag">Cómo funciona</span>
+          <h2 class="section-title mt-2">Reserva tu experiencia en pocos pasos</h2>
+          <p class="section-text">
+            Un flujo simple para viajeros, con control administrativo y seguimiento de reservas.
+          </p>
+
+          <div class="steps-list mt-4">
+            <div class="step-item" *ngFor="let paso of pasos; let i = index">
+              <div class="step-number">{{ i + 1 }}</div>
+              <div class="step-text">{{ paso }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="card card-soft border-0 p-4 process-card">
+            <h5 class="fw-bold mb-3">Ideal para:</h5>
+            <ul class="list-unstyled mb-0 landing-list">
+              <li>✔ Usuarios que desean reservar y pagar tours</li>
+              <li>✔ Administradores que gestionan tours y reservas</li>
+              <li>✔ Guías turísticos que realizan acompañamiento profesional</li>
+              <li>✔ Operaciones turísticas con enfoque moderno y escalable</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESTACADOS -->
+  <section class="py-5">
+    <div class="container">
+      <div class="section-head text-center mb-5">
+        <span class="section-tag">Tours destacados</span>
+        <h2 class="section-title mt-2">Experiencias que inspiran a viajar</h2>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-4" *ngFor="let item of destacados">
+          <div class="card card-soft border-0 h-100 overflow-hidden destination-card">
+            <img [src]="item.imagen" [alt]="item.titulo" class="destination-image">
+            <div class="card-body p-4">
+              <h5 class="fw-bold">{{ item.titulo }}</h5>
+              <p class="text-muted">{{ item.descripcion }}</p>
+              <a routerLink="/tours" class="btn btn-outline-dark btn-soft">
+                Ver tours
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="py-5">
+    <div class="container">
+      <div class="cta-box text-center card-soft p-5">
+        <span class="section-tag">Empieza hoy</span>
+        <h2 class="section-title mt-2">Lleva tu experiencia turística a otro nivel</h2>
+        <p class="section-text mx-auto">
+          Explora destinos, reserva experiencias y administra operaciones turísticas desde una sola plataforma.
+        </p>
+
+        <div class="d-flex justify-content-center flex-wrap gap-3 mt-4">
+          <a routerLink="/tours" class="btn btn-dark btn-lg btn-soft px-4">
+            Ver catálogo
+          </a>
+          <a routerLink="/login" class="btn btn-outline-dark btn-lg btn-soft px-4">
+            Iniciar sesión
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="landing-footer">
+    <div class="container py-4">
+      <div class="row g-4 align-items-center">
+        <div class="col-12 col-lg-6">
+          <h5 class="fw-bold mb-1">TurismoApp</h5>
+          <p class="mb-0 text-white-50">
+            Plataforma profesional para reservas, guías turísticos y administración de experiencias.
+          </p>
+        </div>
+
+        <div class="col-12 col-lg-6 text-lg-end">
+          <div class="d-flex flex-wrap justify-content-lg-end gap-3">
+            <a routerLink="/" class="footer-link">Inicio</a>
+            <a routerLink="/tours" class="footer-link">Tours</a>
+            <a routerLink="/login" class="footer-link">Login</a>
+            <a routerLink="/register" class="footer-link">Registro</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</section>

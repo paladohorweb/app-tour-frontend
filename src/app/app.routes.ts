@@ -3,9 +3,10 @@ import { LoginComponent } from './features/auth/login.component';
 import { RegisterComponent } from './features/auth/register.component';
 import { TourListComponent } from './features/tours/tour-list.component';
 import { guiaGuard } from './core/guards/guia.guard';
+import { LandingPageComponent } from './features/public/landing-page.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'tours', pathMatch: 'full' },
+  { path: '', component: LandingPageComponent },
 
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
@@ -55,5 +56,5 @@ export const routes: Routes = [
       import('./features/guia/guia-panel.component').then(m => m.GuiaPanelComponent)
   },
 
-  { path: '**', redirectTo: 'tours' }
+  { path: '**', redirectTo: '' }
 ];
