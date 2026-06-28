@@ -1,0 +1,49 @@
+.app-footer {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #fff;
+  margin-top: 3rem;
+}
+
+.footer-logo {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: .8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  color: white;
+  font-weight: 800;
+}
+
+.footer-title {
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.footer-text {
+  color: rgba(255,255,255,.68);
+  line-height: 1.7;
+}
+
+.footer-link {
+  display: block;
+  color: rgba(255,255,255,.72);
+  text-decoration: none;
+  margin-bottom: .65rem;
+  transition: color .2s ease;
+}
+
+.footer-link:hover {
+  color: #fff;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,.12);
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  color: rgba(255,255,255,.58);
+  font-size: .9rem;
+}

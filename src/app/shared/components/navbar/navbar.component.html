@@ -1,62 +1,122 @@
-<nav class="navbar navbar-expand-lg navbar-dark app-navbar shadow-sm sticky-top">
+<nav class="navbar navbar-expand-lg app-navbar sticky-top">
   <div class="container-fluid px-3 px-lg-4">
-    <a class="navbar-brand fw-bold" routerLink="/tours" (click)="closeMenu()">
-      TurismoApp
+
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" routerLink="/">
+      <span class="brand-logo">T</span>
+      <span>TurismoApp</span>
     </a>
 
     <button
-      class="navbar-toggler border-0 shadow-none"
+      class="navbar-toggler custom-toggler border-0 shadow-none"
       type="button"
       (click)="toggleMenu()"
-      [attr.aria-expanded]="menuOpen">
-      <span class="navbar-toggler-icon"></span>
+      [attr.aria-expanded]="menuOpen"
+      aria-label="Abrir navegación">
+      <span class="toggler-line"></span>
+      <span class="toggler-line"></span>
+      <span class="toggler-line"></span>
     </button>
 
     <div class="collapse navbar-collapse" [class.show]="menuOpen">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-2">
+
+      <ul class="navbar-nav me-auto mb-3 mb-lg-0 gap-lg-2">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/tours" (click)="closeMenu()">Tours</a>
+          <a class="nav-link" routerLink="/">Inicio</a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" routerLink="/mapa" (click)="closeMenu()">Mapa</a>
+          <a class="nav-link" routerLink="/tours">Tours</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/mapa">Mapa</a>
         </li>
 
         <li class="nav-item" *ngIf="auth.isAuthenticated()">
-          <a class="nav-link" routerLink="/mis-reservas" (click)="closeMenu()">Mis reservas</a>
+          <a class="nav-link" routerLink="/mis-reservas">Mis reservas</a>
         </li>
 
         <li class="nav-item" *ngIf="auth.isAdmin()">
-          <a class="nav-link" routerLink="/admin/tours" (click)="closeMenu()">Admin tours</a>
+          <a class="nav-link" routerLink="/admin/tours">Admin tours</a>
         </li>
 
         <li class="nav-item" *ngIf="auth.isAdmin()">
-          <a class="nav-link" routerLink="/admin/reservas" (click)="closeMenu()">Admin reservas</a>
+          <a class="nav-link" routerLink="/admin/reservas">Admin reservas</a>
         </li>
 
         <li class="nav-item" *ngIf="auth.isGuia()">
-          <a class="nav-link" routerLink="/guia/panel" (click)="closeMenu()">Panel guía</a>
+          <a class="nav-link" routerLink="/guia/panel">Panel guía</a>
         </li>
       </ul>
 
-      <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2" *ngIf="!auth.isAuthenticated(); else loggedTpl">
-        <a class="btn btn-outline-light btn-soft" routerLink="/login" (click)="closeMenu()">Login</a>
-        <a class="btn btn-light btn-soft" routerLink="/register" (click)="closeMenu()">Registro</a>
+      <div
+        class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2"
+        *ngIf="!auth.isAuthenticated(); else loggedTpl">
+        <a class="btn btn-outline-light btn-soft" routerLink="/login">
+          Login
+        </a>
+        <a class="btn btn-light btn-soft fw-semibold" routerLink="/register">
+          Registro
+        </a>
       </div>
 
       <ng-template #loggedTpl>
-        <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 user-box">
-          <span class="badge rounded-pill text-bg-light px-3 py-2">
-            {{ auth.getUserRole() }}
-          </span>
+        <div class="user-dropdown ms-lg-3">
+          <button
+            type="button"
+            class="user-toggle"
+            (click)="toggleUserMenu()"
+            [attr.aria-expanded]="userMenuOpen">
 
-          <span class="user-email text-truncate">
-            {{ auth.currentUser?.email }}
-          </span>
+            <div class="user-avatar">
+              {{ userInitial }}
+            </div>
 
-          <button class="btn btn-outline-light btn-soft" (click)="logout()">
-            Salir
+            <div class="user-meta d-none d-md-flex">
+              <span class="user-name">{{ userDisplayName }}</span>
+              <span class="user-role">{{ userRole }}</span>
+            </div>
+
+            <span class="dropdown-caret">▾</span>
           </button>
+
+          <div class="user-menu" *ngIf="userMenuOpen">
+            <div class="user-menu-header">
+              <div class="user-avatar large">
+                {{ userInitial }}
+              </div>
+
+              <div class="user-menu-info">
+                <div class="fw-semibold">{{ userDisplayName }}</div>
+                <div class="small text-muted text-break">{{ userEmail }}</div>
+                <div class="role-badge mt-2">{{ userRole }}</div>
+              </div>
+            </div>
+
+            <div class="menu-divider"></div>
+
+            <a class="user-menu-item" routerLink="/mis-reservas">
+              Mis reservas
+            </a>
+
+            <a class="user-menu-item" routerLink="/admin/tours" *ngIf="auth.isAdmin()">
+              Admin tours
+            </a>
+
+            <a class="user-menu-item" routerLink="/admin/reservas" *ngIf="auth.isAdmin()">
+              Admin reservas
+            </a>
+
+            <a class="user-menu-item" routerLink="/guia/panel" *ngIf="auth.isGuia()">
+              Panel guía
+            </a>
+
+            <div class="menu-divider"></div>
+
+            <button type="button" class="user-menu-item danger" (click)="logout()">
+              Cerrar sesión
+            </button>
+          </div>
         </div>
       </ng-template>
     </div>

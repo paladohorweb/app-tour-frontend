@@ -1,11 +1,31 @@
-/* You can add global styles to this file, and also import other style files */
 @import "leaflet/dist/leaflet.css";
-@import 'bootstrap/dist/css/bootstrap.min.css';
+@import "bootstrap/dist/css/bootstrap.min.css";
 
+:root {
+  --app-bg: #f8fafc;
+  --app-dark: #0f172a;
+  --app-muted: #64748b;
+  --app-border: #e5e7eb;
+  --app-primary: #2563eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 body {
-  background: #f8fafc;
-  color: #0f172a;
+  margin: 0;
+  background: var(--app-bg);
+  color: var(--app-dark);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a {
+  cursor: pointer;
 }
 
 .card-soft {
@@ -28,4 +48,18 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.25rem;
+}
+
+.section-tag {
+  display: inline-block;
+  padding: .45rem .95rem;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.08);
+  color: #1d4ed8;
+  font-weight: 700;
+  font-size: .9rem;
+}
+
+.text-muted-soft {
+  color: var(--app-muted);
 }

@@ -13,18 +13,24 @@ export class LandingPageComponent {
   destacados = [
     {
       titulo: 'Cartagena Colonial',
-      descripcion: 'Recorre murallas, plazas y la esencia histórica del Caribe colombiano.',
-      imagen: 'https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?q=80&w=1400&auto=format&fit=crop'
+      descripcion: 'Murallas, plazas históricas, cultura caribeña y acompañamiento profesional.',
+      ciudad: 'Cartagena',
+      precio: '180.000',
+      imagen: 'https://images.unsplash.com/photo-1583531352515-8884af319dc1?q=80&w=1400&auto=format&fit=crop'
     },
     {
       titulo: 'Café & Montaña',
-      descripcion: 'Vive una experiencia cultural y natural entre paisajes cafeteros.',
+      descripcion: 'Vive paisajes cafeteros, tradición local y rutas naturales memorables.',
+      ciudad: 'Salento',
+      precio: '220.000',
       imagen: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop'
     },
     {
-      titulo: 'Aventura en la Naturaleza',
-      descripcion: 'Explora destinos con guías preparados y experiencias memorables.',
-      imagen: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1400&auto=format&fit=crop'
+      titulo: 'Medellín Cultural',
+      descripcion: 'Arte urbano, transformación social, miradores y experiencias urbanas.',
+      ciudad: 'Medellín',
+      precio: '150.000',
+      imagen: 'https://images.unsplash.com/photo-1575893771416-7dcfd48c2579?q=80&w=1400&auto=format&fit=crop'
     }
   ];
 
@@ -32,29 +38,35 @@ export class LandingPageComponent {
     {
       icono: '🌍',
       titulo: 'Experiencias auténticas',
-      texto: 'Conecta con destinos, cultura local y recorridos diseñados para turistas nacionales e internacionales.'
+      texto: 'Tours diseñados para conectar viajeros con cultura local, naturaleza y destinos reales.'
     },
     {
       icono: '🧭',
       titulo: 'Guías especializados',
-      texto: 'Trabaja con guías preparados para acompañar grupos y viajeros de forma profesional.'
+      texto: 'Acompañamiento profesional para viajeros nacionales y extranjeros.'
     },
     {
       icono: '💳',
-      titulo: 'Reservas y pagos simples',
-      texto: 'Gestiona reservas, estados y pagos desde una plataforma clara y organizada.'
+      titulo: 'Pagos adaptados a Colombia',
+      texto: 'Flujo preparado para pagos con métodos locales y reservas controladas.'
     },
     {
       icono: '📍',
       titulo: 'Mapa interactivo',
-      texto: 'Descubre destinos, tours activos y puntos de interés de manera visual.'
+      texto: 'Visualiza destinos disponibles y puntos turísticos desde una experiencia moderna.'
     }
   ];
 
   pasos = [
-    'Explora los tours disponibles',
-    'Reserva tu experiencia',
-    'Realiza tu pago de forma segura',
-    'Disfruta el tour con acompañamiento profesional'
+    'Explora tours disponibles',
+    'Elige una experiencia',
+    'Reserva y paga de forma segura',
+    'Disfruta tu tour con guía profesional'
+  ];
+
+  metricas = [
+    { valor: '24/7', label: 'Catálogo disponible' },
+    { valor: '3 roles', label: 'Usuario, guía y admin' },
+    { valor: '100%', label: 'Responsive' }
   ];
 }
