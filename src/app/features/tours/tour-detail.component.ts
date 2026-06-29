@@ -1,33 +1,77 @@
-import { Component } from "@angular/core";
-import { RouterModule } from "@angular/router";
-import { CommonModule } from "@angular/common";
-import { Tour } from "../../core/models/tour.model";
-import { TourService } from "../../core/services/tour.service";
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { catchError, map, of, switchMap } from 'rxjs';
+
+import { Tour } from '../../core/models/tour.model';
+import { TourService } from '../../core/services/tour.service';
 
 @Component({
   standalone: true,
-  imports: [RouterModule, CommonModule],
-  template: `
-  <div class="grid">
-    <div class="card" *ngFor="let tour of tours">
-      <img [src]="tour.imagenUrl">
-      <h3>{{ tour.nombre }}</h3>
-      <p>{{ tour.ciudad }} - {{ tour.pais }}</p>
-      <p><strong>$ {{ tour.precio }}</strong></p>
-
-      <a [routerLink]="['/tours', tour.id]">Ver</a>
-      <a [routerLink]="['/checkout', tour.id]">Reservar</a>
-    </div>
-  </div>
-  `
+  selector: 'app-tour-detail',
+  imports: [CommonModule, RouterLink],
+  templateUrl: './tour-detail.component.html',
+  styleUrls: ['./tour-detail.component.css']
 })
-export class TourDetailComponent {
+export class TourDetailComponent implements OnInit {
+  readonly fallbackImage =
+    'https://placehold.co/1200x720/e2e8f0/475569?text=TurismoApp';
 
-  tours: Tour[] = [];
+  tour?: Tour;
 
-  constructor(private service: TourService) {}
+  loading = true;
+  error = '';
 
-  ngOnInit() {
-    this.service.listar().subscribe(res => this.tours = res);
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly tourService: TourService
+  ) {}
+
+  ngOnInit(): void {
+    this.route.paramMap
+      .pipe(
+        map((params) => Number(params.get('id'))),
+        switchMap((id) => {
+          if (!Number.isInteger(id) || id <= 0) {
+            this.error = 'El identificador del tour no es válido.';
+            return of(null);
+          }
+
+          this.loading = true;
+          this.error = '';
+
+          return this.tourService.obtenerPorId(id).pipe(
+            catchError((err) => {
+              console.error('Error obteniendo tour:', err);
+
+              this.error =
+                err?.error?.message ||
+                'No fue posible cargar la información del tour.';
+
+              return of(null);
+            })
+          );
+        })
+      )
+      .subscribe((tour) => {
+        this.tour = tour ?? undefined;
+        this.loading = false;
+      });
+  }
+
+  get tieneUbicacion(): boolean {
+    return Boolean(
+      this.tour &&
+      Number.isFinite(this.tour.latitud) &&
+      Number.isFinite(this.tour.longitud)
+    );
+  }
+
+  onImageError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+
+    if (image.src !== this.fallbackImage) {
+      image.src = this.fallbackImage;
+    }
   }
 }

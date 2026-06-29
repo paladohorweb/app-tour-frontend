@@ -1,62 +1,213 @@
-<section class="page">
+<section class="mis-reservas-page">
+  <div class="container py-4 py-lg-5">
 
-  <header class="header">
-    <div>
-      <h1>Mis Reservas</h1>
-      <p class="muted">Gestiona tus reservas y pagos</p>
-    </div>
-
-    <button class="btn" (click)="cargar()">Actualizar</button>
-  </header>
-
-  <div class="card" *ngIf="loading">Cargando...</div>
-  <div class="card error" *ngIf="error">{{ error }}</div>
-
-  <div class="grid" *ngIf="!loading && reservas.length">
-
-    <article class="item" *ngFor="let r of reservas">
-
-      <div class="top">
-        <h3>{{ r.tourNombre }}</h3>
-        <span [class]="estadoClase(r.estado)">
-          {{ r.estado }}
-        </span>
+    <section class="page-hero mb-4">
+      <div>
+        <span class="hero-tag">Área personal</span>
+        <h1>Mis reservas</h1>
+        <p>
+          Consulta tus experiencias, realiza pagos pendientes y revisa
+          el estado de cada reserva.
+        </p>
       </div>
 
-      <p><strong>Reserva:</strong> #{{ r.id }}</p>
-      <p><strong>Monto:</strong> $ {{ r.monto | number }}</p>
-      <p><strong>Método:</strong> {{ r.metodoPago || 'Sin definir' }}</p>
-
-      <div class="row">
-
-        <!-- PAGAR -->
-        <a
-          class="btn ghost"
-          *ngIf="r.estado === 'PENDIENTE'"
-          [routerLink]="['/pago', r.id]">
-          Pagar
+      <div class="hero-actions">
+        <a routerLink="/tours" class="btn btn-outline-light btn-soft">
+          Explorar tours
         </a>
 
-        <!-- CANCELAR -->
         <button
-          class="btn warning"
-          *ngIf="puedeCancelar(r)"
-          (click)="cancelar(r)">
-          Cancelar
-        </button>
+          type="button"
+          class="btn btn-light btn-soft"
+          (click)="cargar()"
+          [disabled]="loading">
 
-        <!-- ELIMINAR -->
-        <button
-          class="btn danger"
-          *ngIf="puedeEliminar(r)"
-          (click)="eliminar(r)">
-          Eliminar
-        </button>
+          <span *ngIf="!loading">Actualizar</span>
 
+          <span *ngIf="loading">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Cargando...
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <section class="row g-3 mb-4">
+      <div class="col-6 col-lg-3">
+        <article class="metric-card">
+          <span>Total</span>
+          <strong>{{ totalReservas }}</strong>
+        </article>
       </div>
 
-    </article>
+      <div class="col-6 col-lg-3">
+        <article class="metric-card metric-warning">
+          <span>Por pagar</span>
+          <strong>{{ pendientesPago }}</strong>
+        </article>
+      </div>
 
+      <div class="col-6 col-lg-3">
+        <article class="metric-card metric-primary">
+          <span>Activas</span>
+          <strong>{{ activas }}</strong>
+        </article>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <article class="metric-card metric-finished">
+          <span>Finalizadas</span>
+          <strong>{{ finalizadas }}</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="card card-soft border-0 mb-4">
+      <div class="card-body p-3 p-lg-4">
+        <div class="row g-3 align-items-end">
+          <div class="col-12 col-lg-8">
+            <label class="form-label fw-semibold">Buscar reserva</label>
+
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="filtro"
+              placeholder="Tour, estado o método de pago..."
+            >
+          </div>
+
+          <div class="col-12 col-lg-4">
+            <label class="form-label fw-semibold">Estado</label>
+
+            <select class="form-select" [(ngModel)]="estadoFiltro">
+              <option value="TODOS">Todos los estados</option>
+              <option value="PENDIENTE">Pendientes de pago</option>
+              <option value="PAGADA">Pagadas</option>
+              <option value="EN_CURSO">En curso</option>
+              <option value="FINALIZADA">Finalizadas</option>
+              <option value="CANCELADA">Canceladas</option>
+              <option value="FALLIDA">Fallidas</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="alert alert-danger rounded-4" *ngIf="!loading && error">
+      {{ error }}
+    </div>
+
+    <section class="card card-soft border-0" *ngIf="loading">
+      <div class="card-body py-5 text-center">
+        <div class="spinner-border text-dark mb-3"></div>
+        <p class="mb-0">Cargando tus reservas...</p>
+      </div>
+    </section>
+
+    <section
+      class="empty-state"
+      *ngIf="!loading && !error && reservasFiltradas.length === 0">
+
+      <div class="empty-icon">🧳</div>
+      <h2>Aún no tienes reservas</h2>
+      <p>
+        Explora las experiencias disponibles y reserva tu próxima aventura.
+      </p>
+
+      <a routerLink="/tours" class="btn btn-dark btn-soft">
+        Explorar tours
+      </a>
+    </section>
+
+    <section
+      class="row g-4"
+      *ngIf="!loading && !error && reservasFiltradas.length > 0">
+
+      <div
+        class="col-12 col-md-6 col-xl-4"
+        *ngFor="let reserva of reservasFiltradas; trackBy: trackByReserva">
+
+        <article class="reservation-card card card-soft border-0 h-100">
+          <div class="card-body p-4 d-flex flex-column">
+
+            <div class="reservation-header">
+              <div>
+                <span class="reservation-id">Reserva #{{ reserva.id }}</span>
+                <h2>{{ reserva.tourNombre }}</h2>
+
+                <small class="text-muted">
+                  {{
+                    reserva.fechaCreacion
+                      ? (reserva.fechaCreacion | date:'dd/MM/yyyy · h:mm a')
+                      : 'Fecha no disponible'
+                  }}
+                </small>
+              </div>
+
+              <span [class]="estadoClase(reserva.estado)">
+                {{ reserva.estado }}
+              </span>
+            </div>
+
+            <div class="reservation-info mt-3">
+              <div class="info-grid">
+                <div>
+                  <span>Monto</span>
+                  <strong>$ {{ reserva.monto | number }}</strong>
+                </div>
+
+                <div>
+                  <span>Método de pago</span>
+                  <strong>{{ reserva.metodoPago || 'No definido' }}</strong>
+                </div>
+              </div>
+
+              <div class="info-block" *ngIf="reserva.guiaNombre">
+                <span>Guía asignado</span>
+                <strong>{{ reserva.guiaNombre }}</strong>
+                <small *ngIf="reserva.guiaEmail">{{ reserva.guiaEmail }}</small>
+              </div>
+            </div>
+
+            <div class="reservation-actions mt-auto">
+              <a
+                *ngIf="puedePagar(reserva)"
+                [routerLink]="['/pago', reserva.id]"
+                class="btn btn-dark btn-soft flex-fill">
+                Pagar ahora
+              </a>
+
+              <button
+                *ngIf="puedeCancelar(reserva)"
+                type="button"
+                class="btn btn-outline-warning btn-soft flex-fill"
+                (click)="cancelar(reserva)"
+                [disabled]="esAccionando(reserva)">
+                <span *ngIf="!esAccionando(reserva)">Cancelar</span>
+                <span *ngIf="esAccionando(reserva)">
+                  <span class="spinner-border spinner-border-sm"></span>
+                </span>
+              </button>
+
+              <button
+                *ngIf="puedeEliminar(reserva)"
+                type="button"
+                class="delete-button"
+                (click)="eliminar(reserva)"
+                [disabled]="esAccionando(reserva)">
+                Eliminar reserva
+              </button>
+
+              <div
+                class="completed-message"
+                *ngIf="reserva.estado === 'FINALIZADA'">
+                ✓ Esta experiencia ya fue finalizada.
+              </div>
+            </div>
+
+          </div>
+        </article>
+      </div>
+    </section>
   </div>
-
 </section>

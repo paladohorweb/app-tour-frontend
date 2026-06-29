@@ -11,7 +11,17 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 
-  { path: 'tours', component: TourListComponent },
+  {
+  path: 'tours/:id',
+  loadComponent: () =>
+    import('./features/tours/tour-detail.component').then(
+      (m) => m.TourDetailComponent
+    )
+},
+{
+  path: 'tours',
+  component: TourListComponent
+},
 
   {
     path: 'admin',

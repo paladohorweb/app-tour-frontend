@@ -1,103 +1,268 @@
-<div class="page">
-  <div class="header">
-    <div>
-      <h1>Crear nuevo Tour</h1>
-      <p>Completa la información y publícalo para que aparezca en la app.</p>
-    </div>
+<section class="create-tour-page">
+  <div class="container py-4 py-lg-5">
 
-    <div class="actions">
-      <a class="btn ghost" routerLink="/admin/tours">Ver tours</a>
-      <a class="btn ghost" routerLink="/admin">Dashboard</a>
-    </div>
-  </div>
+    <section class="page-hero mb-4">
+      <div>
+        <span class="hero-tag">Administración turística</span>
+        <h1>Crear nueva experiencia</h1>
+        <p>
+          Registra el tour para que aparezca en el catálogo, en el mapa
+          y en la gestión administrativa.
+        </p>
+      </div>
 
-  <div class="card">
-    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <div class="hero-actions">
+        <a routerLink="/admin/dashboard" class="btn btn-outline-light btn-soft">
+          Dashboard
+        </a>
 
-      <div class="grid">
-        <!-- Nombre -->
-        <label class="field full">
-          <span>Nombre <b>*</b></span>
-          <input formControlName="nombre" placeholder="Tour Guatapé" />
-          <small class="hint error"
-            *ngIf="form.get('nombre')?.touched && form.get('nombre')?.invalid">
-            El nombre es obligatorio.
-          </small>
-        </label>
+        <a routerLink="/admin/tours" class="btn btn-light btn-soft fw-semibold">
+          Ver tours
+        </a>
+      </div>
+    </section>
 
-        <!-- Ciudad -->
-        <label class="field">
-          <span>Ciudad</span>
-          <input formControlName="ciudad" placeholder="Guatapé" />
-        </label>
+    <div class="row g-4">
+      <div class="col-12 col-xl-8">
+        <article class="card card-soft border-0">
+          <div class="card-body p-4 p-lg-5">
+            <div class="form-heading mb-4">
+              <h2>Información del tour</h2>
+              <p>
+                Los campos marcados con <span class="text-danger">*</span>
+                son obligatorios.
+              </p>
+            </div>
 
-        <!-- País -->
-        <label class="field">
-          <span>País</span>
-          <input formControlName="pais" placeholder="Colombia" />
-        </label>
+            <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label fw-semibold">
+                    Nombre del tour <span class="text-danger">*</span>
+                  </label>
 
-        <!-- Precio -->
-        <label class="field">
-          <span>Precio (COP) <b>*</b></span>
-          <input type="number" formControlName="precio" placeholder="200000" />
-          <small class="hint error"
-            *ngIf="form.get('precio')?.touched && form.get('precio')?.invalid">
-            Ingresa un precio válido (mínimo 1).
-          </small>
-        </label>
+                  <input
+                    type="text"
+                    class="form-control form-control-lg"
+                    formControlName="nombre"
+                    placeholder="Ej: Tour Guatapé y Piedra del Peñol"
+                    [class.is-invalid]="form.controls.nombre.touched && form.controls.nombre.invalid"
+                  >
 
-        <!-- Imagen -->
-        <label class="field full">
-          <span>Imagen URL</span>
-          <input formControlName="imagenUrl" placeholder="https://..." />
-          <small class="hint">Tip: usa una URL pública (https) para que cargue en producción.</small>
-        </label>
+                  <div class="invalid-feedback">
+                    El nombre es obligatorio y debe tener mínimo 3 caracteres.
+                  </div>
+                </div>
 
-          <!-- Preview imagen -->
-        <div class="preview full" *ngIf="form.get('imagenUrl')?.value">
-          <div class="preview-box">
-            <img [src]="form.get('imagenUrl')?.value" alt="Preview" (error)="onImageError($event)" />
-            <div class="preview-fallback">
-              Vista previa no disponible
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">
+                    Ciudad <span class="text-danger">*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="ciudad"
+                    placeholder="Ej: Guatapé"
+                    [class.is-invalid]="form.controls.ciudad.touched && form.controls.ciudad.invalid"
+                  >
+
+                  <div class="invalid-feedback">
+                    Ingresa una ciudad válida.
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">
+                    País <span class="text-danger">*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="pais"
+                    placeholder="Ej: Colombia"
+                    [class.is-invalid]="form.controls.pais.touched && form.controls.pais.invalid"
+                  >
+
+                  <div class="invalid-feedback">
+                    Ingresa un país válido.
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">
+                    Precio en COP <span class="text-danger">*</span>
+                  </label>
+
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+
+                    <input
+                      type="number"
+                      min="1"
+                      class="form-control"
+                      formControlName="precio"
+                      placeholder="180000"
+                      [class.is-invalid]="form.controls.precio.touched && form.controls.precio.invalid"
+                    >
+                  </div>
+
+                  <div
+                    class="invalid-feedback d-block"
+                    *ngIf="form.controls.precio.touched && form.controls.precio.invalid">
+                    Ingresa un precio mayor a cero.
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">Imagen principal</label>
+
+                  <input
+                    type="url"
+                    class="form-control"
+                    formControlName="imagenUrl"
+                    placeholder="https://..."
+                    (input)="resetPreview()"
+                  >
+
+                  <div class="form-text">
+                    Usa una URL HTTPS pública para que funcione en producción.
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label fw-semibold">Descripción</label>
+
+                  <textarea
+                    rows="5"
+                    class="form-control"
+                    formControlName="descripcion"
+                    placeholder="Describe la experiencia, el recorrido y los lugares incluidos."
+                  ></textarea>
+                </div>
+
+                <div class="col-12">
+                  <div class="coordinates-box">
+                    <div>
+                      <strong>Ubicación en el mapa</strong>
+                      <small>
+                        Agrega las coordenadas para mostrar este tour
+                        en el mapa interactivo.
+                      </small>
+                    </div>
+
+                    <span>Opcional</span>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">Latitud</label>
+
+                  <input
+                    type="number"
+                    step="any"
+                    class="form-control"
+                    formControlName="latitud"
+                    placeholder="Ej: 6.2442"
+                    [class.is-invalid]="form.controls.latitud.touched && form.controls.latitud.invalid"
+                  >
+
+                  <div class="invalid-feedback">
+                    La latitud debe estar entre -90 y 90.
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">Longitud</label>
+
+                  <input
+                    type="number"
+                    step="any"
+                    class="form-control"
+                    formControlName="longitud"
+                    placeholder="Ej: -75.5812"
+                    [class.is-invalid]="form.controls.longitud.touched && form.controls.longitud.invalid"
+                  >
+
+                  <div class="invalid-feedback">
+                    La longitud debe estar entre -180 y 180.
+                  </div>
+                </div>
+
+                <div class="col-12" *ngIf="coordenadasIncompletas">
+                  <div class="alert alert-warning mb-0 py-2">
+                    Debes ingresar latitud y longitud juntas.
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-footer mt-4 pt-4">
+                <a routerLink="/admin/tours" class="btn btn-outline-dark btn-soft">
+                  Cancelar
+                </a>
+
+                <button
+                  type="submit"
+                  class="btn btn-dark btn-soft px-4"
+                  [disabled]="loading">
+                  <span *ngIf="!loading">Publicar tour</span>
+                  <span *ngIf="loading">
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    Publicando...
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </article>
+      </div>
+
+      <div class="col-12 col-xl-4">
+        <article class="preview-card card card-soft border-0">
+          <div class="card-body p-4">
+            <span class="preview-tag">Vista previa</span>
+            <h2>Así verá el usuario el tour</h2>
+
+            <div
+              class="preview-image mt-3"
+              *ngIf="form.controls.imagenUrl.value && !imagePreviewError; else noImage">
+              <img
+                [src]="form.controls.imagenUrl.value"
+                [alt]="form.controls.nombre.value || 'Vista previa'"
+                (error)="onImageError()"
+              >
+
+              <span class="preview-price">
+                $ {{ form.controls.precio.value | number }}
+              </span>
+            </div>
+
+            <ng-template #noImage>
+              <div class="preview-empty mt-3">
+                <span>🖼️</span>
+                <p>Agrega una imagen válida para verla aquí.</p>
+              </div>
+            </ng-template>
+
+            <div class="preview-content mt-3">
+              <span class="preview-location">
+                {{ form.controls.ciudad.value || 'Ciudad' }},
+                {{ form.controls.pais.value || 'País' }}
+              </span>
+
+              <h3>{{ form.controls.nombre.value || 'Nombre del tour' }}</h3>
+
+              <p>
+                {{
+                  form.controls.descripcion.value ||
+                  'La descripción del tour aparecerá en esta sección.'
+                }}
+              </p>
             </div>
           </div>
-        </div>
-
-        <!-- Descripción -->
-        <label class="field full">
-          <span>Descripción</span>
-          <textarea rows="4" formControlName="descripcion"
-            placeholder="Visita a la piedra del Peñol, recorrido guiado, miradores, etc."></textarea>
-        </label>
-
-        <!-- Coordenadas -->
-        <label class="field">
-          <span>Latitud</span>
-          <input type="number" formControlName="latitud" placeholder="6.233" />
-        </label>
-
-        <label class="field">
-          <span>Longitud</span>
-          <input type="number" formControlName="longitud" placeholder="-75.158" />
-        </label>
+        </article>
       </div>
-
-      <div class="footer">
-        <p class="server-error" *ngIf="error">{{ error }}</p>
-
-        <div class="footer-actions">
-          <a class="btn ghost" routerLink="/admin/tours">Cancelar</a>
-
-          <button class="btn primary"
-            type="submit"
-            [disabled]="form.invalid || loading">
-            <span *ngIf="!loading">Crear Tour</span>
-            <span *ngIf="loading">Guardando...</span>
-          </button>
-        </div>
-      </div>
-    </form>
+    </div>
   </div>
-</div>
-
+</section>

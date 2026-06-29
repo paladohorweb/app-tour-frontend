@@ -1,0 +1,205 @@
+.tour-detail-page {
+  min-height: 100%;
+  background: #f8fafc;
+}
+
+.back-link {
+  color: #334155;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #0f172a;
+  text-decoration: underline;
+}
+
+.error-state {
+  max-width: 680px;
+  margin: 4rem auto;
+  padding: 3rem 1.5rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 1.5rem;
+  background: #fff;
+  text-align: center;
+}
+
+.error-icon {
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #b91c1c;
+  background: #fee2e2;
+  font-size: 1.4rem;
+  font-weight: 900;
+}
+
+.error-state h1 {
+  margin: 1rem 0 .5rem;
+  color: #0f172a;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.error-state p {
+  margin-bottom: 1.5rem;
+  color: #64748b;
+}
+
+.tour-main-card,
+.booking-card {
+  overflow: hidden;
+  border-radius: 1.4rem;
+}
+
+.detail-image-container {
+  position: relative;
+  height: min(58vw, 480px);
+  min-height: 280px;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+.detail-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-price {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  padding: .55rem .9rem;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(15, 23, 42, .92);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.tour-location {
+  color: #475569;
+  font-size: .9rem;
+  font-weight: 700;
+}
+
+.tour-main-card h1 {
+  margin: .7rem 0 .8rem;
+  color: #0f172a;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  font-weight: 900;
+  letter-spacing: -.7px;
+}
+
+.tour-description {
+  margin: 0;
+  color: #64748b;
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+.experience-info {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+  margin-top: 2rem;
+}
+
+.experience-info div {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  background: #f8fafc;
+}
+
+.experience-info span {
+  color: #64748b;
+  font-size: .75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.experience-info strong {
+  color: #0f172a;
+  font-size: .9rem;
+}
+
+.booking-card {
+  position: sticky;
+  top: 95px;
+}
+
+.booking-tag {
+  display: inline-block;
+  padding: .38rem .75rem;
+  border-radius: 999px;
+  color: #1d4ed8;
+  background: #eff6ff;
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.booking-card h2 {
+  margin: .85rem 0 .55rem;
+  color: #0f172a;
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.booking-card p {
+  color: #64748b;
+  line-height: 1.65;
+}
+
+.booking-price {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border-radius: 1rem;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.booking-price span {
+  color: #64748b;
+  font-weight: 700;
+}
+
+.booking-price strong {
+  font-size: 1.15rem;
+}
+
+.booking-notes {
+  display: flex;
+  flex-direction: column;
+  gap: .65rem;
+  margin-top: 1.3rem;
+  color: #475569;
+  font-size: .88rem;
+  font-weight: 600;
+}
+
+.btn-soft {
+  border-radius: .85rem;
+}
+
+@media (max-width: 1199.98px) {
+  .booking-card {
+    position: static;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .experience-info {
+    grid-template-columns: 1fr;
+  }
+}

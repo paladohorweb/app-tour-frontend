@@ -1,0 +1,127 @@
+<section class="tour-detail-page">
+  <div class="container py-4 py-lg-5">
+
+    <a routerLink="/tours" class="back-link">
+      ← Volver a tours
+    </a>
+
+    <section class="card card-soft border-0 mt-3" *ngIf="loading">
+      <div class="card-body py-5 text-center">
+        <div class="spinner-border text-dark mb-3"></div>
+        <p class="mb-0">Cargando información del tour...</p>
+      </div>
+    </section>
+
+    <section class="error-state" *ngIf="!loading && error">
+      <div class="error-icon">!</div>
+      <h1>No pudimos cargar el tour</h1>
+      <p>{{ error }}</p>
+
+      <a routerLink="/tours" class="btn btn-dark btn-soft">
+        Ver tours disponibles
+      </a>
+    </section>
+
+    <section class="tour-detail" *ngIf="!loading && tour">
+      <div class="row g-4">
+        <div class="col-12 col-xl-7">
+          <article class="tour-main-card card card-soft border-0">
+            <div class="detail-image-container">
+              <img
+                [src]="tour.imagenUrl || fallbackImage"
+                [alt]="tour.nombre"
+                (error)="onImageError($event)"
+              >
+
+              <span class="detail-price">
+                $ {{ (tour.precio || 0) | number }}
+              </span>
+            </div>
+
+            <div class="card-body p-4 p-lg-5">
+              <span class="tour-location">
+                📍 {{ tour.ciudad }}, {{ tour.pais }}
+              </span>
+
+              <h1>{{ tour.nombre }}</h1>
+
+              <p class="tour-description">
+                {{
+                  tour.descripcion ||
+                  'Esta experiencia está lista para que descubras nuevos destinos.'
+                }}
+              </p>
+
+              <div class="experience-info">
+                <div>
+                  <span>Destino</span>
+                  <strong>{{ tour.ciudad }}, {{ tour.pais }}</strong>
+                </div>
+
+                <div>
+                  <span>Disponibilidad</span>
+                  <strong>{{ tour.activo ? 'Disponible' : 'No disponible' }}</strong>
+                </div>
+
+                <div>
+                  <span>Ubicación</span>
+                  <strong>
+                    {{ tieneUbicacion ? 'Configurada en mapa' : 'No configurada' }}
+                  </strong>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <aside class="booking-card card card-soft border-0">
+            <div class="card-body p-4">
+              <span class="booking-tag">Reserva tu experiencia</span>
+
+              <h2>Todo listo para viajar</h2>
+
+              <p>
+                Reserva esta experiencia y continúa con el método de pago
+                que prefieras.
+              </p>
+
+              <div class="booking-price">
+                <span>Precio por reserva</span>
+                <strong>$ {{ (tour.precio || 0) | number }}</strong>
+              </div>
+
+              <a
+                *ngIf="tour.activo"
+                [routerLink]="['/checkout', tour.id]"
+                class="btn btn-dark btn-soft w-100">
+                Reservar ahora
+              </a>
+
+              <button
+                *ngIf="!tour.activo"
+                type="button"
+                class="btn btn-secondary btn-soft w-100"
+                disabled>
+                Tour no disponible
+              </button>
+
+              <a
+                *ngIf="tieneUbicacion"
+                routerLink="/mapa"
+                class="btn btn-outline-dark btn-soft w-100 mt-2">
+                Ver en mapa
+              </a>
+
+              <div class="booking-notes">
+                <span>✓ Pago seguro</span>
+                <span>✓ Confirmación de reserva</span>
+                <span>✓ Guía asignado después del pago</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
