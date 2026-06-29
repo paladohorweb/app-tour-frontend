@@ -30,7 +30,7 @@ export class LandingPageComponent {
       descripcion: 'Arte urbano, transformación social, miradores y experiencias urbanas.',
       ciudad: 'Medellín',
       precio: '150.000',
-      imagen: 'https://images.unsplash.com/photo-1575893771416-7dcfd48c2579?q=80&w=1400&auto=format&fit=crop'
+      imagen: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop'
     }
   ];
 

@@ -1,64 +1,106 @@
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-12 col-lg-7">
+<section class="success-page">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8 col-xl-7">
 
-      <div class="card card-soft p-4" *ngIf="loading">
-        Consultando estado de la reserva...
-      </div>
+        <section class="card card-soft border-0" *ngIf="loading">
+          <div class="card-body py-5 text-center">
+            <div class="spinner-border text-dark mb-3"></div>
+            <p class="mb-0">Consultando el estado de tu reserva...</p>
+          </div>
+        </section>
 
-      <div class="card card-soft p-4 border-danger" *ngIf="!loading && error">
-        <h3 class="text-danger fw-bold">No se pudo cargar la reserva</h3>
-        <p class="mb-0">{{ error }}</p>
-      </div>
+        <section class="error-state" *ngIf="!loading && error">
+          <div class="error-icon">!</div>
 
-      <div class="card card-soft p-4" *ngIf="!loading && reserva">
-        <div class="text-center mb-4">
-          <div class="display-6 mb-3">✅</div>
-          <h2 class="fw-bold">Estado de tu reserva</h2>
-          <p class="text-muted">Aquí puedes validar cómo quedó tu proceso de pago</p>
-        </div>
+          <h1>No se pudo consultar la reserva</h1>
 
-        <div class="row g-3 mb-4">
-          <div class="col-md-6">
-            <div class="border rounded-4 p-3 h-100">
-              <small class="text-muted d-block">Reserva</small>
-              <strong>#{{ reserva.id }}</strong>
+          <p>{{ error }}</p>
+
+          <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a routerLink="/mis-reservas" class="btn btn-dark btn-soft">
+              Ir a mis reservas
+            </a>
+
+            <a routerLink="/tours" class="btn btn-outline-dark btn-soft">
+              Explorar tours
+            </a>
+          </div>
+        </section>
+
+        <section class="reservation-result card card-soft border-0" *ngIf="!loading && reserva">
+          <div class="card-body p-4 p-lg-5">
+
+            <div class="result-header text-center">
+              <div
+                class="result-icon"
+                [class.icon-success]="reserva.estado === 'PAGADA'"
+                [class.icon-warning]="reserva.estado === 'PENDIENTE'"
+                [class.icon-progress]="reserva.estado === 'EN_CURSO'"
+                [class.icon-finished]="reserva.estado === 'FINALIZADA'"
+                [class.icon-danger]="reserva.estado === 'FALLIDA'"
+                [class.icon-muted]="reserva.estado === 'CANCELADA'">
+
+                {{ iconoEstado }}
+              </div>
+
+              <span [class]="estadoClase(reserva.estado)">
+                {{ reserva.estado }}
+              </span>
+
+              <h1>{{ tituloEstado }}</h1>
+
+              <p>{{ descripcionEstado }}</p>
+            </div>
+
+            <div class="reservation-details">
+              <div class="detail-box">
+                <span>Reserva</span>
+                <strong>#{{ reserva.id }}</strong>
+              </div>
+
+              <div class="detail-box">
+                <span>Tour</span>
+                <strong>{{ reserva.tourNombre }}</strong>
+              </div>
+
+              <div class="detail-box">
+                <span>Monto</span>
+                <strong>$ {{ reserva.monto | number }}</strong>
+              </div>
+
+              <div class="detail-box">
+                <span>Método de pago</span>
+                <strong>{{ reserva.metodoPago || 'No definido' }}</strong>
+              </div>
+            </div>
+
+            <div class="guide-box" *ngIf="reserva.guiaNombre">
+              <span>Guía asignado</span>
+              <strong>{{ reserva.guiaNombre }}</strong>
+              <small *ngIf="reserva.guiaEmail">{{ reserva.guiaEmail }}</small>
+            </div>
+
+            <div class="result-actions">
+              <a
+                *ngIf="puedePagar()"
+                [routerLink]="['/pago', reserva.id]"
+                class="btn btn-dark btn-soft">
+                Completar pago
+              </a>
+
+              <a routerLink="/mis-reservas" class="btn btn-outline-dark btn-soft">
+                Ir a mis reservas
+              </a>
+
+              <a routerLink="/tours" class="btn btn-outline-secondary btn-soft">
+                Seguir explorando
+              </a>
             </div>
           </div>
+        </section>
 
-          <div class="col-md-6">
-            <div class="border rounded-4 p-3 h-100">
-              <small class="text-muted d-block">Tour</small>
-              <strong>{{ reserva.tourNombre }}</strong>
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <div class="border rounded-4 p-3 h-100">
-              <small class="text-muted d-block">Monto</small>
-              <strong>$ {{ reserva.monto | number }}</strong>
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <div class="border rounded-4 p-3 h-100">
-              <small class="text-muted d-block">Método de pago</small>
-              <strong>{{ reserva.metodoPago || 'No definido' }}</strong>
-            </div>
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <span class="badge badge-soft fs-6" [class]="badgeClass(reserva.estado)">
-            {{ reserva.estado }}
-          </span>
-        </div>
-
-        <div class="d-flex flex-wrap gap-2">
-          <a routerLink="/mis-reservas" class="btn btn-dark btn-soft">Ir a mis reservas</a>
-          <a routerLink="/tours" class="btn btn-outline-dark btn-soft">Seguir explorando</a>
-        </div>
       </div>
     </div>
   </div>
-</div>
+</section>

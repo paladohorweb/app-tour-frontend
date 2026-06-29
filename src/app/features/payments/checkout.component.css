@@ -1,96 +1,180 @@
-.page{
-  max-width: 720px;
-  margin: 32px auto;
-  padding: 0 16px;
+.checkout-page {
+  min-height: 100%;
+  background: #f8fafc;
 }
 
-.card{
-  background: #fff;
-  border-radius: 18px;
-  border: 1px solid #e8edf5;
-  box-shadow: 0 12px 28px rgba(0,0,0,.08);
-  padding: 20px;
+.back-link {
+  color: #334155;
+  font-weight: 700;
+  text-decoration: none;
 }
 
-h1{
-  margin: 0;
-  font-size: 26px;
+.back-link:hover {
+  color: #0f172a;
+  text-decoration: underline;
 }
 
-.subtitle{
-  margin: 6px 0 18px;
+.error-state {
+  max-width: 680px;
+  margin-inline: auto;
+  padding: 3rem 1.5rem;
+  border: 1px dashed #fecaca;
+  border-radius: 1.5rem;
+  background: #ffffff;
+  text-align: center;
+}
+
+.error-icon {
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #b91c1c;
+  background: #fee2e2;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.error-state h1 {
+  margin: 1rem 0 .5rem;
+  color: #0f172a;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.error-state p {
+  margin-bottom: 1.5rem;
   color: #64748b;
 }
 
-.loading{
-  padding: 12px;
-  border-radius: 14px;
-  background: #f8fafc;
-  border: 1px dashed #dbe3ef;
-  color: #334155;
+.tour-summary-card,
+.booking-summary-card {
+  overflow: hidden;
+  border-radius: 1.4rem;
 }
 
-.error{
-  margin: 10px 0;
-  color: #b00020;
-  font-size: 13px;
+.tour-image-container {
+  height: min(54vw, 420px);
+  min-height: 260px;
+  background: #e2e8f0;
 }
 
-.summary{
-  margin-bottom: 16px;
-  padding: 14px;
-  border-radius: 16px;
-  background: #f8fafc;
-  border: 1px solid #e8edf5;
-}
-
-.row{
-  display:flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  color: #0f172a;
-}
-
-.total{
-  border-top: 1px solid #e8edf5;
-  margin-top: 8px;
-  padding-top: 10px;
-}
-
-.stripe-box{
-  padding: 12px;
-  border-radius: 16px;
-  border: 1px solid #e8edf5;
-  margin-bottom: 12px;
-}
-
-.btn{
+.tour-image-container img {
   width: 100%;
-  margin-top: 10px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding: 12px 14px;
-  border-radius: 12px;
-  text-decoration:none;
-  cursor:pointer;
-  border: 1px solid #dbe3ef;
-  background: transparent;
-  color: #0f172a;
+  height: 100%;
+  object-fit: cover;
+}
+
+.location-badge,
+.summary-tag {
+  display: inline-block;
+  padding: .38rem .75rem;
+  border-radius: 999px;
+  color: #1d4ed8;
+  background: #eff6ff;
+  font-size: .78rem;
   font-weight: 800;
 }
 
-.btn.primary{
-  background: #2f66ff;
-  border-color: #2f66ff;
-  color: #fff;
+.tour-summary-card h1 {
+  margin: .8rem 0 .65rem;
+  color: #0f172a;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 900;
+  letter-spacing: -.7px;
 }
 
-.btn.primary:disabled{
-  opacity: .7;
-  cursor: not-allowed;
+.tour-description {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.75;
 }
 
-.btn.ghost:hover{
-  background: #eef2ff;
+.included-box {
+  display: flex;
+  gap: .85rem;
+  margin-top: 1.8rem;
+  padding: 1rem;
+  border: 1px solid #dbeafe;
+  border-radius: 1rem;
+  background: #eff6ff;
+}
+
+.included-icon {
+  display: inline-flex;
+  width: 2.3rem;
+  height: 2.3rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: .75rem;
+  color: #166534;
+  background: #dcfce7;
+  font-weight: 900;
+}
+
+.included-box strong {
+  color: #1e3a8a;
+}
+
+.included-box p {
+  margin: .2rem 0 0;
+  color: #475569;
+  font-size: .9rem;
+}
+
+.booking-summary-card {
+  position: sticky;
+  top: 95px;
+}
+
+.booking-summary-card h2 {
+  margin: .85rem 0 1.4rem;
+  color: #0f172a;
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .85rem 0;
+  color: #475569;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.price-row strong {
+  color: #0f172a;
+}
+
+.total-row {
+  padding-top: 1.1rem;
+  color: #0f172a;
+  border-bottom: 0;
+  font-weight: 800;
+}
+
+.total-row strong {
+  font-size: 1.2rem;
+}
+
+.security-note {
+  margin: 1rem 0 0;
+  color: #64748b;
+  font-size: .82rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.btn-soft {
+  border-radius: .85rem;
+}
+
+@media (max-width: 1199.98px) {
+  .booking-summary-card {
+    position: static;
+  }
 }

@@ -1,52 +1,121 @@
-<div class="container py-4" *ngIf="!loading && tour">
-  <div class="row justify-content-center">
-    <div class="col-12 col-lg-8">
-      <div class="card card-soft">
-        <div class="card-body p-4">
-          <h2 class="fw-bold mb-2">Checkout</h2>
-          <p class="text-muted mb-4">{{ tour.nombre }} · {{ tour.ciudad }}, {{ tour.pais }}</p>
+<section class="checkout-page">
+  <div class="container py-4 py-lg-5">
 
-          <div class="row g-3 mb-4">
-            <div class="col-md-4">
-              <div class="border rounded-4 p-3">
-                <small class="text-muted d-block">Tour</small>
-                <strong>{{ tour.nombre }}</strong>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="border rounded-4 p-3">
-                <small class="text-muted d-block">Precio</small>
-                <strong>$ {{ tour.precio | number }}</strong>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="border rounded-4 p-3">
-                <small class="text-muted d-block">Reserva</small>
-                <strong>#{{ reservaId }}</strong>
-              </div>
-            </div>
-          </div>
+    <a routerLink="/tours" class="back-link">
+      ← Volver a tours
+    </a>
 
-          <div class="mb-4">
-            <label class="form-label">Método de pago</label>
-            <select class="form-select form-select-lg" [(ngModel)]="metodoPago">
-              <option *ngFor="let m of metodos" [ngValue]="m">{{ m }}</option>
-            </select>
-          </div>
-
-          <button class="btn btn-dark btn-lg w-100 btn-soft" (click)="pagar()" [disabled]="paying">
-            {{ paying ? 'Procesando...' : 'Continuar al pago' }}
-          </button>
-
-          <div class="alert alert-danger mt-3" *ngIf="error">
-            {{ error }}
-          </div>
-        </div>
+    <section class="card card-soft border-0 mt-3" *ngIf="loading">
+      <div class="card-body py-5 text-center">
+        <div class="spinner-border text-dark mb-3"></div>
+        <p class="mb-0">Preparando tu reserva...</p>
       </div>
-    </div>
-  </div>
-</div>
+    </section>
 
-<div class="container py-5" *ngIf="loading">
-  Cargando checkout...
-</div>
+    <section class="error-state mt-3" *ngIf="!loading && error">
+      <div class="error-icon">!</div>
+
+      <h1>No pudimos preparar la reserva</h1>
+
+      <p>{{ error }}</p>
+
+      <a routerLink="/tours" class="btn btn-dark btn-soft">
+        Ver tours disponibles
+      </a>
+    </section>
+
+    <section class="checkout-content mt-3" *ngIf="!loading && tour as tour">
+      <div class="row g-4">
+
+        <div class="col-12 col-xl-7">
+          <article class="tour-summary-card card card-soft border-0">
+            <div class="tour-image-container">
+              <img
+                [src]="tour.imagenUrl || fallbackImage"
+                [alt]="tour.nombre"
+                (error)="onImageError($event)"
+              >
+            </div>
+
+            <div class="card-body p-4 p-lg-5">
+              <span class="location-badge">
+                📍 {{ tour.ciudad }}, {{ tour.pais }}
+              </span>
+
+              <h1>{{ tour.nombre }}</h1>
+
+              <p class="tour-description">
+                {{
+                  tour.descripcion ||
+                  'Esta experiencia está lista para que descubras un nuevo destino.'
+                }}
+              </p>
+
+              <div class="included-box">
+                <div class="included-icon">✓</div>
+
+                <div>
+                  <strong>Reserva protegida</strong>
+                  <p>
+                    Después de confirmar tu reserva podrás elegir el método de pago.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <aside class="booking-summary-card card card-soft border-0">
+            <div class="card-body p-4">
+
+              <span class="summary-tag">Resumen de reserva</span>
+
+              <h2>Estás a un paso de viajar</h2>
+
+              <div class="price-row">
+                <span>Experiencia</span>
+                <strong>$ {{ (tour.precio || 0) | number }}</strong>
+              </div>
+
+              <div class="price-row total-row">
+                <span>Total a pagar</span>
+                <strong>$ {{ (tour.precio || 0) | number }}</strong>
+              </div>
+
+              <button
+                *ngIf="tour.activo"
+                type="button"
+                class="btn btn-dark btn-soft w-100 mt-4"
+                (click)="reservar()"
+                [disabled]="creandoReserva">
+
+                <span *ngIf="!creandoReserva">
+                  Continuar al pago
+                </span>
+
+                <span *ngIf="creandoReserva">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Creando reserva...
+                </span>
+              </button>
+
+              <button
+                *ngIf="!tour.activo"
+                type="button"
+                class="btn btn-secondary btn-soft w-100 mt-4"
+                disabled>
+                Tour no disponible
+              </button>
+
+              <p class="security-note">
+                🔒 Tus datos se procesan de forma segura. La plataforma no almacena información de tarjetas.
+              </p>
+            </div>
+          </aside>
+        </div>
+
+      </div>
+    </section>
+  </div>
+</section>

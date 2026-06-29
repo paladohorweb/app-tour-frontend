@@ -1,97 +1,118 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
-import { PaymentService } from '../../core/services/payment.service';
-import { ReservaService, MetodoPago } from '../../core/services/reserva.service';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
+
+import { AuthService } from '../../core/services/auth.service';
+import { ReservaService } from '../../core/services/reserva.service';
 import { TourService } from '../../core/services/tour.service';
 import { Tour } from '../../core/models/tour.model';
-import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
   selector: 'app-checkout',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.css']
 })
 export class CheckoutComponent implements OnInit {
-  loading = true;
-  paying = false;
-  error = '';
+  readonly fallbackImage =
+    'https://placehold.co/1200x720/e2e8f0/475569?text=TurismoApp';
 
   tour?: Tour;
-  reservaId?: number;
 
-  metodoPago: MetodoPago = 'TARJETA';
-  metodos: MetodoPago[] = ['TARJETA', 'PSE', 'NEQUI', 'DAVIPLATA', 'TRANSFERENCIA', 'EFECTIVO'];
+  loading = true;
+  creandoReserva = false;
+  error = '';
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private tourService: TourService,
-    private reservaService: ReservaService,
-    private paymentService: PaymentService
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly authService: AuthService,
+    private readonly tourService: TourService,
+    private readonly reservaService: ReservaService
   ) {}
 
-  async ngOnInit() {
-    try {
-      const tourId = Number(this.route.snapshot.paramMap.get('tourId'));
-      if (!tourId) throw new Error('tourId inválido');
+  ngOnInit(): void {
+    const tourId = Number(this.route.snapshot.paramMap.get('tourId'));
 
-      this.tour = await firstValueFrom(this.tourService.obtenerPorId(tourId));
-      const reserva = await firstValueFrom(this.reservaService.crearReserva(tourId));
-      this.reservaId = reserva.id;
-
+    if (!Number.isInteger(tourId) || tourId <= 0) {
+      this.error = 'El tour seleccionado no es válido.';
       this.loading = false;
-    } catch (e: any) {
-      console.error(e);
-      this.error = e?.error?.message || 'No se pudo iniciar el checkout';
-      this.loading = false;
+      return;
     }
+
+    this.tourService.obtenerPorId(tourId).subscribe({
+      next: (tour) => {
+        this.tour = tour;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error cargando tour para checkout:', err);
+
+        this.error =
+          err?.error?.message ||
+          'No fue posible cargar la información del tour.';
+
+        this.loading = false;
+      }
+    });
   }
 
-  async pagar() {
-    if (!this.reservaId) return;
+  reservar(): void {
+    if (!this.tour || !this.tour.activo) {
+      return;
+    }
 
-    this.error = '';
-    this.paying = true;
-
-    try {
-      const res = await firstValueFrom(
-        this.paymentService.crearIntentoPago(this.reservaId, this.metodoPago)
-      );
-
-      if (res.provider === 'MANUAL') {
-        await Swal.fire({
-          icon: 'success',
-          title: 'Pago registrado',
-          text: 'La reserva quedó pagada correctamente'
-        });
-        this.router.navigate(['/order/success'], {
-          queryParams: { reservaId: this.reservaId }
-        });
-        return;
-      }
-
-      if (res.provider === 'WOMPI' && res.checkoutUrl) {
-        window.location.href = res.checkoutUrl;
-        return;
-      }
-
-      throw new Error('No se recibió una URL de checkout válida');
-
-    } catch (e: any) {
-      console.error(e);
-      this.error = e?.error?.message || e?.message || 'No se pudo procesar el pago';
-      this.paying = false;
-
+    if (!this.authService.isAuthenticated()) {
       Swal.fire({
-        icon: 'error',
-        title: 'Pago no procesado',
-        text: this.error
+        icon: 'info',
+        title: 'Inicia sesión para continuar',
+        text: 'Debes iniciar sesión o crear una cuenta antes de realizar una reserva.',
+        showCancelButton: true,
+        confirmButtonText: 'Ir al inicio de sesión',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#0f172a'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/login'], {
+            queryParams: {
+              returnUrl: `/checkout/${this.tour?.id}`
+            }
+          });
+        }
       });
+
+      return;
+    }
+
+    this.creandoReserva = true;
+
+    this.reservaService.crearReserva(this.tour.id).subscribe({
+      next: (reserva) => {
+        this.creandoReserva = false;
+        this.router.navigate(['/pago', reserva.id]);
+      },
+      error: async (err) => {
+        console.error('Error creando reserva:', err);
+        this.creandoReserva = false;
+
+        await Swal.fire({
+          icon: 'error',
+          title: 'No se pudo crear la reserva',
+          text:
+            err?.error?.message ||
+            'Ocurrió un error al crear la reserva. Intenta nuevamente.'
+        });
+      }
+    });
+  }
+
+  onImageError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+
+    if (image.src !== this.fallbackImage) {
+      image.src = this.fallbackImage;
     }
   }
 }

@@ -1,62 +1,149 @@
-<div class="container py-4">
-  <div class="row justify-content-center">
-    <div class="col-12 col-lg-8">
+<section class="pago-page">
+  <div class="container py-4 py-lg-5">
 
-      <div class="card card-soft p-4" *ngIf="loading">
-        Cargando información de la reserva...
+    <a routerLink="/mis-reservas" class="back-link">
+      ← Volver a mis reservas
+    </a>
+
+    <section class="card card-soft border-0 mt-3" *ngIf="loading">
+      <div class="card-body py-5 text-center">
+        <div class="spinner-border text-dark mb-3"></div>
+        <p class="mb-0">Cargando información de pago...</p>
       </div>
+    </section>
 
-      <div class="card card-soft p-4 border-danger" *ngIf="!loading && error">
-        <h4 class="text-danger fw-bold">No se pudo cargar el pago</h4>
-        <p class="mb-0">{{ error }}</p>
-      </div>
+    <section class="error-state mt-3" *ngIf="!loading && error">
+      <div class="error-icon">!</div>
 
-      <div class="card card-soft p-4" *ngIf="!loading && !error && reserva">
-        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
-          <div>
-            <h2 class="fw-bold mb-1">Pagar reserva</h2>
-            <p class="text-muted mb-0">Reserva #{{ reserva.id }} · {{ reserva.tourNombre }}</p>
-          </div>
+      <h1>No pudimos cargar el pago</h1>
 
-          <a routerLink="/mis-reservas" class="btn btn-outline-dark btn-soft">
-            Volver
-          </a>
+      <p>{{ error }}</p>
+
+      <a routerLink="/mis-reservas" class="btn btn-dark btn-soft">
+        Ir a mis reservas
+      </a>
+    </section>
+
+    <section class="payment-content mt-3" *ngIf="!loading && reserva as reserva">
+      <div class="row g-4">
+
+        <div class="col-12 col-xl-7">
+          <article class="payment-card card card-soft border-0">
+            <div class="card-body p-4 p-lg-5">
+
+              <span class="payment-tag">Pago de reserva</span>
+
+              <div class="payment-header">
+                <div>
+                  <span class="reservation-number">
+                    Reserva #{{ reserva.id }}
+                  </span>
+
+                  <h1>{{ reserva.tourNombre }}</h1>
+                </div>
+
+                <span [class]="estadoClase(reserva.estado)">
+                  {{ reserva.estado }}
+                </span>
+              </div>
+
+              <p class="payment-description">
+                Selecciona el método de pago con el que deseas confirmar
+                esta experiencia.
+              </p>
+
+              <div class="payment-methods" *ngIf="puedePagar">
+                <button
+                  *ngFor="let metodo of metodos"
+                  type="button"
+                  class="payment-method"
+                  [class.selected]="metodoSeleccionado === metodo.value"
+                  (click)="seleccionarMetodo(metodo.value)">
+
+                  <span class="method-icon">{{ metodo.icon }}</span>
+
+                  <span class="method-content">
+                    <strong>{{ metodo.title }}</strong>
+                    <small>{{ metodo.description }}</small>
+                  </span>
+
+                  <span class="method-check">
+                    {{ metodoSeleccionado === metodo.value ? '✓' : '' }}
+                  </span>
+                </button>
+              </div>
+
+              <div class="payment-state-info" *ngIf="!puedePagar">
+                <strong>Esta reserva no requiere un nuevo pago.</strong>
+
+                <p>
+                  Consulta su estado desde tus reservas.
+                </p>
+              </div>
+            </div>
+          </article>
         </div>
 
-        <div class="row g-3 mb-4">
-          <div class="col-md-4">
-            <div class="border rounded-4 p-3 h-100">
-              <small class="text-muted d-block">Tour</small>
-              <strong>{{ reserva.tourNombre }}</strong>
-            </div>
-          </div>
+        <div class="col-12 col-xl-5">
+          <aside class="payment-summary card card-soft border-0">
+            <div class="card-body p-4">
 
-          <div class="col-md-4">
-            <div class="border rounded-4 p-3 h-100">
-              <small class="text-muted d-block">Monto</small>
-              <strong>$ {{ reserva.monto | number }}</strong>
-            </div>
-          </div>
+              <span class="summary-tag">Resumen</span>
 
-          <div class="col-md-4">
-            <div class="border rounded-4 p-3 h-100">
-              <small class="text-muted d-block">Estado</small>
-              <strong>{{ reserva.estado }}</strong>
+              <div class="summary-line">
+                <span>Tour</span>
+                <strong>{{ reserva.tourNombre }}</strong>
+              </div>
+
+              <div class="summary-line">
+                <span>Reserva</span>
+                <strong>#{{ reserva.id }}</strong>
+              </div>
+
+              <div class="summary-line total-line">
+                <span>Total a pagar</span>
+                <strong>$ {{ reserva.monto | number }}</strong>
+              </div>
+
+              <button
+                *ngIf="puedePagar"
+                type="button"
+                class="btn btn-dark btn-soft w-100 mt-4"
+                (click)="iniciarPago()"
+                [disabled]="procesando">
+
+                <span *ngIf="!procesando">
+                  Continuar al pago seguro
+                </span>
+
+                <span *ngIf="procesando">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Conectando con el proveedor...
+                </span>
+              </button>
+
+              <a
+                *ngIf="!puedePagar"
+                routerLink="/mis-reservas"
+                class="btn btn-outline-dark btn-soft w-100 mt-4">
+                Ver mis reservas
+              </a>
+
+              <a
+                [routerLink]="['/order/success']"
+                [queryParams]="{ reservaId: reserva.id }"
+                class="btn btn-outline-secondary btn-soft w-100 mt-2">
+                Consultar estado
+              </a>
+
+              <p class="security-note">
+                🔒 El pago se procesa con el proveedor configurado por la plataforma.
+              </p>
             </div>
-          </div>
+          </aside>
         </div>
 
-        <div class="mb-4">
-          <label class="form-label fw-semibold">Método de pago</label>
-          <select class="form-select form-select-lg" [(ngModel)]="metodoPago">
-            <option *ngFor="let m of metodos" [ngValue]="m">{{ m }}</option>
-          </select>
-        </div>
-
-        <button class="btn btn-dark btn-lg w-100 btn-soft" [disabled]="paying" (click)="pagar()">
-          {{ paying ? 'Procesando...' : 'Continuar al pago' }}
-        </button>
       </div>
-    </div>
+    </section>
   </div>
-</div>
+</section>
