@@ -1,30 +1,52 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import Swal from 'sweetalert2';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  selector: 'app-login',
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loading = false;
+  error = '';
+  passwordVisible = false;
 
-  form = this.fb.nonNullable.group({
+  private returnUrl = '/tours';
+
+  readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(4)]],
+    password: ['', [Validators.required, Validators.minLength(6)]]
   });
 
   constructor(
-    private fb: FormBuilder,
-    private auth: AuthService,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {}
+
+  ngOnInit(): void {
+    const requestedReturnUrl =
+      this.route.snapshot.queryParamMap.get('returnUrl') || '';
+
+    this.returnUrl = this.sanitizeReturnUrl(requestedReturnUrl);
+
+    const email = this.route.snapshot.queryParamMap.get('email');
+
+    if (email) {
+      this.form.controls.email.setValue(email);
+    }
+
+    if (this.authService.isAuthenticated()) {
+      this.router.navigateByUrl(this.returnUrl);
+    }
+  }
 
   submit(): void {
     if (this.form.invalid) {
@@ -33,40 +55,35 @@ export class LoginComponent {
     }
 
     this.loading = true;
+    this.error = '';
 
-    this.auth.login(this.form.getRawValue()).subscribe({
-      next: async () => {
+    const { email, password } = this.form.getRawValue();
+
+    this.authService.login({
+      email: email.trim().toLowerCase(),
+      password
+    }).subscribe({
+      next: () => {
         this.loading = false;
-
-        await Swal.fire({
-          icon: 'success',
-          title: 'Bienvenido',
-          text: 'Inicio de sesión correcto',
-          timer: 1300,
-          showConfirmButton: false
-        });
-
-        if (this.auth.isAdmin()) {
-          this.router.navigate(['/admin/tours']);
-          return;
-        }
-
-        if (this.auth.isGuia()) {
-          this.router.navigate(['/guia/panel']);
-          return;
-        }
-
-        this.router.navigate(['/tours']);
+        this.router.navigateByUrl(this.returnUrl);
       },
-      error: async (err) => {
-        this.loading = false;
+      error: (err) => {
+        console.error('Error iniciando sesión:', err);
 
-        await Swal.fire({
-          icon: 'error',
-          title: 'No se pudo iniciar sesión',
-          text: err?.error?.message || 'Verifica tus credenciales'
-        });
+        this.error =
+          err?.error?.message ||
+          'Correo o contraseña incorrectos. Verifica tus datos.';
+
+        this.loading = false;
       }
     });
+  }
+
+  private sanitizeReturnUrl(value: string): string {
+    if (!value.startsWith('/') || value.startsWith('//')) {
+      return '/tours';
+    }
+
+    return value;
   }
 }

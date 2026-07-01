@@ -1,43 +1,128 @@
-<div class="container py-5">
-  <div class="row justify-content-center align-items-center min-vh-75">
-    <div class="col-12 col-md-8 col-lg-5">
-      <div class="card card-soft">
-        <div class="card-body p-4 p-lg-5">
-          <div class="text-center mb-4">
-            <h2 class="fw-bold mb-2">Iniciar sesión</h2>
-            <p class="text-muted mb-0">Accede a tu cuenta para continuar</p>
+<section class="auth-page">
+  <div class="container py-4 py-lg-5">
+    <div class="row justify-content-center align-items-center min-vh-75">
+
+      <div class="col-12 col-lg-10 col-xl-9">
+        <div class="row g-0 auth-shell">
+
+          <div class="col-12 col-lg-6">
+            <section class="auth-brand-panel">
+              <span class="brand-tag">TurismoApp</span>
+
+              <h1>Tu próxima aventura empieza aquí.</h1>
+
+              <p>
+                Reserva experiencias, consulta tus pagos y vive nuevos destinos
+                con la tranquilidad de tener todo organizado.
+              </p>
+
+              <div class="brand-benefits">
+                <span>✓ Reserva experiencias únicas</span>
+                <span>✓ Pago seguro</span>
+                <span>✓ Guías asignados para tu recorrido</span>
+              </div>
+            </section>
           </div>
 
-          <form [formGroup]="form" (ngSubmit)="submit()">
-            <div class="mb-3">
-              <label class="form-label">Correo electrónico</label>
-              <input
-                type="email"
-                class="form-control form-control-lg"
-                formControlName="email"
-                placeholder="correo@ejemplo.com">
-            </div>
+          <div class="col-12 col-lg-6">
+            <section class="auth-form-panel">
+              <div class="form-header">
+                <span class="form-tag">Bienvenido de nuevo</span>
+                <h2>Inicia sesión</h2>
+                <p>Ingresa tus datos para continuar con tu cuenta.</p>
+              </div>
 
-            <div class="mb-4">
-              <label class="form-label">Contraseña</label>
-              <input
-                type="password"
-                class="form-control form-control-lg"
-                formControlName="password"
-                placeholder="********">
-            </div>
+              <div class="alert alert-danger rounded-4" *ngIf="error">
+                {{ error }}
+              </div>
 
-            <button class="btn btn-dark btn-lg w-100 btn-soft" [disabled]="loading">
-              {{ loading ? 'Ingresando...' : 'Entrar' }}
-            </button>
-          </form>
+              <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Correo electrónico</label>
 
-          <div class="text-center mt-4">
-            <span class="text-muted">¿No tienes cuenta?</span>
-            <a routerLink="/register" class="text-decoration-none ms-1 fw-semibold">Regístrate</a>
+                  <input
+                    type="email"
+                    class="form-control"
+                    formControlName="email"
+                    placeholder="nombre@correo.com"
+                    autocomplete="email"
+                    [class.is-invalid]="
+                      form.controls.email.touched &&
+                      form.controls.email.invalid
+                    "
+                  >
+
+                  <div class="invalid-feedback">
+                    Ingresa un correo electrónico válido.
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label fw-semibold">Contraseña</label>
+
+                  <div class="input-group">
+                    <input
+                      [type]="passwordVisible ? 'text' : 'password'"
+                      class="form-control"
+                      formControlName="password"
+                      placeholder="Tu contraseña"
+                      autocomplete="current-password"
+                      [class.is-invalid]="
+                        form.controls.password.touched &&
+                        form.controls.password.invalid
+                      "
+                    >
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary password-toggle"
+                      (click)="passwordVisible = !passwordVisible">
+
+                      {{ passwordVisible ? 'Ocultar' : 'Ver' }}
+                    </button>
+                  </div>
+
+                  <div
+                    class="invalid-feedback d-block"
+                    *ngIf="
+                      form.controls.password.touched &&
+                      form.controls.password.invalid
+                    ">
+                    La contraseña debe tener al menos 6 caracteres.
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-dark btn-soft w-100"
+                  [disabled]="loading">
+
+                  <span *ngIf="!loading">Ingresar a mi cuenta</span>
+
+                  <span *ngIf="loading">
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    Ingresando...
+                  </span>
+                </button>
+              </form>
+
+              <div class="auth-footer">
+                <span>¿Aún no tienes una cuenta?</span>
+
+                <a routerLink="/register">
+                  Crear cuenta
+                </a>
+              </div>
+
+              <a routerLink="/tours" class="back-link">
+                ← Volver a experiencias
+              </a>
+            </section>
           </div>
+
         </div>
       </div>
+
     </div>
   </div>
-</div>
+</section>
