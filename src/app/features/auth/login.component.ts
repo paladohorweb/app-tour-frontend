@@ -1,7 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink
+} from '@angular/router';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 
 import { AuthService } from '../../core/services/auth.service';
 
@@ -17,7 +25,7 @@ export class LoginComponent implements OnInit {
   error = '';
   passwordVisible = false;
 
-  private returnUrl = '/tours';
+  returnUrl = '';
 
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -44,8 +52,12 @@ export class LoginComponent implements OnInit {
     }
 
     if (this.authService.isAuthenticated()) {
-      this.router.navigateByUrl(this.returnUrl);
+      this.navigateAfterLogin();
     }
+  }
+
+  get isCheckoutReturn(): boolean {
+    return this.returnUrl.startsWith('/checkout/');
   }
 
   submit(): void {
@@ -65,7 +77,7 @@ export class LoginComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigateByUrl(this.returnUrl);
+        this.navigateAfterLogin();
       },
       error: (err) => {
         console.error('Error iniciando sesión:', err);
@@ -79,9 +91,32 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  private navigateAfterLogin(): void {
+    const destination =
+      this.returnUrl || this.getDefaultDestinationByRole();
+
+    this.router.navigateByUrl(destination);
+  }
+
+  private getDefaultDestinationByRole(): string {
+    switch (this.authService.getUserRole()) {
+      case 'ADMIN':
+        return '/admin/dashboard';
+
+      case 'GUIA':
+        return '/guia/panel';
+
+      case 'USER':
+        return '/mis-reservas';
+
+      default:
+        return '/tours';
+    }
+  }
+
   private sanitizeReturnUrl(value: string): string {
     if (!value.startsWith('/') || value.startsWith('//')) {
-      return '/tours';
+      return '';
     }
 
     return value;

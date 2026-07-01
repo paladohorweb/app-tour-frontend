@@ -1,58 +1,140 @@
 .register-page {
+  position: relative;
   min-height: 100%;
-  background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, .11), transparent 30%),
-    #f8fafc;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.register-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(85px);
+  opacity: .42;
+  pointer-events: none;
+}
+
+.register-orb-one {
+  top: 4rem;
+  right: -8rem;
+  width: 24rem;
+  height: 24rem;
+  background: #93c5fd;
+}
+
+.register-orb-two {
+  bottom: 3rem;
+  left: -7rem;
+  width: 21rem;
+  height: 21rem;
+  background: #a5f3fc;
 }
 
 .register-shell {
+  position: relative;
   overflow: hidden;
-  border-radius: 1.5rem;
+  border: 1px solid rgba(15, 23, 42, .06);
+  border-radius: 1.6rem;
   background: #ffffff;
-  box-shadow: 0 25px 70px rgba(15, 23, 42, .14);
+  box-shadow: 0 28px 75px rgba(15, 23, 42, .16);
 }
 
-.register-header {
-  padding: 3rem;
+.register-brand-panel {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.8rem;
   color: #ffffff;
   background:
-    radial-gradient(circle at top right, rgba(56, 189, 248, .24), transparent 30%),
-    linear-gradient(135deg, #0f172a, #1e293b);
-  text-align: center;
+    radial-gradient(circle at top right, rgba(56, 189, 248, .28), transparent 32%),
+    linear-gradient(145deg, #0f172a, #1e293b);
 }
 
-.brand-tag {
+.brand-mark {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: .6rem;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.brand-symbol {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: .7rem;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+}
+
+.brand-copy {
+  margin: 3rem 0;
+}
+
+.brand-tag,
+.form-tag {
   display: inline-block;
-  padding: .42rem .8rem;
+  width: fit-content;
+  padding: .42rem .82rem;
   border-radius: 999px;
-  color: #e0f2fe;
-  background: rgba(255, 255, 255, .12);
   font-size: .78rem;
   font-weight: 800;
 }
 
-.register-header h1 {
-  margin: .9rem 0 .5rem;
-  font-size: clamp(2rem, 4vw, 2.8rem);
-  font-weight: 900;
-  letter-spacing: -.9px;
+.brand-tag {
+  color: #e0f2fe;
+  background: rgba(255, 255, 255, .12);
 }
 
-.register-header p {
-  max-width: 640px;
-  margin: 0 auto;
+.register-brand-panel h1 {
+  margin: 1rem 0 .8rem;
+  font-size: clamp(1.9rem, 4vw, 2.7rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.register-brand-panel p {
+  margin: 0;
   color: rgba(255, 255, 255, .76);
-  line-height: 1.7;
+  line-height: 1.75;
+}
+
+.brand-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+  color: #dbeafe;
+  font-size: .88rem;
+  font-weight: 700;
 }
 
 .register-form-panel {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 3rem;
+  padding: 2.8rem;
+}
+
+.form-tag {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.form-header h2 {
+  margin: .85rem 0 .35rem;
+  color: #0f172a;
+  font-size: 1.85rem;
+  font-weight: 900;
+  letter-spacing: -.5px;
+}
+
+.form-header p {
+  margin-bottom: 1.7rem;
+  color: #64748b;
 }
 
 .form-control {
-  min-height: 46px;
+  min-height: 47px;
   border-radius: .8rem;
 }
 
@@ -67,10 +149,19 @@
 }
 
 .password-toggle {
+  border: 1px solid #ced4da;
+  border-left: 0;
   border-top-right-radius: .8rem;
   border-bottom-right-radius: .8rem;
-  font-size: .85rem;
-  font-weight: 700;
+  color: #475569;
+  background: #ffffff;
+  font-size: .84rem;
+  font-weight: 800;
+}
+
+.password-toggle:hover {
+  color: #0f172a;
+  background: #f8fafc;
 }
 
 .role-selector {
@@ -82,6 +173,7 @@
 .role-card {
   display: flex;
   gap: .75rem;
+  min-height: 98px;
   padding: 1rem;
   border: 1px solid #e5e7eb;
   border-radius: 1rem;
@@ -110,20 +202,20 @@
 
 .role-icon {
   display: inline-flex;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.45rem;
+  height: 2.45rem;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   border-radius: .8rem;
   background: #eef2ff;
-  font-size: 1.1rem;
+  font-size: 1.08rem;
 }
 
 .role-content {
   display: flex;
   flex-direction: column;
-  gap: .18rem;
+  gap: .2rem;
 }
 
 .role-content strong {
@@ -134,7 +226,8 @@
 .role-content small,
 .role-note {
   color: #64748b;
-  font-size: .78rem;
+  font-size: .77rem;
+  line-height: 1.45;
 }
 
 .role-note {
@@ -143,7 +236,7 @@
 }
 
 .btn-soft {
-  min-height: 46px;
+  min-height: 48px;
   border-radius: .85rem;
 }
 
@@ -172,7 +265,7 @@
   width: fit-content;
   margin: 1.5rem auto 0;
   color: #475569;
-  font-size: .88rem;
+  font-size: .87rem;
   font-weight: 700;
   text-decoration: none;
 }
@@ -181,20 +274,30 @@
   color: #0f172a;
 }
 
-@media (max-width: 767.98px) {
-  .register-header,
+@media (max-width: 991.98px) {
+  .register-brand-panel,
   .register-form-panel {
     padding: 2rem;
   }
 
+  .brand-copy {
+    margin: 2rem 0;
+  }
+}
+
+@media (max-width: 767.98px) {
   .role-selector {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 575.98px) {
-  .register-header,
+  .register-brand-panel,
   .register-form-panel {
     padding: 1.5rem;
+  }
+
+  .register-brand-panel h1 {
+    font-size: 2rem;
   }
 }

@@ -1,1 +1,44 @@
-<p>loader works!</p>
+<section
+  class="loader-overlay"
+  role="status"
+  aria-live="polite"
+  aria-busy="true">
+
+  <article
+    class="loader-card"
+    [class.loader-card--admin]="context === 'admin'"
+    [class.loader-card--guide]="context === 'guide'"
+    [class.loader-card--traveler]="context === 'traveler'">
+
+    <div class="loader-scene" aria-hidden="true">
+      <div class="loader-sun"></div>
+
+      <div class="loader-mountain loader-mountain--back"></div>
+      <div class="loader-mountain loader-mountain--front"></div>
+
+      <div class="loader-route">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="loader-icon">
+        {{ content.icon }}
+      </div>
+    </div>
+
+    <div class="loader-content">
+      <span class="loader-label">
+        {{ content.label }}
+      </span>
+
+      <h2>{{ content.title }}</h2>
+
+      <p>{{ content.message }}</p>
+    </div>
+
+    <div class="loader-progress" aria-hidden="true">
+      <span></span>
+    </div>
+  </article>
+</section>

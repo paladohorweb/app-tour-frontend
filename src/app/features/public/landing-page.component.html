@@ -1,34 +1,35 @@
 <section class="landing-page">
 
-  <!-- HERO -->
   <section class="hero-section">
     <div class="hero-glow hero-glow-one"></div>
     <div class="hero-glow hero-glow-two"></div>
 
     <div class="container py-5">
       <div class="row align-items-center g-5 min-vh-75">
+
         <div class="col-12 col-lg-6">
           <span class="hero-badge">
-            Turismo inteligente · Reservas · Guías · Pagos Colombia
+            Descubre Colombia · Reserva · Viaja con guía
           </span>
 
           <h1 class="hero-title mt-3">
-            Administra y reserva experiencias turísticas en Colombia con una plataforma
-            <span class="text-gradient">moderna y profesional</span>
+            Descubre experiencias que hacen de cada viaje una historia
+            <span class="text-gradient">para recordar.</span>
           </h1>
 
           <p class="hero-text mt-3">
-            TurismoApp conecta viajeros, guías y administradores en una sola solución:
-            catálogo de tours, mapa interactivo, reservas, pagos y operación turística.
+            Encuentra tours, cultura, naturaleza y destinos únicos en Colombia.
+            Reserva con facilidad, consulta tus experiencias y viaja con
+            acompañamiento profesional.
           </p>
 
           <div class="d-flex flex-wrap gap-3 mt-4">
             <a routerLink="/tours" class="btn btn-dark btn-lg btn-soft px-4">
-              Explorar tours
+              Explorar experiencias
             </a>
 
-            <a routerLink="/register" class="btn btn-outline-dark btn-lg btn-soft px-4">
-              Crear cuenta
+            <a routerLink="/mapa" class="btn btn-outline-dark btn-lg btn-soft px-4">
+              Ver destinos en mapa
             </a>
           </div>
 
@@ -42,73 +43,92 @@
 
         <div class="col-12 col-lg-6">
           <div class="hero-visual">
-            <img
-              src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop"
-              alt="Turismo Colombia"
-              class="hero-image"
-            />
+            <div class="hero-image-frame">
+              <img
+                [src]="heroImage"
+                alt="Paisaje turístico de Colombia"
+                class="hero-image"
+                (error)="onImageError($event)"
+              >
+            </div>
 
             <div class="floating-card floating-card-top">
-              <span>📍 Tours activos</span>
-              <strong>Colombia</strong>
+              <span>📍 Destinos únicos</span>
+              <strong>Colombia te espera</strong>
             </div>
 
             <div class="floating-card floating-card-bottom">
-              <span>💳 Pagos</span>
-              <strong>PSE · Nequi · Tarjeta</strong>
+              <span>🧭 Acompañamiento</span>
+              <strong>Guías para tu recorrido</strong>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </section>
 
-  <!-- TRUST BAR -->
   <section class="trust-section">
     <div class="container">
       <div class="trust-box">
-        <span>Diseñada para turismo receptivo</span>
-        <span>Gestión de guías</span>
+        <span>Turismo local</span>
         <span>Reservas online</span>
+        <span>Gestión de guías</span>
         <span>Mapa interactivo</span>
       </div>
     </div>
   </section>
 
-  <!-- BENEFICIOS -->
   <section class="py-5">
     <div class="container">
       <div class="section-head text-center mb-5">
-        <span class="section-tag">Plataforma turística</span>
-        <h2 class="section-title mt-2">Una experiencia digital seria para operar tours</h2>
+        <span class="section-tag">Una sola plataforma</span>
+
+        <h2 class="section-title mt-2">
+          Todo lo que necesitas para planear y disfrutar tu experiencia
+        </h2>
+
         <p class="section-text">
-          Pensada para mostrar destinos, administrar reservas y organizar el trabajo de guías turísticos.
+          TurismoApp conecta viajeros, guías y administradores para que cada
+          reserva tenga un flujo claro desde el primer clic hasta el final del recorrido.
         </p>
       </div>
 
       <div class="row g-4">
-        <div class="col-12 col-md-6 col-lg-3" *ngFor="let item of beneficios">
-          <div class="card card-soft h-100 border-0 feature-card">
+        <div
+          class="col-12 col-md-6 col-lg-3"
+          *ngFor="let item of beneficios">
+
+          <article class="card card-soft h-100 border-0 feature-card">
             <div class="card-body p-4">
               <div class="feature-icon">{{ item.icono }}</div>
-              <h5 class="fw-bold mt-3">{{ item.titulo }}</h5>
-              <p class="text-muted mb-0">{{ item.texto }}</p>
+
+              <h3 class="feature-title">{{ item.titulo }}</h3>
+
+              <p class="feature-text mb-0">
+                {{ item.texto }}
+              </p>
             </div>
-          </div>
+          </article>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- COMO FUNCIONA -->
   <section class="py-5 section-muted">
     <div class="container">
       <div class="row align-items-center g-5">
+
         <div class="col-12 col-lg-6">
-          <span class="section-tag">Cómo funciona</span>
-          <h2 class="section-title mt-2">Del descubrimiento del tour a la experiencia finalizada</h2>
+          <span class="section-tag">Así funciona</span>
+
+          <h2 class="section-title mt-2">
+            Desde encontrar un destino hasta vivir la experiencia
+          </h2>
+
           <p class="section-text">
-            Un flujo claro para el usuario y control operativo para administradores y guías.
+            Un proceso claro para viajeros y una operación organizada para
+            guías y administradores.
           </p>
 
           <div class="steps-list mt-4">
@@ -120,80 +140,124 @@
         </div>
 
         <div class="col-12 col-lg-6">
-          <div class="card card-soft border-0 process-card">
+          <article class="card card-soft border-0 process-card">
             <div class="card-body p-4 p-lg-5">
-              <h4 class="fw-bold mb-3">Roles de la plataforma</h4>
+              <span class="process-tag">Roles conectados</span>
+
+              <h3 class="process-title">
+                Una operación turística organizada
+              </h3>
 
               <div class="role-item">
                 <div class="role-icon">👤</div>
+
                 <div>
-                  <strong>Usuario</strong>
-                  <p>Explora, reserva, paga y consulta sus reservas.</p>
+                  <strong>Viajero</strong>
+                  <p>Explora, reserva, paga y consulta sus experiencias.</p>
                 </div>
               </div>
 
               <div class="role-item">
                 <div class="role-icon">🧭</div>
+
                 <div>
                   <strong>Guía</strong>
-                  <p>Gestiona tours asignados, inicia y finaliza experiencias.</p>
+                  <p>Gestiona experiencias asignadas, inicia y finaliza recorridos.</p>
                 </div>
               </div>
 
               <div class="role-item">
                 <div class="role-icon">⚙️</div>
+
                 <div>
                   <strong>Administrador</strong>
-                  <p>Administra tours, reservas, pagos y asignación de guías.</p>
+                  <p>Controla tours, pagos, reservas y asignación de guías.</p>
                 </div>
               </div>
-
             </div>
-          </div>
+          </article>
         </div>
+
       </div>
     </div>
   </section>
 
-  <!-- DESTACADOS -->
   <section class="py-5">
     <div class="container">
       <div class="section-head text-center mb-5">
-        <span class="section-tag">Tours destacados</span>
-        <h2 class="section-title mt-2">Experiencias que inspiran a viajar</h2>
+        <span class="section-tag">Experiencias destacadas</span>
+
+        <h2 class="section-title mt-2">
+          Viajes que inspiran a descubrir nuevos lugares
+        </h2>
+
+        <p class="section-text">
+          Las imágenes siempre se adaptarán al mismo formato visual,
+          aunque cambies la URL de cada experiencia.
+        </p>
       </div>
 
       <div class="row g-4">
-        <div class="col-12 col-md-6 col-lg-4" *ngFor="let item of destacados">
-          <div class="card card-soft border-0 h-100 overflow-hidden destination-card">
+        <div
+          class="col-12 col-md-6 col-lg-4"
+          *ngFor="let item of destacados">
+
+          <article class="card card-soft border-0 h-100 destination-card">
             <div class="destination-image-wrap">
-              <img [src]="item.imagen" [alt]="item.titulo" class="destination-image">
-              <span class="destination-price">$ {{ item.precio }}</span>
+              <img
+                [src]="item.imagen"
+                [alt]="item.titulo"
+                class="destination-image"
+                [style.object-position]="item.posicion"
+                loading="lazy"
+                decoding="async"
+                (error)="onImageError($event)"
+              >
+
+              <div class="destination-overlay"></div>
+
+              <span class="destination-price">
+                Desde $ {{ item.precio }}
+              </span>
             </div>
 
-            <div class="card-body p-4">
-              <span class="destination-city">{{ item.ciudad }}</span>
-              <h5 class="fw-bold mt-2">{{ item.titulo }}</h5>
-              <p class="text-muted">{{ item.descripcion }}</p>
+            <div class="card-body p-4 destination-body">
+              <span class="destination-city">
+                {{ item.ciudad }}
+              </span>
 
-              <a routerLink="/tours" class="btn btn-outline-dark btn-soft w-100">
-                Ver tours
+              <h3 class="destination-title">
+                {{ item.titulo }}
+              </h3>
+
+              <p class="destination-description">
+                {{ item.descripcion }}
+              </p>
+
+              <a
+                routerLink="/tours"
+                class="btn btn-outline-dark btn-soft w-100 mt-auto">
+                Ver experiencias
               </a>
             </div>
-          </div>
+          </article>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA FINAL -->
   <section class="py-5">
     <div class="container">
-      <div class="cta-box text-center card-soft p-4 p-lg-5">
-        <span class="section-tag">Empieza ahora</span>
-        <h2 class="section-title mt-2">Convierte tu operación turística en una experiencia digital</h2>
+      <section class="cta-box text-center card-soft p-4 p-lg-5">
+        <span class="section-tag">Tu próxima aventura empieza aquí</span>
+
+        <h2 class="section-title mt-2">
+          Descubre Colombia con una experiencia digital más simple
+        </h2>
+
         <p class="section-text mx-auto">
-          Explora destinos, reserva experiencias y administra tu operación desde una plataforma moderna.
+          Explora destinos, reserva experiencias y lleva el control de cada
+          etapa de tu viaje desde una sola plataforma.
         </p>
 
         <div class="d-flex justify-content-center flex-wrap gap-3 mt-4">
@@ -201,11 +265,11 @@
             Ver catálogo
           </a>
 
-          <a routerLink="/login" class="btn btn-outline-dark btn-lg btn-soft px-4">
-            Iniciar sesión
+          <a routerLink="/register" class="btn btn-outline-dark btn-lg btn-soft px-4">
+            Crear cuenta
           </a>
         </div>
-      </div>
+      </section>
     </div>
   </section>
 

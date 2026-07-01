@@ -1,7 +1,11 @@
-<nav class="navbar navbar-expand-lg app-navbar sticky-top">
+<nav class="navbar navbar-expand-lg app-navbar">
   <div class="container-fluid px-3 px-lg-4">
 
-    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" routerLink="/">
+    <a
+      class="navbar-brand d-flex align-items-center gap-2 fw-bold"
+      routerLink="/"
+      (click)="closeAllMenus()">
+
       <span class="brand-logo">T</span>
       <span>TurismoApp</span>
     </a>
@@ -12,6 +16,7 @@
       (click)="toggleMenu()"
       [attr.aria-expanded]="menuOpen"
       aria-label="Abrir navegación">
+
       <span class="toggler-line"></span>
       <span class="toggler-line"></span>
       <span class="toggler-line"></span>
@@ -19,108 +24,161 @@
 
     <div class="collapse navbar-collapse" [class.show]="menuOpen">
 
-      <ul class="navbar-nav me-auto mb-3 mb-lg-0 gap-lg-2">
+      <ul class="navbar-nav me-auto mb-3 mb-lg-0 gap-lg-1">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/">Inicio</a>
+          <a
+            class="nav-link"
+            routerLink="/"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="closeMenu()">
+            Inicio
+          </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" routerLink="/tours">Tours</a>
+          <a
+            class="nav-link"
+            routerLink="/tours"
+            routerLinkActive="is-active"
+            (click)="closeMenu()">
+            Experiencias
+          </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" routerLink="/mapa">Mapa</a>
+          <a
+            class="nav-link"
+            routerLink="/mapa"
+            routerLinkActive="is-active"
+            (click)="closeMenu()">
+            Mapa
+          </a>
         </li>
-
-        <!-- <li class="nav-item" *ngIf="auth.isAuthenticated()">
-          <a class="nav-link" routerLink="/mis-reservas">Mis reservas</a>
-        </li> -->
 
         <li class="nav-item" *ngIf="auth.isAdmin()">
-  <a class="nav-link" routerLink="/admin/dashboard">
-    Administración
-  </a>
-</li>
-
-        <!-- <li class="nav-item" *ngIf="auth.isAdmin()">
-          <a class="nav-link" routerLink="/admin/reservas">Admin reservas</a>
-        </li> -->
+          <a
+            class="nav-link"
+            routerLink="/admin/dashboard"
+            routerLinkActive="is-active"
+            (click)="closeMenu()">
+            Administración
+          </a>
+        </li>
 
         <li class="nav-item" *ngIf="auth.isGuia()">
-          <a class="nav-link" routerLink="/guia/panel">Panel guía</a>
+          <a
+            class="nav-link"
+            routerLink="/guia/panel"
+            routerLinkActive="is-active"
+            (click)="closeMenu()">
+            Panel guía
+          </a>
         </li>
       </ul>
 
       <div
-        class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2"
-        *ngIf="!auth.isAuthenticated(); else loggedTpl">
-        <a class="btn btn-outline-light btn-soft" routerLink="/login">
-          Login
+        *ngIf="!auth.isAuthenticated(); else loggedTemplate"
+        class="guest-actions d-flex flex-column flex-lg-row gap-2">
+
+        <a
+          class="btn btn-outline-light btn-soft"
+          routerLink="/login"
+          (click)="closeMenu()">
+          Iniciar sesión
         </a>
-        <a class="btn btn-light btn-soft fw-semibold" routerLink="/register">
-          Registro
+
+        <a
+          class="btn btn-light btn-soft fw-semibold"
+          routerLink="/register"
+          (click)="closeMenu()">
+          Crear cuenta
         </a>
       </div>
 
-      <ng-template #loggedTpl>
+      <ng-template #loggedTemplate>
         <div class="user-dropdown ms-lg-3">
+
           <button
             type="button"
             class="user-toggle"
             (click)="toggleUserMenu()"
             [attr.aria-expanded]="userMenuOpen">
 
-            <div class="user-avatar">
+            <span class="user-avatar">
               {{ userInitial }}
-            </div>
+            </span>
 
-            <div class="user-meta d-none d-md-flex">
+            <span class="user-meta d-none d-md-flex">
               <span class="user-name">{{ userDisplayName }}</span>
-              <span class="user-role">{{ userRole }}</span>
-            </div>
+              <span class="user-role">{{ userRoleLabel }}</span>
+            </span>
 
             <span class="dropdown-caret">▾</span>
           </button>
 
           <div class="user-menu" *ngIf="userMenuOpen">
             <div class="user-menu-header">
-              <div class="user-avatar large">
+              <span class="user-avatar large">
                 {{ userInitial }}
-              </div>
+              </span>
 
               <div class="user-menu-info">
-                <div class="fw-semibold">{{ userDisplayName }}</div>
-                <div class="small text-muted text-break">{{ userEmail }}</div>
-                <div class="role-badge mt-2">{{ userRole }}</div>
+                <strong>{{ userDisplayName }}</strong>
+                <span>{{ userEmail }}</span>
+                <small>{{ userRoleLabel }}</small>
               </div>
             </div>
 
             <div class="menu-divider"></div>
 
-            <a class="user-menu-item" routerLink="/mis-reservas">
+            <a
+              *ngIf="auth.getUserRole() === 'USER'"
+              class="user-menu-item"
+              routerLink="/mis-reservas">
               Mis reservas
             </a>
 
-           <a class="user-menu-item" routerLink="/admin/dashboard" *ngIf="auth.isAdmin()">
-  Panel administrativo
-</a>
-
-            <a class="user-menu-item" routerLink="/admin/reservas" *ngIf="auth.isAdmin()">
-              Admin reservas
+            <a
+              *ngIf="auth.isAdmin()"
+              class="user-menu-item"
+              routerLink="/admin/dashboard">
+              Panel administrativo
             </a>
 
-            <a class="user-menu-item" routerLink="/guia/panel" *ngIf="auth.isGuia()">
-              Panel guía
+            <a
+              *ngIf="auth.isAdmin()"
+              class="user-menu-item"
+              routerLink="/admin/tours">
+              Gestionar tours
+            </a>
+
+            <a
+              *ngIf="auth.isAdmin()"
+              class="user-menu-item"
+              routerLink="/admin/reservas">
+              Gestionar reservas
+            </a>
+
+            <a
+              *ngIf="auth.isGuia()"
+              class="user-menu-item"
+              routerLink="/guia/panel">
+              Mis experiencias asignadas
             </a>
 
             <div class="menu-divider"></div>
 
-            <button type="button" class="user-menu-item danger" (click)="logout()">
+            <button
+              type="button"
+              class="user-menu-item danger"
+              (click)="logout()">
               Cerrar sesión
             </button>
           </div>
         </div>
       </ng-template>
+
     </div>
   </div>
 </nav>

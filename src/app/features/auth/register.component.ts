@@ -1,7 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink
+} from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { AuthService } from '../../core/services/auth.service';
@@ -22,7 +32,7 @@ export class RegisterComponent implements OnInit {
   passwordVisible = false;
   confirmPasswordVisible = false;
 
-  public returnUrl = '/tours';
+  returnUrl = '';
 
   readonly form = this.fb.nonNullable.group(
     {
@@ -51,8 +61,15 @@ export class RegisterComponent implements OnInit {
     this.returnUrl = this.sanitizeReturnUrl(requestedReturnUrl);
 
     if (this.authService.isAuthenticated()) {
-      this.router.navigateByUrl(this.returnUrl);
+      this.router.navigateByUrl(this.returnUrl || '/tours');
     }
+  }
+
+  get passwordsDoNotMatch(): boolean {
+    return Boolean(
+      this.form.touched &&
+      this.form.errors?.['passwordsDoNotMatch']
+    );
   }
 
   submit(): void {
@@ -78,7 +95,7 @@ export class RegisterComponent implements OnInit {
         await Swal.fire({
           icon: 'success',
           title: 'Cuenta creada correctamente',
-          text: 'Ahora puedes iniciar sesión para continuar.',
+          text: 'Ahora inicia sesión para continuar.',
           confirmButtonText: 'Iniciar sesión'
         });
 
@@ -101,13 +118,6 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  get passwordsDoNotMatch(): boolean {
-    return Boolean(
-      this.form.touched &&
-      this.form.errors?.['passwordsDoNotMatch']
-    );
-  }
-
   private passwordsMatchValidator(
     control: AbstractControl
   ): ValidationErrors | null {
@@ -125,7 +135,7 @@ export class RegisterComponent implements OnInit {
 
   private sanitizeReturnUrl(value: string): string {
     if (!value.startsWith('/') || value.startsWith('//')) {
-      return '/tours';
+      return '';
     }
 
     return value;

@@ -1,237 +1,269 @@
 <section class="register-page">
+  <div class="register-orb register-orb-one"></div>
+  <div class="register-orb register-orb-two"></div>
+
   <div class="container py-4 py-lg-5">
     <div class="row justify-content-center">
 
-      <div class="col-12 col-lg-10 col-xl-9">
-        <div class="register-shell">
+      <div class="col-12 col-lg-11 col-xl-10">
+        <div class="row g-0 register-shell">
 
-          <section class="register-header">
-            <span class="brand-tag">TurismoApp</span>
+          <div class="col-12 col-lg-5">
+            <section class="register-brand-panel">
+              <span class="brand-mark">
+                <span class="brand-symbol">T</span>
+                TurismoApp
+              </span>
 
-            <h1>Crea tu cuenta</h1>
+              <div class="brand-copy">
+                <span class="brand-tag">Haz parte del viaje</span>
 
-            <p>
-              Regístrate para reservar experiencias, consultar pagos
-              y administrar tus próximas aventuras.
-            </p>
-          </section>
+                <h1>Una cuenta para descubrir, reservar y organizar experiencias.</h1>
 
-          <section class="register-form-panel">
-            <div class="alert alert-danger rounded-4" *ngIf="error">
-              {{ error }}
-            </div>
-
-            <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-              <div class="row g-3">
-
-                <div class="col-12">
-                  <label class="form-label fw-semibold">
-                    Nombre completo
-                  </label>
-
-                  <input
-                    type="text"
-                    class="form-control"
-                    formControlName="nombre"
-                    placeholder="Tu nombre completo"
-                    autocomplete="name"
-                    [class.is-invalid]="
-                      form.controls.nombre.touched &&
-                      form.controls.nombre.invalid
-                    "
-                  >
-
-                  <div class="invalid-feedback">
-                    Ingresa un nombre de mínimo 3 caracteres.
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label fw-semibold">
-                    Correo electrónico
-                  </label>
-
-                  <input
-                    type="email"
-                    class="form-control"
-                    formControlName="email"
-                    placeholder="nombre@correo.com"
-                    autocomplete="email"
-                    [class.is-invalid]="
-                      form.controls.email.touched &&
-                      form.controls.email.invalid
-                    "
-                  >
-
-                  <div class="invalid-feedback">
-                    Ingresa un correo electrónico válido.
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <label class="form-label fw-semibold">
-                    Tipo de cuenta
-                  </label>
-
-                  <div class="role-selector">
-                    <label
-                      class="role-card"
-                      [class.selected]="form.controls.rol.value === 'ROLE_USER'">
-
-                      <input
-                        type="radio"
-                        formControlName="rol"
-                        value="ROLE_USER"
-                      >
-
-                      <span class="role-icon">🧳</span>
-
-                      <span class="role-content">
-                        <strong>Viajero</strong>
-                        <small>Reserva y consulta tus experiencias.</small>
-                      </span>
-                    </label>
-
-                    <label
-                      class="role-card"
-                      [class.selected]="form.controls.rol.value === 'ROLE_GUIA'">
-
-                      <input
-                        type="radio"
-                        formControlName="rol"
-                        value="ROLE_GUIA"
-                      >
-
-                      <span class="role-icon">🧭</span>
-
-                      <span class="role-content">
-                        <strong>Guía turístico</strong>
-                        <small>Gestiona experiencias asignadas.</small>
-                      </span>
-                    </label>
-                  </div>
-
-                  <small class="role-note">
-                    Las cuentas administrativas se crean de forma interna.
-                  </small>
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label fw-semibold">
-                    Contraseña
-                  </label>
-
-                  <div class="input-group">
-                    <input
-                      [type]="passwordVisible ? 'text' : 'password'"
-                      class="form-control"
-                      formControlName="password"
-                      placeholder="Mínimo 6 caracteres"
-                      autocomplete="new-password"
-                      [class.is-invalid]="
-                        form.controls.password.touched &&
-                        form.controls.password.invalid
-                      "
-                    >
-
-                    <button
-                      type="button"
-                      class="btn btn-outline-secondary password-toggle"
-                      (click)="passwordVisible = !passwordVisible">
-
-                      {{ passwordVisible ? 'Ocultar' : 'Ver' }}
-                    </button>
-                  </div>
-
-                  <div
-                    class="invalid-feedback d-block"
-                    *ngIf="
-                      form.controls.password.touched &&
-                      form.controls.password.invalid
-                    ">
-                    La contraseña debe tener al menos 6 caracteres.
-                  </div>
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label fw-semibold">
-                    Confirmar contraseña
-                  </label>
-
-                  <div class="input-group">
-                    <input
-                      [type]="confirmPasswordVisible ? 'text' : 'password'"
-                      class="form-control"
-                      formControlName="confirmPassword"
-                      placeholder="Repite tu contraseña"
-                      autocomplete="new-password"
-                      [class.is-invalid]="
-                        form.controls.confirmPassword.touched &&
-                        (
-                          form.controls.confirmPassword.invalid ||
-                          passwordsDoNotMatch
-                        )
-                      "
-                    >
-
-                    <button
-                      type="button"
-                      class="btn btn-outline-secondary password-toggle"
-                      (click)="confirmPasswordVisible = !confirmPasswordVisible">
-
-                      {{ confirmPasswordVisible ? 'Ocultar' : 'Ver' }}
-                    </button>
-                  </div>
-
-                  <div
-                    class="invalid-feedback d-block"
-                    *ngIf="
-                      form.controls.confirmPassword.touched &&
-                      form.controls.confirmPassword.invalid
-                    ">
-                    Debes confirmar tu contraseña.
-                  </div>
-
-                  <div
-                    class="invalid-feedback d-block"
-                    *ngIf="
-                      form.controls.confirmPassword.touched &&
-                      passwordsDoNotMatch
-                    ">
-                    Las contraseñas no coinciden.
-                  </div>
-                </div>
-
+                <p>
+                  Crea tu perfil y empieza a conectar con destinos,
+                  recorridos y nuevas aventuras en Colombia.
+                </p>
               </div>
 
-              <button
-                type="submit"
-                class="btn btn-dark btn-soft w-100 mt-4"
-                [disabled]="loading">
+              <div class="brand-benefits">
+                <span>✓ Registro rápido</span>
+                <span>✓ Gestión de reservas</span>
+                <span>✓ Acceso según tu perfil</span>
+              </div>
+            </section>
+          </div>
 
-                <span *ngIf="!loading">Crear mi cuenta</span>
+          <div class="col-12 col-lg-7">
+            <section class="register-form-panel">
+              <div class="form-header">
+                <span class="form-tag">Crea tu perfil</span>
 
-                <span *ngIf="loading">
-                  <span class="spinner-border spinner-border-sm me-2"></span>
-                  Creando cuenta...
-                </span>
-              </button>
-            </form>
+                <h2>Regístrate en TurismoApp</h2>
 
-            <div class="auth-footer">
-              <span>¿Ya tienes una cuenta?</span>
+                <p>
+                  Completa tu información para empezar.
+                </p>
+              </div>
 
-              <a
-                routerLink="/login"
-                [queryParams]="{ returnUrl: returnUrl }">
-                Iniciar sesión
+              <div class="alert alert-danger rounded-4" *ngIf="error">
+                {{ error }}
+              </div>
+
+              <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+                <div class="row g-3">
+
+                  <div class="col-12">
+                    <label class="form-label fw-semibold">
+                      Nombre completo
+                    </label>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="nombre"
+                      placeholder="Tu nombre completo"
+                      autocomplete="name"
+                      [class.is-invalid]="
+                        form.controls.nombre.touched &&
+                        form.controls.nombre.invalid
+                      "
+                    >
+
+                    <div class="invalid-feedback">
+                      Ingresa un nombre de mínimo 3 caracteres.
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label fw-semibold">
+                      Correo electrónico
+                    </label>
+
+                    <input
+                      type="email"
+                      class="form-control"
+                      formControlName="email"
+                      placeholder="nombre@correo.com"
+                      autocomplete="email"
+                      [class.is-invalid]="
+                        form.controls.email.touched &&
+                        form.controls.email.invalid
+                      "
+                    >
+
+                    <div class="invalid-feedback">
+                      Ingresa un correo electrónico válido.
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label fw-semibold">
+                      Tipo de cuenta
+                    </label>
+
+                    <div class="role-selector">
+                      <label
+                        class="role-card"
+                        [class.selected]="form.controls.rol.value === 'ROLE_USER'">
+
+                        <input
+                          type="radio"
+                          formControlName="rol"
+                          value="ROLE_USER"
+                        >
+
+                        <span class="role-icon">🧳</span>
+
+                        <span class="role-content">
+                          <strong>Viajero</strong>
+                          <small>
+                            Explora, reserva y consulta tus experiencias.
+                          </small>
+                        </span>
+                      </label>
+
+                      <label
+                        class="role-card"
+                        [class.selected]="form.controls.rol.value === 'ROLE_GUIA'">
+
+                        <input
+                          type="radio"
+                          formControlName="rol"
+                          value="ROLE_GUIA"
+                        >
+
+                        <span class="role-icon">🧭</span>
+
+                        <span class="role-content">
+                          <strong>Guía turístico</strong>
+                          <small>
+                            Gestiona las experiencias que te sean asignadas.
+                          </small>
+                        </span>
+                      </label>
+                    </div>
+
+                    <small class="role-note">
+                      Las cuentas administrativas se crean de forma interna.
+                    </small>
+                  </div>
+
+                  <div class="col-12 col-md-6">
+                    <label class="form-label fw-semibold">
+                      Contraseña
+                    </label>
+
+                    <div class="input-group">
+                      <input
+                        [type]="passwordVisible ? 'text' : 'password'"
+                        class="form-control"
+                        formControlName="password"
+                        placeholder="Mínimo 6 caracteres"
+                        autocomplete="new-password"
+                        [class.is-invalid]="
+                          form.controls.password.touched &&
+                          form.controls.password.invalid
+                        "
+                      >
+
+                      <button
+                        type="button"
+                        class="btn password-toggle"
+                        (click)="passwordVisible = !passwordVisible">
+                        {{ passwordVisible ? 'Ocultar' : 'Ver' }}
+                      </button>
+                    </div>
+
+                    <div
+                      class="invalid-feedback d-block"
+                      *ngIf="
+                        form.controls.password.touched &&
+                        form.controls.password.invalid
+                      ">
+                      La contraseña debe tener al menos 6 caracteres.
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-6">
+                    <label class="form-label fw-semibold">
+                      Confirmar contraseña
+                    </label>
+
+                    <div class="input-group">
+                      <input
+                        [type]="confirmPasswordVisible ? 'text' : 'password'"
+                        class="form-control"
+                        formControlName="confirmPassword"
+                        placeholder="Repite tu contraseña"
+                        autocomplete="new-password"
+                        [class.is-invalid]="
+                          form.controls.confirmPassword.touched &&
+                          (
+                            form.controls.confirmPassword.invalid ||
+                            passwordsDoNotMatch
+                          )
+                        "
+                      >
+
+                      <button
+                        type="button"
+                        class="btn password-toggle"
+                        (click)="confirmPasswordVisible = !confirmPasswordVisible">
+                        {{ confirmPasswordVisible ? 'Ocultar' : 'Ver' }}
+                      </button>
+                    </div>
+
+                    <div
+                      class="invalid-feedback d-block"
+                      *ngIf="
+                        form.controls.confirmPassword.touched &&
+                        form.controls.confirmPassword.invalid
+                      ">
+                      Debes confirmar tu contraseña.
+                    </div>
+
+                    <div
+                      class="invalid-feedback d-block"
+                      *ngIf="
+                        form.controls.confirmPassword.touched &&
+                        passwordsDoNotMatch
+                      ">
+                      Las contraseñas no coinciden.
+                    </div>
+                  </div>
+
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-dark btn-soft w-100 mt-4"
+                  [disabled]="loading">
+
+                  <span *ngIf="!loading">Crear mi cuenta</span>
+
+                  <span *ngIf="loading">
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    Creando cuenta...
+                  </span>
+                </button>
+              </form>
+
+              <div class="auth-footer">
+                <span>¿Ya tienes una cuenta?</span>
+
+                <a
+                  routerLink="/login"
+                  [queryParams]="returnUrl ? { returnUrl: returnUrl } : null">
+                  Iniciar sesión
+                </a>
+              </div>
+
+              <a routerLink="/tours" class="back-link">
+                ← Volver a experiencias
               </a>
-            </div>
-
-            <a routerLink="/tours" class="back-link">
-              ← Volver a experiencias
-            </a>
-          </section>
+            </section>
+          </div>
 
         </div>
       </div>
