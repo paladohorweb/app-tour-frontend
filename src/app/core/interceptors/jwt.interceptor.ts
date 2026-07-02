@@ -13,7 +13,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
     req.url.includes(`${API.AUTH}/register`);
 
 
-      console.log('REQ:', req.url, 'TOKEN:', token); // ✅ temporal
+      //console.log('REQ:', req.url, 'TOKEN:', token); // ✅ temporal
 
   if (token && !isAuthEndpoint) {
     const authReq = req.clone({
