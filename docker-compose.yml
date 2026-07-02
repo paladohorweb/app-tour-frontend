@@ -1,0 +1,14 @@
+services:
+  turismo-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: paladohorweb1/turismo-demo:1.0
+
+    container_name: turismo-demo
+
+    ports:
+      - "8088:80"
+
+    restart: unless-stopped

@@ -66,5 +66,12 @@ export const routes: Routes = [
       import('./features/guia/guia-panel.component').then(m => m.GuiaPanelComponent)
   },
 
+  {
+  path: 'demo/reset',
+  loadComponent: () =>
+    import('./features/demo-reset/demo-reset.component')
+      .then((module) => module.DemoResetComponent)
+},
+
   { path: '**', redirectTo: '' }
 ];

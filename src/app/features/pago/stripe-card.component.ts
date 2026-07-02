@@ -43,7 +43,10 @@ export class StripeCardComponent implements AfterViewInit {
   }
 
   confirmarPago() {
-    this.pagoService.crearIntentoPago({ reservaId: this.reservaId })
+    this.pagoService.crearIntentoPago({
+      reservaId: this.reservaId,
+      metodoPago: 'TARJETA'
+    })
       .subscribe(async res => {
 
         const result = await this.stripe.confirmCardPayment(

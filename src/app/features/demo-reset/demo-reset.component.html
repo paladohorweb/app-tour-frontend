@@ -1,0 +1,47 @@
+<section class="demo-reset-page">
+  <div class="demo-reset-card">
+    <span class="demo-reset-badge">
+      Modo demostración
+    </span>
+
+    <h1>Restablecer datos demo</h1>
+
+    <p class="demo-reset-description">
+      Esta acción restaura los usuarios, tours y reservas iniciales
+      de la demostración en este navegador.
+    </p>
+
+    <div class="demo-reset-warning">
+      <span class="warning-icon">⚠️</span>
+
+      <p>
+        Se eliminarán los tours creados, las reservas generadas,
+        pagos demo, asignaciones de guías y cambios de estado.
+      </p>
+    </div>
+
+    <div class="demo-reset-actions">
+      <a
+        routerLink="/"
+        class="secondary-action"
+      >
+        Volver al inicio
+      </a>
+
+      <button
+        type="button"
+        class="danger-action"
+        [disabled]="resetting"
+        (click)="resetDemo()"
+      >
+        <span *ngIf="!resetting">
+          Restablecer demo
+        </span>
+
+        <span *ngIf="resetting">
+          Restableciendo...
+        </span>
+      </button>
+    </div>
+  </div>
+</section>
