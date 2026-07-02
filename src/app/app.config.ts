@@ -9,6 +9,7 @@ import {
 } from '@angular/router';
 
 import { routes } from './app.routes';
+
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { demoApiInterceptor } from './core/demo/demo-api.interceptor';
@@ -25,12 +26,10 @@ export const appConfig: ApplicationConfig = {
 
     provideHttpClient(
       withInterceptors([
-        demoApiInterceptor,
+        loadingInterceptor,
         jwtInterceptor,
-        loadingInterceptor
+        demoApiInterceptor
       ])
     )
   ]
 };
-
-
