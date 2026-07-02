@@ -3,9 +3,7 @@ import {
   HttpInterceptorFn,
   HttpResponse
 } from '@angular/common/http';
-
 import { inject } from '@angular/core';
-
 import {
   delay,
   of,
@@ -19,11 +17,11 @@ import {
   DemoRegisterRequest
 } from './demo.models';
 
-import { DemoSessionService } from './demo-session.service';
-import { DemoStoreService } from './demo-store.service';
-
+import { DemoOperationsService } from './demo-operations.service';
 import { DemoPaymentService } from './demo-payment.service';
 import { DemoReservationService } from './demo-reservation.service';
+import { DemoSessionService } from './demo-session.service';
+import { DemoStoreService } from './demo-store.service';
 
 export const demoApiInterceptor: HttpInterceptorFn = (
   request,
@@ -31,8 +29,9 @@ export const demoApiInterceptor: HttpInterceptorFn = (
 ) => {
   const store = inject(DemoStoreService);
   const session = inject(DemoSessionService);
-  const payments = inject(DemoPaymentService);
   const reservations = inject(DemoReservationService);
+  const payments = inject(DemoPaymentService);
+  const operations = inject(DemoOperationsService);
 
   const method = request.method.toUpperCase();
 
@@ -41,13 +40,28 @@ export const demoApiInterceptor: HttpInterceptorFn = (
     window.location.origin
   );
 
-  const path = requestUrl.pathname.replace(/\/+$/, '');
+  const path = requestUrl.pathname.replace(
+    /\/+$/,
+    ''
+  );
+
   const body = request.body as Record<string, unknown> | null;
 
+  /*
+   * Solo interceptamos rutas de la API.
+   *
+   * Recursos externos, imágenes, Leaflet, Bootstrap
+   * y demás solicitudes siguen su flujo normal.
+   */
   if (!path.startsWith('/api/')) {
     return next(request);
   }
 
+  /*
+   * Simula una respuesta HTTP del backend.
+   * El delay es útil para que loaders y estados
+   * de carga se comporten como en producción.
+   */
   const respond = <T>(payload: T) => {
     return of(
       new HttpResponse({
@@ -59,9 +73,9 @@ export const demoApiInterceptor: HttpInterceptorFn = (
 
   try {
     /*
-     * ==========================
+     * =================================================
      * AUTENTICACIÓN
-     * ==========================
+     * =================================================
      */
 
     if (
@@ -93,23 +107,27 @@ export const demoApiInterceptor: HttpInterceptorFn = (
     }
 
     /*
-     * ==========================
+     * =================================================
      * TOURS PÚBLICOS
-     * ==========================
+     * =================================================
      */
 
     if (
       method === 'GET' &&
       path === '/api/tours'
     ) {
-      return respond(store.getActiveTours());
+      return respond(
+        store.getActiveTours()
+      );
     }
 
     if (
       method === 'GET' &&
       /^\/api\/tours\/\d+$/.test(path)
     ) {
-      const tour = store.getTourById(getLastId(path));
+      const tour = store.getTourById(
+        getLastId(path)
+      );
 
       if (!tour) {
         throw new DemoApiError(
@@ -118,6 +136,10 @@ export const demoApiInterceptor: HttpInterceptorFn = (
         );
       }
 
+      /*
+       * Un administrador puede consultar tours inactivos
+       * desde administración. Un visitante normal no.
+       */
       const canViewInactive =
         session.isCurrentUserAdmin();
 
@@ -132,9 +154,9 @@ export const demoApiInterceptor: HttpInterceptorFn = (
     }
 
     /*
-     * ==========================
-     * TOURS ADMINISTRACIÓN
-     * ==========================
+     * =================================================
+     * ADMINISTRACIÓN DE TOURS
+     * =================================================
      */
 
     if (
@@ -143,7 +165,9 @@ export const demoApiInterceptor: HttpInterceptorFn = (
     ) {
       session.requireRole('ROLE_ADMIN');
 
-      return respond(store.getTours());
+      return respond(
+        store.getTours()
+      );
     }
 
     if (
@@ -193,125 +217,184 @@ export const demoApiInterceptor: HttpInterceptorFn = (
     ) {
       session.requireRole('ROLE_ADMIN');
 
-      store.deleteTour(getLastId(path));
+      store.deleteTour(
+        getLastId(path)
+      );
 
       return respond(null);
     }
-      /*
- * ==========================
- * RESERVAS DEL VIAJERO
- * ==========================
- */
 
-if (
-  method === 'POST' &&
-  path === '/api/reservas'
-) {
-  return respond(
-    reservations.create(
-      Number(body?.['tourId'])
-    )
-  );
-}
-
-if (
-  method === 'GET' &&
-  path === '/api/reservas/mias'
-) {
-  return respond(
-    reservations.listMine()
-  );
-}
-
-if (
-  method === 'GET' &&
-  /^\/api\/reservas\/\d+$/.test(path)
-) {
-  return respond(
-    reservations.getById(
-      getLastId(path)
-    )
-  );
-}
-
-if (
-  method === 'PATCH' &&
-  /^\/api\/reservas\/\d+\/cancelar$/.test(path)
-) {
-  reservations.cancel(
-    getLastId(path)
-  );
-
-  return respond(null);
-}
-
-if (
-  method === 'DELETE' &&
-  /^\/api\/reservas\/\d+$/.test(path)
-) {
-  reservations.delete(
-    getLastId(path)
-  );
-
-  return respond(null);
-}
-
-/*
- * ==========================
- * PAGO DEMO
- * ==========================
- */
-
-if (
-  method === 'POST' &&
-  path === '/api/pagos/crear-intent'
-) {
-  return respond(
-    payments.createIntent(
-      Number(body?.['reservaId']),
-      String(body?.['metodoPago'] ?? '')
-    )
-  );
-}
     /*
-     * Estas rutas se mantienen vacías temporalmente
-     * para que dashboard, guía y reservas no intenten
-     * comunicarse con Spring Boot mientras construimos
-     * el siguiente bloque.
+     * =================================================
+     * RESERVAS DEL VIAJERO
+     * =================================================
+     */
+
+    if (
+      method === 'POST' &&
+      path === '/api/reservas'
+    ) {
+      return respond(
+        reservations.create(
+          Number(body?.['tourId'])
+        )
+      );
+    }
+
+    if (
+      method === 'GET' &&
+      path === '/api/reservas/mias'
+    ) {
+      return respond(
+        reservations.listMine()
+      );
+    }
+
+    if (
+      method === 'GET' &&
+      /^\/api\/reservas\/\d+$/.test(path)
+    ) {
+      return respond(
+        reservations.getById(
+          getLastId(path)
+        )
+      );
+    }
+
+    if (
+      method === 'PATCH' &&
+      /^\/api\/reservas\/\d+\/cancelar$/.test(path)
+    ) {
+      reservations.cancel(
+        getLastId(path)
+      );
+
+      return respond(null);
+    }
+
+    if (
+      method === 'DELETE' &&
+      /^\/api\/reservas\/\d+$/.test(path)
+    ) {
+      reservations.delete(
+        getLastId(path)
+      );
+
+      return respond(null);
+    }
+
+    /*
+     * =================================================
+     * PAGOS DEMO
+     * =================================================
+     *
+     * El pago se aprueba en el navegador y deja la
+     * reserva en estado PAGADA.
+     */
+
+    if (
+      method === 'POST' &&
+      path === '/api/pagos/crear-intent'
+    ) {
+      return respond(
+        payments.createIntent(
+          Number(body?.['reservaId']),
+          String(body?.['metodoPago'] ?? '')
+        )
+      );
+    }
+
+    /*
+     * =================================================
+     * ADMINISTRACIÓN DE RESERVAS
+     * =================================================
      */
 
     if (
       method === 'GET' &&
       path === '/api/admin/reservas'
     ) {
-      session.requireRole('ROLE_ADMIN');
+      const estado = requestUrl.searchParams.get(
+        'estado'
+      );
 
-      return respond([]);
+      return respond(
+        operations.listAdminReservations(estado)
+      );
     }
 
     if (
       method === 'GET' &&
       path === '/api/admin/guias'
     ) {
-      session.requireRole('ROLE_ADMIN');
-
-      return respond([]);
+      return respond(
+        operations.listGuides()
+      );
     }
+
+    if (
+      method === 'PATCH' &&
+      /^\/api\/admin\/reservas\/\d+\/asignar-guia\/\d+$/.test(
+        path
+      )
+    ) {
+      const {
+        reservationId,
+        guideId
+      } = getAssignmentIds(path);
+
+      return respond(
+        operations.assignGuide(
+          reservationId,
+          guideId
+        )
+      );
+    }
+
+    /*
+     * =================================================
+     * OPERACIÓN DEL GUÍA
+     * =================================================
+     */
 
     if (
       method === 'GET' &&
       path === '/api/guia/reservas'
     ) {
-      session.requireRole('ROLE_GUIA');
-
-      return respond([]);
+      return respond(
+        operations.listGuideReservations()
+      );
     }
 
-   
+    if (
+      method === 'PATCH' &&
+      /^\/api\/guia\/reservas\/\d+\/iniciar$/.test(path)
+    ) {
+      return respond(
+        operations.startReservation(
+          getLastId(path)
+        )
+      );
+    }
 
+    if (
+      method === 'PATCH' &&
+      /^\/api\/guia\/reservas\/\d+\/finalizar$/.test(path)
+    ) {
+      return respond(
+        operations.finishReservation(
+          getLastId(path)
+        )
+      );
+    }
+
+    /*
+     * Ninguna ruta /api debe intentar comunicarse
+     * accidentalmente con localhost:8086.
+     */
     throw new DemoApiError(
       501,
-      'Esta ruta todavía no está implementada en la demo.'
+      `La ruta demo ${method} ${path} todavía no está implementada.`
     );
   } catch (error) {
     const demoError =
@@ -319,7 +402,7 @@ if (
         ? error
         : new DemoApiError(
             500,
-            'Ocurrió un error interno en la demo.'
+            'Ocurrió un error interno en el modo demo.'
           );
 
     return throwError(
@@ -346,4 +429,25 @@ function getLastId(path: string): number {
   return lastMatch
     ? Number(lastMatch[1])
     : 0;
+}
+
+function getAssignmentIds(path: string): {
+  reservationId: number;
+  guideId: number;
+} {
+  const match = path.match(
+    /^\/api\/admin\/reservas\/(\d+)\/asignar-guia\/(\d+)$/
+  );
+
+  if (!match) {
+    return {
+      reservationId: 0,
+      guideId: 0
+    };
+  }
+
+  return {
+    reservationId: Number(match[1]),
+    guideId: Number(match[2])
+  };
 }
