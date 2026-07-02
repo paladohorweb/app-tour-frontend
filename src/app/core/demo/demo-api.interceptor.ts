@@ -22,12 +22,17 @@ import {
 import { DemoSessionService } from './demo-session.service';
 import { DemoStoreService } from './demo-store.service';
 
+import { DemoPaymentService } from './demo-payment.service';
+import { DemoReservationService } from './demo-reservation.service';
+
 export const demoApiInterceptor: HttpInterceptorFn = (
   request,
   next
 ) => {
   const store = inject(DemoStoreService);
   const session = inject(DemoSessionService);
+  const payments = inject(DemoPaymentService);
+  const reservations = inject(DemoReservationService);
 
   const method = request.method.toUpperCase();
 
@@ -192,7 +197,82 @@ export const demoApiInterceptor: HttpInterceptorFn = (
 
       return respond(null);
     }
+      /*
+ * ==========================
+ * RESERVAS DEL VIAJERO
+ * ==========================
+ */
 
+if (
+  method === 'POST' &&
+  path === '/api/reservas'
+) {
+  return respond(
+    reservations.create(
+      Number(body?.['tourId'])
+    )
+  );
+}
+
+if (
+  method === 'GET' &&
+  path === '/api/reservas/mias'
+) {
+  return respond(
+    reservations.listMine()
+  );
+}
+
+if (
+  method === 'GET' &&
+  /^\/api\/reservas\/\d+$/.test(path)
+) {
+  return respond(
+    reservations.getById(
+      getLastId(path)
+    )
+  );
+}
+
+if (
+  method === 'PATCH' &&
+  /^\/api\/reservas\/\d+\/cancelar$/.test(path)
+) {
+  reservations.cancel(
+    getLastId(path)
+  );
+
+  return respond(null);
+}
+
+if (
+  method === 'DELETE' &&
+  /^\/api\/reservas\/\d+$/.test(path)
+) {
+  reservations.delete(
+    getLastId(path)
+  );
+
+  return respond(null);
+}
+
+/*
+ * ==========================
+ * PAGO DEMO
+ * ==========================
+ */
+
+if (
+  method === 'POST' &&
+  path === '/api/pagos/crear-intent'
+) {
+  return respond(
+    payments.createIntent(
+      Number(body?.['reservaId']),
+      String(body?.['metodoPago'] ?? '')
+    )
+  );
+}
     /*
      * Estas rutas se mantienen vacías temporalmente
      * para que dashboard, guía y reservas no intenten
@@ -227,14 +307,7 @@ export const demoApiInterceptor: HttpInterceptorFn = (
       return respond([]);
     }
 
-    if (
-      method === 'GET' &&
-      path === '/api/reservas/mias'
-    ) {
-      session.getCurrentUser();
-
-      return respond([]);
-    }
+   
 
     throw new DemoApiError(
       501,

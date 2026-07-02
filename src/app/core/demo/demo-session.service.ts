@@ -106,9 +106,21 @@ export class DemoSessionService {
 
     return this.store.findUserByEmail(payload.sub);
   }
+  requireAuthenticated(): DemoUser {
+  const currentUser = this.getCurrentUser();
+
+  if (!currentUser) {
+    throw new DemoApiError(
+      401,
+      'Debes iniciar sesión para continuar.'
+    );
+  }
+
+  return currentUser;
+}
 
   requireRole(role: DemoRole): DemoUser {
-    const currentUser = this.getCurrentUser();
+   const currentUser = this.requireAuthenticated();
 
     if (!currentUser) {
       throw new DemoApiError(

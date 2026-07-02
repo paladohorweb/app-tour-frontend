@@ -138,36 +138,37 @@ export class PagoComponent implements OnInit {
       });
   }
 
-  async procesarRespuestaPago(
-    respuesta: CreateIntentResponse
-  ): Promise<void> {
-    if (respuesta.checkoutUrl) {
-      window.location.assign(respuesta.checkoutUrl);
-      return;
-    }
+async procesarRespuestaPago(
+  respuesta: CreateIntentResponse
+): Promise<void> {
+  if (respuesta.provider === 'DEMO') {
+    await Swal.fire({
+      icon: 'success',
+      title: 'Pago aprobado',
+      text:
+        'Tu reserva fue pagada correctamente en el modo demostración.'
+    });
 
-    if (respuesta.clientSecret) {
-      await Swal.fire({
-        icon: 'info',
-        title: 'Pago preparado',
-        text:
-          'El proveedor devolvió una intención de pago. Consulta el estado de la reserva mientras termina el proceso.'
-      });
+    this.router.navigate(['/order/success'], {
+      queryParams: {
+        reservaId: respuesta.reservaId
+      }
+    });
 
-      this.router.navigate(['/order/success'], {
-        queryParams: {
-          reservaId: this.reserva?.id
-        }
-      });
+    return;
+  }
 
-      return;
-    }
+  if (respuesta.checkoutUrl) {
+    window.location.assign(respuesta.checkoutUrl);
+    return;
+  }
 
+  if (respuesta.clientSecret) {
     await Swal.fire({
       icon: 'info',
-      title: 'Solicitud de pago creada',
+      title: 'Pago preparado',
       text:
-        'No se recibió una URL de pago. Consulta el estado de la reserva para ver las instrucciones disponibles.'
+        'El proveedor devolvió una intención de pago. Consulta el estado de la reserva mientras termina el proceso.'
     });
 
     this.router.navigate(['/order/success'], {
@@ -175,7 +176,23 @@ export class PagoComponent implements OnInit {
         reservaId: this.reserva?.id
       }
     });
+
+    return;
   }
+
+  await Swal.fire({
+    icon: 'info',
+    title: 'Solicitud de pago creada',
+    text:
+      'No se recibió una URL de pago. Consulta el estado de la reserva para ver las instrucciones disponibles.'
+  });
+
+  this.router.navigate(['/order/success'], {
+    queryParams: {
+      reservaId: this.reserva?.id
+    }
+  });
+}
 
   get puedePagar(): boolean {
     return this.reserva?.estado === 'PENDIENTE';

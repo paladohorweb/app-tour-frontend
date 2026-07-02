@@ -1,4 +1,8 @@
-import { DemoUser, DemoTour } from './demo.models';
+import {
+  DemoReservation,
+  DemoTour,
+  DemoUser
+} from './demo.models';
 
 export const DEMO_USERS: DemoUser[] = [
   {
@@ -96,3 +100,4 @@ export const DEMO_TOURS: DemoTour[] = [
     activo: false
   }
 ];
+export const DEMO_RESERVATIONS: DemoReservation[] = [];

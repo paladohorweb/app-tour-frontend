@@ -32,6 +32,55 @@ export interface DemoJwtPayload {
   role: DemoRole;
   exp: number;
 }
+export type DemoReservationStatus =
+  | 'PENDIENTE'
+  | 'PAGADA'
+  | 'EN_CURSO'
+  | 'FINALIZADA'
+  | 'CANCELADA'
+  | 'FALLIDA';
+
+export type DemoPaymentMethod =
+  | 'TARJETA'
+  | 'PSE'
+  | 'NEQUI'
+  | 'DAVIPLATA'
+  | 'TRANSFERENCIA'
+  | 'EFECTIVO';
+
+export interface DemoReservation {
+  id: number;
+  tourId: number;
+  tourNombre: string;
+
+  usuarioId: number;
+  emailCliente: string;
+  nombreCliente: string;
+
+  monto: number;
+  estado: DemoReservationStatus;
+
+  metodoPago?: DemoPaymentMethod | null;
+  paymentProvider?: string | null;
+  externalPaymentId?: string | null;
+  paymentRedirectUrl?: string | null;
+  paymentReference?: string | null;
+  stripePaymentIntentId?: string | null;
+
+  fechaCreacion: string;
+
+  guiaId?: number | null;
+  guiaNombre?: string | null;
+  guiaEmail?: string | null;
+}
+
+export interface DemoPaymentIntentResponse {
+  clientSecret: string;
+  reservaId: number;
+  provider: 'DEMO';
+  checkoutUrl: null;
+  reference: string;
+}
 
 export class DemoApiError extends Error {
   constructor(

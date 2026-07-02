@@ -5,13 +5,15 @@ import { TourCreate } from '../models/tour-create.model';
 
 import {
   DemoApiError,
+  DemoReservation,
   DemoTour,
   DemoUser
 } from './demo.models';
 
 import {
   DEMO_TOURS,
-  DEMO_USERS
+  DEMO_USERS,
+  DEMO_RESERVATIONS
 } from './demo.fixtures';
 
 @Injectable({
@@ -20,6 +22,9 @@ import {
 export class DemoStoreService {
   private readonly usersStorageKey = 'turismo_demo_v2_users';
   private readonly toursStorageKey = 'turismo_demo_v2_tours';
+
+  private readonly reservationsStorageKey =
+  'turismo_demo_v2_reservas';
 
   private readonly defaultImage =
     'https://placehold.co/1200x800/e2e8f0/475569?text=TurismoApp';
@@ -180,28 +185,130 @@ export class DemoStoreService {
     );
   }
 
+  getReservations(): DemoReservation[] {
+  return this.clone(
+    this.read<DemoReservation[]>(
+      this.reservationsStorageKey,
+      []
+    )
+  );
+}
+
+getReservationById(id: number): DemoReservation | null {
+  const reservation = this.getReservations().find(
+    (item) => item.id === id
+  );
+
+  return reservation
+    ? this.clone(reservation)
+    : null;
+}
+
+createReservation(
+  reservation: Omit<DemoReservation, 'id'>
+): DemoReservation {
+  const reservations = this.getReservations();
+
+  const newReservation: DemoReservation = {
+    ...reservation,
+    id: this.getNextId(reservations)
+  };
+
+  reservations.push(newReservation);
+
+  this.write(
+    this.reservationsStorageKey,
+    reservations
+  );
+
+  return this.clone(newReservation);
+}
+
+updateReservation(
+  id: number,
+  changes: Partial<Omit<DemoReservation, 'id'>>
+): DemoReservation {
+  const reservations = this.getReservations();
+
+  const index = reservations.findIndex(
+    (reservation) => reservation.id === id
+  );
+
+  if (index === -1) {
+    throw new DemoApiError(
+      404,
+      'Reserva no encontrada.'
+    );
+  }
+
+  const updatedReservation: DemoReservation = {
+    ...reservations[index],
+    ...changes,
+    id
+  };
+
+  reservations[index] = updatedReservation;
+
+  this.write(
+    this.reservationsStorageKey,
+    reservations
+  );
+
+  return this.clone(updatedReservation);
+}
+
+deleteReservation(id: number): void {
+  const reservations = this.getReservations();
+
+  const exists = reservations.some(
+    (reservation) => reservation.id === id
+  );
+
+  if (!exists) {
+    throw new DemoApiError(
+      404,
+      'Reserva no encontrada.'
+    );
+  }
+
+  this.write(
+    this.reservationsStorageKey,
+    reservations.filter(
+      (reservation) => reservation.id !== id
+    )
+  );
+}
+
   resetDemoData(): void {
     localStorage.removeItem(this.usersStorageKey);
     localStorage.removeItem(this.toursStorageKey);
+    localStorage.removeItem(this.reservationsStorageKey);
 
     this.initialize();
   }
 
-  private initialize(): void {
-    if (!localStorage.getItem(this.usersStorageKey)) {
-      this.write(
-        this.usersStorageKey,
-        this.clone(DEMO_USERS)
-      );
-    }
-
-    if (!localStorage.getItem(this.toursStorageKey)) {
-      this.write(
-        this.toursStorageKey,
-        this.clone(DEMO_TOURS)
-      );
-    }
+private initialize(): void {
+  if (!localStorage.getItem(this.usersStorageKey)) {
+    this.write(
+      this.usersStorageKey,
+      this.clone(DEMO_USERS)
+    );
   }
+
+  if (!localStorage.getItem(this.toursStorageKey)) {
+    this.write(
+      this.toursStorageKey,
+      this.clone(DEMO_TOURS)
+    );
+  }
+
+  if (!localStorage.getItem(this.reservationsStorageKey)) {
+    this.write(
+      this.reservationsStorageKey,
+      this.clone(DEMO_RESERVATIONS)
+    );
+  }
+}
 
   private buildTour(
     payload: TourCreate,
