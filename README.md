@@ -1,27 +1,56 @@
-# TurismoApp
+﻿# TurismoApp Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.2.0.
+Frontend Angular 17 para administrar turismo, tours, reservas, pagos y guias.
 
-## Development server
+## Desarrollo con backend Spring Boot
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+```bash
+npm install
+npm start
+```
 
-## Code scaffolding
+La API local configurada actualmente es `http://localhost:8086/api`.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Modo demo
+
+```bash
+npm run start:demo
+```
+
+El modo demo no necesita backend. Usa datos locales persistidos en `localStorage`
+y cubre los flujos principales:
+
+- Catalogo de tours y mapa
+- Login por rol
+- Reservas de cliente
+- Pago simulado
+- Dashboard administrativo
+- Gestion de tours
+- Gestion de reservas y asignacion de guias
+- Panel de guia para iniciar y finalizar experiencias
+
+Credenciales demo:
+
+- `admin@demo.com` / `demo123`
+- `guia@demo.com` / `demo123`
+- `cliente@demo.com` / `demo123`
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```bash
+npm run build
+npm run build:demo
+```
 
-## Running unit tests
+## Netlify
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+El archivo `netlify.toml` publica la version demo:
 
-## Running end-to-end tests
+```toml
+[build]
+  command = "npm run build:demo"
+  publish = "dist/turismo-app/browser"
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Incluye redireccion SPA para que rutas como `/admin/dashboard`, `/tours/1`
+y `/mis-reservas` funcionen al recargar.

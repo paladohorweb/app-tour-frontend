@@ -1,4 +1,4 @@
-import { ApplicationConfig } from '@angular/core';
+﻿import { ApplicationConfig } from '@angular/core';
 import {
   provideHttpClient,
   withInterceptors
@@ -10,6 +10,8 @@ import {
 
 import { routes } from './app.routes';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
+import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { demoApiInterceptor } from './core/demo/demo-api.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,8 +25,12 @@ export const appConfig: ApplicationConfig = {
 
     provideHttpClient(
       withInterceptors([
+        demoApiInterceptor,
+        jwtInterceptor,
         loadingInterceptor
       ])
     )
   ]
 };
+
+

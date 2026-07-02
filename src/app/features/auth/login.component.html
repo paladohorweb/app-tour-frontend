@@ -1,4 +1,4 @@
-<section class="auth-page">
+﻿<section class="auth-page">
   <div class="auth-orb auth-orb-one"></div>
   <div class="auth-orb auth-orb-two"></div>
 
@@ -18,7 +18,7 @@
               <div class="brand-copy">
                 <span class="brand-tag">Explora con confianza</span>
 
-                <h1>Tu próximo viaje empieza con una gran experiencia.</h1>
+                <h1>Tu prÃ³ximo viaje empieza con una gran experiencia.</h1>
 
                 <p>
                   Reserva destinos, consulta tus pagos y lleva el control de
@@ -27,9 +27,9 @@
               </div>
 
               <div class="brand-benefits">
-                <span>✓ Experiencias seleccionadas</span>
-                <span>✓ Reservas organizadas</span>
-                <span>✓ Guías para tu recorrido</span>
+                <span>âœ“ Experiencias seleccionadas</span>
+                <span>âœ“ Reservas organizadas</span>
+                <span>âœ“ GuÃ­as para tu recorrido</span>
               </div>
             </section>
           </div>
@@ -39,7 +39,7 @@
               <div class="form-header">
                 <span class="form-tag">Bienvenido de nuevo</span>
 
-                <h2>Inicia sesión</h2>
+                <h2>Inicia sesiÃ³n</h2>
 
                 <p>
                   Ingresa tus datos para continuar con tu cuenta.
@@ -47,8 +47,8 @@
               </div>
 
               <div class="continue-note" *ngIf="isCheckoutReturn">
-                <span>🧳</span>
-                Después de iniciar sesión continuarás con tu reserva.
+                <span>ðŸ§³</span>
+                DespuÃ©s de iniciar sesiÃ³n continuarÃ¡s con tu reserva.
               </div>
 
               <div class="alert alert-danger rounded-4" *ngIf="error">
@@ -58,7 +58,7 @@
               <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
                 <div class="mb-3">
                   <label class="form-label fw-semibold">
-                    Correo electrónico
+                    Correo electrÃ³nico
                   </label>
 
                   <input
@@ -74,13 +74,13 @@
                   >
 
                   <div class="invalid-feedback">
-                    Ingresa un correo electrónico válido.
+                    Ingresa un correo electrÃ³nico vÃ¡lido.
                   </div>
                 </div>
 
                 <div class="mb-4">
                   <label class="form-label fw-semibold">
-                    Contraseña
+                    ContraseÃ±a
                   </label>
 
                   <div class="input-group">
@@ -88,7 +88,7 @@
                       [type]="passwordVisible ? 'text' : 'password'"
                       class="form-control"
                       formControlName="password"
-                      placeholder="Tu contraseña"
+                      placeholder="Tu contraseÃ±a"
                       autocomplete="current-password"
                       [class.is-invalid]="
                         form.controls.password.touched &&
@@ -111,7 +111,7 @@
                       form.controls.password.touched &&
                       form.controls.password.invalid
                     ">
-                    La contraseña debe tener al menos 6 caracteres.
+                    La contraseÃ±a debe tener al menos 6 caracteres.
                   </div>
                 </div>
 
@@ -129,8 +129,18 @@
                 </button>
               </form>
 
+              <section class="demo-access" *ngIf="demoMode">
+                <span>Accesos demo</span>
+                <div class="demo-buttons">
+                  <button type="button" class="btn btn-outline-dark btn-sm" (click)="useDemo('admin@demo.com')">Admin</button>
+                  <button type="button" class="btn btn-outline-dark btn-sm" (click)="useDemo('guia@demo.com')">Guia</button>
+                  <button type="button" class="btn btn-outline-dark btn-sm" (click)="useDemo('cliente@demo.com')">Cliente</button>
+                </div>
+                <small>Clave para todos: demo123</small>
+              </section>
+
               <div class="auth-footer">
-                <span>¿Aún no tienes una cuenta?</span>
+                <span>Â¿AÃºn no tienes una cuenta?</span>
 
                 <a
                   routerLink="/register"
@@ -140,7 +150,7 @@
               </div>
 
               <a routerLink="/tours" class="back-link">
-                ← Volver a experiencias
+                â† Volver a experiencias
               </a>
             </section>
           </div>
@@ -151,3 +161,4 @@
     </div>
   </div>
 </section>
+

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ActivatedRoute,
@@ -12,6 +12,7 @@ import {
 } from '@angular/forms';
 
 import { AuthService } from '../../core/services/auth.service';
+import { DEMO_MODE } from '../../core/constants/demo.constants';
 
 @Component({
   standalone: true,
@@ -24,6 +25,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   error = '';
   passwordVisible = false;
+  readonly demoMode = DEMO_MODE;
 
   returnUrl = '';
 
@@ -60,6 +62,15 @@ export class LoginComponent implements OnInit {
     return this.returnUrl.startsWith('/checkout/');
   }
 
+  useDemo(email: string): void {
+    this.form.patchValue({
+      email,
+      password: 'demo123'
+    });
+
+    this.submit();
+  }
+
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -80,11 +91,11 @@ export class LoginComponent implements OnInit {
         this.navigateAfterLogin();
       },
       error: (err) => {
-        console.error('Error iniciando sesión:', err);
+        console.error('Error iniciando sesiÃ³n:', err);
 
         this.error =
           err?.error?.message ||
-          'Correo o contraseña incorrectos. Verifica tus datos.';
+          'Correo o contraseÃ±a incorrectos. Verifica tus datos.';
 
         this.loading = false;
       }
@@ -122,3 +133,6 @@ export class LoginComponent implements OnInit {
     return value;
   }
 }
+
+
+
