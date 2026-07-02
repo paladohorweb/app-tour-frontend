@@ -3,23 +3,31 @@ import {
   HttpInterceptorFn,
   HttpResponse
 } from '@angular/common/http';
+
 import { inject } from '@angular/core';
+
 import {
   delay,
   of,
   throwError
 } from 'rxjs';
 
+import { TourCreate } from '../models/tour-create.model';
+
 import {
   DemoApiError,
-  DemoDataService
-} from './demo-data.service';
+  DemoRegisterRequest
+} from './demo.models';
+
+import { DemoSessionService } from './demo-session.service';
+import { DemoStoreService } from './demo-store.service';
 
 export const demoApiInterceptor: HttpInterceptorFn = (
   request,
   next
 ) => {
-  const demoData = inject(DemoDataService);
+  const store = inject(DemoStoreService);
+  const session = inject(DemoSessionService);
 
   const method = request.method.toUpperCase();
 
@@ -28,12 +36,12 @@ export const demoApiInterceptor: HttpInterceptorFn = (
     window.location.origin
   );
 
-  const path = requestUrl.pathname.replace(
-    /\/+$/,
-    ''
-  );
-
+  const path = requestUrl.pathname.replace(/\/+$/, '');
   const body = request.body as Record<string, unknown> | null;
+
+  if (!path.startsWith('/api/')) {
+    return next(request);
+  }
 
   const respond = <T>(payload: T) => {
     return of(
@@ -44,17 +52,11 @@ export const demoApiInterceptor: HttpInterceptorFn = (
     ).pipe(delay(300));
   };
 
-  const isDemoApiRequest = path.startsWith('/api/');
-
-  if (!isDemoApiRequest) {
-    return next(request);
-  }
-
   try {
     /*
-     * =================================================
-     * AUTENTICACIÓN DEMO
-     * =================================================
+     * ==========================
+     * AUTENTICACIÓN
+     * ==========================
      */
 
     if (
@@ -62,7 +64,7 @@ export const demoApiInterceptor: HttpInterceptorFn = (
       path === '/api/auth/login'
     ) {
       return respond(
-        demoData.login(
+        session.login(
           String(body?.['email'] ?? ''),
           String(body?.['password'] ?? '')
         )
@@ -74,35 +76,136 @@ export const demoApiInterceptor: HttpInterceptorFn = (
       path === '/api/auth/register'
     ) {
       return respond(
-        demoData.register({
+        session.register({
           nombre: String(body?.['nombre'] ?? ''),
           email: String(body?.['email'] ?? ''),
           password: String(body?.['password'] ?? ''),
-          rol: String(body?.['rol'] ?? 'ROLE_USER')
+          rol: String(
+            body?.['rol'] ?? 'ROLE_USER'
+          ) as DemoRegisterRequest['rol']
         })
       );
     }
 
     /*
-     * =================================================
-     * RESPUESTAS TEMPORALES PARA LOS PANELES
-     *
-     * Estas respuestas permiten que las rutas carguen
-     * mientras construimos tours, reservas y pagos.
-     * =================================================
+     * ==========================
+     * TOURS PÚBLICOS
+     * ==========================
+     */
+
+    if (
+      method === 'GET' &&
+      path === '/api/tours'
+    ) {
+      return respond(store.getActiveTours());
+    }
+
+    if (
+      method === 'GET' &&
+      /^\/api\/tours\/\d+$/.test(path)
+    ) {
+      const tour = store.getTourById(getLastId(path));
+
+      if (!tour) {
+        throw new DemoApiError(
+          404,
+          'Tour no encontrado.'
+        );
+      }
+
+      const canViewInactive =
+        session.isCurrentUserAdmin();
+
+      if (!tour.activo && !canViewInactive) {
+        throw new DemoApiError(
+          404,
+          'Tour no disponible.'
+        );
+      }
+
+      return respond(tour);
+    }
+
+    /*
+     * ==========================
+     * TOURS ADMINISTRACIÓN
+     * ==========================
      */
 
     if (
       method === 'GET' &&
       path === '/api/admin/tours'
     ) {
-      return respond([]);
+      session.requireRole('ROLE_ADMIN');
+
+      return respond(store.getTours());
     }
+
+    if (
+      method === 'POST' &&
+      path === '/api/tours'
+    ) {
+      session.requireRole('ROLE_ADMIN');
+
+      return respond(
+        store.createTour(
+          body as unknown as TourCreate
+        )
+      );
+    }
+
+    if (
+      method === 'PUT' &&
+      /^\/api\/tours\/\d+$/.test(path)
+    ) {
+      session.requireRole('ROLE_ADMIN');
+
+      return respond(
+        store.updateTour(
+          getLastId(path),
+          body as unknown as TourCreate
+        )
+      );
+    }
+
+    if (
+      method === 'PATCH' &&
+      /^\/api\/tours\/\d+\/activo$/.test(path)
+    ) {
+      session.requireRole('ROLE_ADMIN');
+
+      store.changeTourStatus(
+        getLastId(path),
+        Boolean(body?.['activo'])
+      );
+
+      return respond(null);
+    }
+
+    if (
+      method === 'DELETE' &&
+      /^\/api\/tours\/\d+$/.test(path)
+    ) {
+      session.requireRole('ROLE_ADMIN');
+
+      store.deleteTour(getLastId(path));
+
+      return respond(null);
+    }
+
+    /*
+     * Estas rutas se mantienen vacías temporalmente
+     * para que dashboard, guía y reservas no intenten
+     * comunicarse con Spring Boot mientras construimos
+     * el siguiente bloque.
+     */
 
     if (
       method === 'GET' &&
       path === '/api/admin/reservas'
     ) {
+      session.requireRole('ROLE_ADMIN');
+
       return respond([]);
     }
 
@@ -110,6 +213,8 @@ export const demoApiInterceptor: HttpInterceptorFn = (
       method === 'GET' &&
       path === '/api/admin/guias'
     ) {
+      session.requireRole('ROLE_ADMIN');
+
       return respond([]);
     }
 
@@ -117,6 +222,8 @@ export const demoApiInterceptor: HttpInterceptorFn = (
       method === 'GET' &&
       path === '/api/guia/reservas'
     ) {
+      session.requireRole('ROLE_GUIA');
+
       return respond([]);
     }
 
@@ -124,31 +231,14 @@ export const demoApiInterceptor: HttpInterceptorFn = (
       method === 'GET' &&
       path === '/api/reservas/mias'
     ) {
+      session.getCurrentUser();
+
       return respond([]);
     }
 
-    if (
-      method === 'GET' &&
-      path === '/api/tours'
-    ) {
-      return respond([]);
-    }
-
-    /*
-     * No permitimos que ninguna solicitud /api llegue
-     * accidentalmente a localhost:8086.
-     */
-    return throwError(
-      () =>
-        new HttpErrorResponse({
-          status: 501,
-          statusText: 'Demo endpoint pending',
-          url: request.url,
-          error: {
-            message:
-              'Esta acción todavía no está implementada en la demo.'
-          }
-        })
+    throw new DemoApiError(
+      501,
+      'Esta ruta todavía no está implementada en la demo.'
     );
   } catch (error) {
     const demoError =
@@ -172,3 +262,15 @@ export const demoApiInterceptor: HttpInterceptorFn = (
     );
   }
 };
+
+function getLastId(path: string): number {
+  const matches = Array.from(
+    path.matchAll(/\/(\d+)/g)
+  );
+
+  const lastMatch = matches[matches.length - 1];
+
+  return lastMatch
+    ? Number(lastMatch[1])
+    : 0;
+}
