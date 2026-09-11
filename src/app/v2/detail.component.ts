@@ -63,7 +63,8 @@ export class DetailComponent implements OnInit {
       : 1;
   }
   get total() {
-    return (this.e?.price || 0) * this.people * this.nights;
+    const amount = (this.e?.price || 0) * this.people * this.nights;
+    return Number.isFinite(amount) ? amount : 0;
   }
   dateChanged() {
     if (this.selected) {
@@ -85,8 +86,11 @@ export class DetailComponent implements OnInit {
       !this.privacy ||
       this.people < 1 ||
       this.people > 30
+      || !Number.isInteger(this.people)
+      || !this.selected || this.people > this.selected.available
+      || !Number.isFinite(this.nights) || this.nights < 1 || this.nights > 30
     ) {
-      this.error = 'Selecciona fecha, participantes y acepta las políticas.';
+      this.error = 'Revisa la fecha, los cupos, el número entero de personas y las políticas. Las estancias deben ser de 1 a 30 noches.';
       return;
     }
     this.busy = true;
@@ -116,7 +120,7 @@ export class DetailComponent implements OnInit {
     return this.e && this.booking
       ? whatsappUrl(
           this.e.whatsapp,
-          `Hola, quiero coordinar la solicitud ${this.booking.reference}: ${this.e.title}, ${this.booking.date}, ${this.booking.people} personas, total consultado COP ${this.booking.total}. ¿Me confirmas disponibilidad y condiciones?`,
+          `Hola, quiero coordinar la solicitud ${this.booking.reference}: ${this.booking.title}, llegada ${this.booking.date}${this.booking.endDate ? ', salida ' + this.booking.endDate : ''}, ${this.booking.people} personas, total consultado COP ${this.booking.total}. ¿Me confirmas disponibilidad, punto de encuentro y condiciones de pago?`,
         )
       : '';
   }

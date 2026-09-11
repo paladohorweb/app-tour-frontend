@@ -93,3 +93,11 @@
     min-width: 150px;
   }
 }
+.map-legend{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem;font-size:.85rem;color:#0f766e}
+.map-legend span:nth-child(2){color:#a65a32}.map-legend span:nth-child(3){color:#7c3aed}
+.map-legend button,.map-toolbar button{border:1px solid #b9cdc0;border-radius:2rem;background:white;color:#174b3a;padding:.65rem 1rem}
+.map-selected{position:relative;margin-bottom:1rem}
+.selected-cover{width:100%;height:150px;object-fit:cover;border-radius:.6rem;margin-bottom:1rem}
+.close-selection{position:absolute;right:1.3rem;top:1.3rem;border:0;border-radius:50%;width:32px;height:32px;background:white;font-size:1.4rem}
+.map-item.is-selected{outline:2px solid #0f766e;background:#e4f3ed}
+.map-item{flex-wrap:wrap}.map-item>span{flex:1}.map-item>small{width:100%;color:#53665c}

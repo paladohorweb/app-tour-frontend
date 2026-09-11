@@ -6,11 +6,12 @@
       Encuentra experiencias locales, conversa con tu anfitrión y descubre cómo
       llegar.
     </p>
-    <a routerLink="/mapa" class="v2-btn v2-light">Explorar el mapa ↗</a>
+    <a routerLink="/mapa" class="v2-btn v2-light" [queryParams]="{q:q,kind:kind}">Explorar el mapa ↗</a>
   </div>
 </section>
 <section class="v2-wrap">
   <div class="v2-demo" *ngIf="demo">{{ demoMessage }}</div>
+  <div class="journey-steps"><span>01 · Encuentra tu destino</span><span>02 · Elige fecha y personas</span><span>03 · Coordina por WhatsApp</span></div>
   <div class="v2-filters">
     <label
       >¿A dónde quieres ir?<input
@@ -28,6 +29,15 @@
   <div class="v2-heading">
     <h2>Descubre algo nuevo</h2>
     <span>{{ filtered.length }} experiencias</span>
+  </div>
+  <div class="destination-chips" aria-label="Destinos publicados">
+    <button *ngFor="let city of destinations" (click)="q = city" [attr.aria-pressed]="q === city">{{city}}</button>
+  </div>
+  <div class="v2-filters">
+    <label>Presupuesto por persona (COP)<input type="number" min="0" [(ngModel)]="maxPrice" placeholder="Sin límite" /></label>
+    <label>Ordenar por<select [(ngModel)]="sort"><option value="">Orden original</option><option value="price">Menor precio</option><option value="price-desc">Mayor precio</option></select></label>
+    <button class="v2-btn" (click)="reset()">Limpiar filtros</button>
+    <a routerLink="/mapa" [queryParams]="{q:q,kind:kind}">Ver destino en el mapa ↗</a>
   </div>
   <p role="status" *ngIf="loading">Buscando experiencias…</p>
   <div class="v2-error" role="alert" *ngIf="error">
@@ -50,6 +60,7 @@
         ><small>
           / {{ e.kind === "STAY" ? "persona por noche" : "persona" }}</small
         >
+        <p class="card-action">Ver experiencia y fechas →</p>
       </div></a
     >
   </div>

@@ -1,7 +1,7 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 import { V2Api, navigationUrl } from '../../v2/api.service';
 import { Experience } from '../../v2/models';
@@ -27,7 +27,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   observer?: ResizeObserver;
   subscription?: Subscription;
   destroyed = false;
-  constructor(private api: V2Api) {}
+  constructor(private api: V2Api, route: ActivatedRoute) {
+    this.q = route.snapshot.queryParamMap.get('q') || '';
+    this.kind = route.snapshot.queryParamMap.get('kind') || '';
+  }
+  distance(e: Experience): string {
+    if (!this.location) return '';
+    return (this.location.getLatLng().distanceTo([e.latitude, e.longitude]) / 1000).toFixed(1);
+  }
   ngAfterViewInit() {
     this.map = L.map('map', { zoomControl: false }).setView([4.57, -74.29], 6);
     L.control.zoom({ position: 'bottomright' }).addTo(this.map);

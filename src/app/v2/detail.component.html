@@ -7,8 +7,10 @@
         <img class="v2-cover" [src]="e.imageUrl" [alt]="e.title" />
         <p class="v2-eyebrow">{{ e.municipality }} · {{ e.department }}</p>
         <h1>{{ e.title }}</h1>
+        <div class="journey-steps"><span>{{e.kind === 'STAY' ? 'Hospedaje' : e.kind === 'EVENT' ? 'Evento' : 'Tour local'}}</span><span>{{e.municipality}}</span><span>Compra coordinada con el prestador</span></div>
+        <nav class="destination-chips" aria-label="Secciones de la experiencia"><a href="#encuentro">Cómo llegar</a><a href="#condiciones">Condiciones</a><a href="#reserva">Consultar fechas</a></nav>
         <p class="v2-prose">{{ e.description }}</p>
-        <h2>Punto de encuentro y acceso</h2>
+        <h2 id="encuentro">Punto de encuentro y acceso</h2>
         <p>{{ e.address }}</p>
         <p>{{ e.meetingInstructions }}</p>
         <a
@@ -22,19 +24,20 @@
           Se abre Google Maps. Revisa las indicaciones del prestador para el
           último tramo rural.
         </p>
-        <h2>Condiciones de esta experiencia</h2>
+        <h2 id="condiciones">Condiciones de esta experiencia</h2>
         <p class="v2-prose">{{ e.cancellationPolicy }}</p>
         <p>
           RNT informado por el prestador: {{ e.rnt }}. Verifica su vigencia
           antes de comprar.
         </p>
       </div>
-      <aside class="v2-panel">
+      <aside class="v2-panel" id="reserva">
         <h2>Organiza tu experiencia</h2>
         <strong class="v2-price">{{
           e.price | currency: "COP" : "symbol-narrow" : "1.0-0"
         }}</strong>
         <p>por persona {{ e.kind === "STAY" ? "y noche" : "" }}</p>
+        <ol class="booking-steps"><li>Selecciona una fecha disponible.</li><li>Registra tu solicitud y revisa la referencia.</li><li>Acuerda disponibilidad y pago por WhatsApp.</li></ol>
         <form (ngSubmit)="reserve()" *ngIf="!booking">
           <label
             >Fecha y horario<select
@@ -81,6 +84,7 @@
               total | currency: "COP" : "symbol-narrow" : "1.0-0"
             }}</strong>
           </p>
+          <p class="v2-muted" *ngIf="selected">{{people}} persona(s){{e.kind === 'STAY' ? ' · ' + nights + ' noche(s)' : ''}}. Cupos de la fecha elegida: {{selected.available}}.</p>
           <label class="v2-check"
             ><input name="terms" type="checkbox" [(ngModel)]="terms" required />
             Acepto los

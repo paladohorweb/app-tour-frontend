@@ -341,3 +341,17 @@ summary:focus-visible {
     scroll-behavior: auto !important;
   }
 }
+/* Traveler discovery */
+.journey-steps{display:flex;flex-wrap:wrap;gap:1rem;padding:1.4rem 0;color:#49675c;font-size:.88rem;border-bottom:1px solid #dce7e0;margin-bottom:1.5rem}
+.journey-steps span{flex:1;min-width:160px}
+.destination-chips{display:flex;gap:.65rem;overflow:auto;padding:.5rem 0 1.2rem}
+.destination-chips button,.destination-chips a{white-space:nowrap;border:1px solid #b9cdc0;background:#fff;color:#174b3a;border-radius:2rem;padding:.65rem 1.2rem;text-decoration:none}
+.destination-chips button[aria-pressed=true]{background:#174b3a;color:white}
+.card-action{margin-top:1.2rem;padding-top:1rem;border-top:1px solid #dce7e0;color:#17674c;font-weight:700}
+.v2-card{transition:transform .2s,box-shadow .2s}
+.v2-card:hover{transform:translateY(-4px);box-shadow:0 14px 35px #193f3320}
+.v2-card img{aspect-ratio:4/3;object-fit:cover}
+.booking-steps{padding-left:1.3rem;color:#53665c;line-height:1.8;font-size:.9rem}
+#encuentro,#condiciones,#reserva{scroll-margin-top:100px}
+@media(min-width:900px){.v2-detail>.v2-panel{position:sticky;top:95px;align-self:start}}
+@media(prefers-reduced-motion:reduce){.v2-card{transition:none}.v2-card:hover{transform:none}}

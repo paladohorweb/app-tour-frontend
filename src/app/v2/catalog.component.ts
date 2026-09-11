@@ -15,6 +15,12 @@ export class CatalogComponent implements OnInit {
   items: Experience[] = [];
   q = '';
   kind = '';
+  sort = '';
+  maxPrice: number | null = null;
+  get destinations() {
+    return [...new Set(this.items.map(e => e.municipality))].sort();
+  }
+  reset() { this.q = ''; this.kind = ''; this.maxPrice = null; this.sort = ''; }
   loading = true;
   error = '';
   demo = environment.demo;
@@ -42,9 +48,10 @@ export class CatalogComponent implements OnInit {
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .toLowerCase();
-    return this.items.filter(
+    const results = this.items.filter(
       (e) =>
         (!this.kind || e.kind === this.kind) &&
+        (this.maxPrice === null || e.price <= this.maxPrice) &&
         [e.title, e.department, e.municipality]
           .join(' ')
           .normalize('NFD')
@@ -52,6 +59,7 @@ export class CatalogComponent implements OnInit {
           .toLowerCase()
           .includes(q),
     );
+    return this.sort ? results.sort((a, b) => this.sort === 'price' ? a.price - b.price : b.price - a.price) : results;
   }
   label(k: string) {
     return k === 'STAY' ? 'Hospedaje' : k === 'EVENT' ? 'Evento' : 'Tour';

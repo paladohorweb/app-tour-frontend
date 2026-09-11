@@ -20,6 +20,7 @@
       {{ locating ? "Localizando…" : "Mi ubicación" }}
     </button>
   </div>
+  <div class="map-legend"><span>● Tours</span><span>● Hospedajes</span><span>● Eventos</span><button (click)="redraw(true)">Ver todos los resultados</button></div>
   <p class="map-error" role="alert" *ngIf="error">
     {{ error }} <button (click)="load()">Reintentar</button>
   </p>
@@ -30,6 +31,8 @@
         {{ loading ? "Cargando…" : filtered.length + " experiencias" }}
       </p>
       <article class="map-selected" *ngIf="selected">
+        <img class="selected-cover" [src]="selected.imageUrl" [alt]="selected.title" />
+        <button class="close-selection" (click)="selected = undefined" aria-label="Cerrar selección">×</button>
         <h2>{{ selected.title }}</h2>
         <p>{{ selected.meetingInstructions }}</p>
         <div class="v2-actions">
@@ -42,7 +45,7 @@
           >
         </div>
       </article>
-      <button class="map-item" *ngFor="let e of filtered" (click)="select(e)">
+      <button class="map-item" *ngFor="let e of filtered" (click)="select(e)" [class.is-selected]="selected?.id === e.id" [attr.aria-pressed]="selected?.id === e.id">
         <img [src]="e.imageUrl" alt="" loading="lazy" /><span
           ><strong>{{ e.title }}</strong
           ><small
@@ -50,6 +53,7 @@
             {{ e.price | currency: "COP" : "symbol-narrow" : "1.0-0" }}</small
           ></span
         >
+        <small *ngIf="location">{{distance(e)}} km en línea recta</small>
       </button>
       <p *ngIf="!loading && !filtered.length">
         Prueba otro municipio o tipo de experiencia.
