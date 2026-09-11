@@ -72,6 +72,9 @@ async function logout() {
 }
 try {
   await visit("/");
+  await page.getByRole('heading', { name: /Juan te guía/ }).waitFor();
+  await page.getByRole('link', {name: 'Iniciar sesión para suscribirme'}).waitFor();
+  await visit('/tours');
   await page.locator(".v2-card").first().waitFor();
   assert.equal(await page.locator(".v2-card").count(), 6);
   await page.getByRole("button", { name: "Abrir navegación" }).click();

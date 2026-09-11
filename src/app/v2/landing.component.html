@@ -1,0 +1,32 @@
+<section class="welcome">
+  <div class="welcome-copy">
+    <p class="eyebrow">PUEBLOS · CAMINOS · HISTORIAS</p>
+    <h1>Juan te guía<span>Colombia te espera.</span></h1>
+    <p class="intro">Sal de la rutina. Encuentra un rincón para descansar, una experiencia para recordar y el camino para llegar.</p>
+    <div class="actions"><a class="primary" routerLink="/tours">Encuentra tu próxima experiencia →</a><a class="secondary" routerLink="/mapa">Explorar el mapa ↗</a></div>
+    <p class="caption">Tours, hospedajes y eventos. A tu ritmo, con contacto directo.</p>
+  </div>
+  <div class="landscape" aria-hidden="true"><div class="sun"></div><div class="mountain far"></div><div class="mountain near"></div><div class="landscape-label">Un pueblo.<br />Mil formas de descubrirlo.</div></div>
+</section>
+<section class="landing-section">
+  <p class="eyebrow">ELIGE TU FORMA DE VIAJAR</p><h2>¿Qué quieres vivir?</h2>
+  <div class="options">
+    <a routerLink="/mapa" [queryParams]="{kind:'TOUR'}"><span class="number">01 / EXPLORAR</span><h3>Caminos e historias</h3><p>Encuentra tours y descubre el lugar de cada experiencia en el mapa.</p><strong>Buscar tours →</strong></a>
+    <a routerLink="/mapa" [queryParams]="{kind:'STAY'}"><span class="number">02 / DESCANSAR</span><h3>Quédate un poco más</h3><p>Explora hospedajes y consulta las fechas para tu próxima escapada.</p><strong>Buscar hospedajes →</strong></a>
+    <a routerLink="/mapa" [queryParams]="{kind:'EVENT'}"><span class="number">03 / COMPARTIR</span><h3>Haz parte del encuentro</h3><p>Descubre eventos publicados y organiza tu visita con el prestador.</p><strong>Buscar eventos →</strong></a>
+  </div>
+</section>
+<section class="how landing-section"><div><p class="eyebrow">DEL PLAN AL CAMINO</p><h2>Tu viaje empieza<br />con una buena idea.</h2><a routerLink="/tours">Ver experiencias disponibles →</a></div><ol><li><h3>Encuentra tu lugar</h3><p>Filtra por destino, categoría y presupuesto.</p></li><li><h3>Organiza la visita</h3><p>Elige fecha y personas. Registra tu solicitud y coordina disponibilidad y pago por WhatsApp.</p></li><li><h3>Prepárate para llegar</h3><p>Consulta tu viaje y abre las indicaciones al punto de encuentro. La solicitud necesita confirmación del prestador.</p></li></ol></section>
+<section class="subscribe landing-section" id="novedades">
+  <div><p class="eyebrow">SIGAMOS DESCUBRIENDO</p><h2>Tu próxima escapada,<br />más cerca.</h2><p>Suscríbete a novedades y promociones de Juan te guía en la bandeja de la aplicación. Puedes cancelar cuando quieras.</p><p class="demo-note" *ngIf="demo">Modo demo: esta preferencia solo se guarda en este navegador.</p></div>
+  <div class="subscription-panel">
+    <ng-container *ngIf="!auth.isAuthenticated(); else account"><h3>Únete a Juan te guía</h3><p>Inicia sesión o crea tu cuenta. Después podrás activar tu suscripción aquí.</p><a class="primary" routerLink="/login" [queryParams]="{returnUrl:'/'}">Iniciar sesión para suscribirme</a><a routerLink="/register">Crear una cuenta</a></ng-container>
+    <ng-template #account>
+      <form *ngIf="ready && !subscribed" (ngSubmit)="save(true)"><h3>Recibe inspiración para viajar</h3><label><input type="checkbox" name="consent" [(ngModel)]="consent" required /> Acepto recibir novedades y promociones dentro de la aplicación según la <a routerLink="/legal/privacidad">política de tratamiento de datos</a>.</label><button class="primary" [disabled]="busy || !consent">{{busy ? 'Guardando…' : 'Suscribirme a novedades'}}</button></form>
+      <div *ngIf="ready && subscribed"><h3>Ya eres parte del viaje</h3><p>Tu suscripción está activa.</p><a routerLink="/notificaciones">Ver mis novedades →</a><button class="secondary" (click)="save(false)" [disabled]="busy">{{busy ? 'Guardando…' : 'Cancelar suscripción'}}</button></div>
+      <p *ngIf="!ready && !error" role="status">Consultando tu preferencia…</p>
+      <button *ngIf="!ready && error" (click)="load()">Reintentar</button>
+    </ng-template>
+    <p role="status" *ngIf="message">{{message}}</p><p role="alert" *ngIf="error">{{error}}</p>
+  </div>
+</section>

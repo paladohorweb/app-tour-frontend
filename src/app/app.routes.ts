@@ -19,7 +19,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./v2/catalog.component').then((m) => m.CatalogComponent),
+      import('./v2/landing.component').then((m) => m.LandingComponent),
   },
   {
     path: 'tours',
