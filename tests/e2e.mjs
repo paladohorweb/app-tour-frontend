@@ -114,6 +114,7 @@ try {
   await logout();
   await login("guia@demo.com");
   await visit("/guia/panel");
+  await page.getByRole('button', {name: /Reservas ·/}).click();
   await page
     .getByRole("button", { name: "Confirmar disponibilidad", exact: true })
     .first()

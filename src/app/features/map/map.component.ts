@@ -6,6 +6,7 @@ import * as L from 'leaflet';
 import { V2Api, navigationUrl } from '../../v2/api.service';
 import { Experience } from '../../v2/models';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../environments/environment';
 @Component({
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
@@ -17,6 +18,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   layer = L.layerGroup();
   items: Experience[] = [];
   q = '';
+  demo = environment.demo;
   kind = '';
   selected?: Experience;
   error = '';
@@ -103,17 +105,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       const city = document.createElement('p');
       city.textContent = e.municipality;
       content.append(title, city);
-      L.circleMarker([e.latitude, e.longitude], {
-        radius: 10,
-        color: '#fff',
-        weight: 3,
-        fillColor:
-          e.kind === 'STAY'
-            ? '#a65a32'
-            : e.kind === 'EVENT'
-              ? '#7c3aed'
-              : '#0f766e',
-        fillOpacity: 1,
+      const badge = document.createElement('span');
+      badge.className = 'map-price-label';
+      badge.textContent = new Intl.NumberFormat('es-CO', {style:'currency', currency:'COP', maximumFractionDigits:0}).format(e.price);
+      badge.style.background = e.kind === 'STAY' ? '#a65a32' : e.kind === 'EVENT' ? '#7c3aed' : '#0f766e';
+      L.marker([e.latitude, e.longitude], {
+        title: e.title,
+        icon: L.divIcon({html: badge, className: 'map-price-icon', iconSize:[88,34], iconAnchor:[44,17]}),
       })
         .bindPopup(content)
         .on('click', () => this.select(e))

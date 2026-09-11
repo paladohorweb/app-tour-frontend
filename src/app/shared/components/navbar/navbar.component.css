@@ -276,3 +276,7 @@
     display: inline-flex;
   }
 }
+:host .app-navbar{background:#163f34!important;border-bottom:3px solid #d7ee60;box-shadow:0 4px 20px #173e3415}
+:host .brand-logo{background:#d7ee60;color:#173e34;border-radius:12px}
+:host .navbar-brand{letter-spacing:-.035em}
+:host .nav-link.is-active{background:#ffffff18;border-radius:10px}

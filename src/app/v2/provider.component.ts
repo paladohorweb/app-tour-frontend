@@ -21,6 +21,15 @@ export class ProviderComponent implements OnInit {
   status = STATUS;
   editing = 0;
   selected = 0;
+  tab = 'overview';
+  bookingFilter = '';
+  demo = environment.demo;
+  get activeCount() { return this.items.filter(e => e.active).length; }
+  get pendingCount() { return this.bookings.filter(b => b.status === 'REQUESTED').length; }
+  get verifiedTotal() { return this.bookings.filter(b => b.paymentStatus === 'VERIFIED' && b.status !== 'CANCELLED').reduce((sum,b) => sum + b.total, 0); }
+  get filteredBookings() { return this.bookings.filter(b => !this.bookingFilter || b.status === this.bookingFilter); }
+  get upcoming() { const today = new Date().toLocaleDateString('en-CA'); return this.bookings.filter(b => b.status === 'CONFIRMED' && b.date >= today).sort((a,b) => a.date.localeCompare(b.date)).slice(0,5); }
+  count(kind: string) { return this.items.filter(e => e.kind === kind).length; }
   slot = { date: '', time: '09:00', capacity: 10 };
   form: any = this.empty();
   constructor(private api: V2Api) {}
@@ -58,9 +67,10 @@ export class ProviderComponent implements OnInit {
       });
     this.api
       .get<Booking[]>('/provider/bookings')
-      .subscribe({ next: (r) => (this.bookings = r), error: () => {} });
+      .subscribe({ next: (r) => (this.bookings = r), error: () => { this.error = 'No se pudieron cargar las reservas. Los indicadores pueden estar incompletos.'; } });
   }
   edit(e: Experience) {
+    this.tab = 'publications';
     this.editing = e.id;
     const { id, ownerId, active, ...rest } = e;
     this.form = rest;

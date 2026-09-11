@@ -47,3 +47,5 @@
   color: rgba(255,255,255,.58);
   font-size: .9rem;
 }
+:host .app-footer{background:#163f34;color:#f7f9ed;border-top:5px solid #d7ee60}
+:host .footer-logo{background:#d7ee60;color:#173e34;border-radius:12px}

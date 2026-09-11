@@ -1,9 +1,13 @@
 <section class="v2-wrap">
   <span class="v2-eyebrow">TU CONOCIMIENTO, SU PRÓXIMO VIAJE</span>
-  <h1>Panel del prestador</h1>
+  <div class="dashboard-heading"><div><h1>Tu centro de experiencias</h1><p>Publica, organiza y acompaña cada reserva.</p></div><a class="v2-btn" routerLink="/mapa">Ver mapa ↗</a></div>
+  <p class="v2-demo" *ngIf="demo">Demo interactivo · Las publicaciones y reservas de este navegador también aparecen en el catálogo y el mapa.</p>
+  <div class="dashboard-metrics"><article><small>Publicaciones activas</small><strong>{{activeCount}}</strong><span>de {{items.length}} experiencias</span></article><article><small>Por confirmar</small><strong>{{pendingCount}}</strong><span>solicitudes de viajeros</span></article><article><small>Reservas registradas</small><strong>{{bookings.length}}</strong><span>todos los estados</span></article><article><small>Pagos verificados</small><strong>{{verifiedTotal | currency:'COP':'symbol-narrow':'1.0-0'}}</strong><span>excluye reservas canceladas</span></article></div>
+  <nav class="dashboard-tabs" aria-label="Secciones del panel"><button (click)="tab = 'overview'" [attr.aria-pressed]="tab === 'overview'">Resumen</button><button (click)="tab = 'publications'" [attr.aria-pressed]="tab === 'publications'">Publicaciones</button><button (click)="tab = 'availability'" [attr.aria-pressed]="tab === 'availability'">Disponibilidad</button><button (click)="tab = 'bookings'" [attr.aria-pressed]="tab === 'bookings'">Reservas · {{pendingCount}}</button></nav>
+  <div class="dashboard-overview" *ngIf="tab === 'overview'"><section class="v2-panel"><h2>Tu catálogo, de un vistazo</h2><div class="category-summary"><span>Tours <strong>{{count('TOUR')}}</strong></span><span>Hospedajes <strong>{{count('STAY')}}</strong></span><span>Eventos <strong>{{count('EVENT')}}</strong></span></div><button class="v2-btn" (click)="tab = 'publications'">Gestionar experiencias →</button></section><section class="v2-panel"><h2>Próximas visitas confirmadas</h2><div class="v2-row" *ngFor="let b of upcoming"><span><strong>{{b.title}}</strong><br />{{b.date}} · {{b.people}} personas</span></div><p *ngIf="!upcoming.length">Aún no tienes visitas próximas confirmadas.</p><button (click)="tab = 'bookings'">Revisar solicitudes →</button></section></div>
   <p class="v2-error" role="alert" *ngIf="error">{{ error }}</p>
   <p class="v2-success" role="status" *ngIf="message">{{ message }}</p>
-  <details class="v2-panel" [open]="editing > 0">
+  <details *ngIf="tab === 'publications'" class="v2-panel" [open]="editing > 0">
     <summary>
       {{ editing ? "Editar experiencia" : "Publicar una experiencia" }}
     </summary>
@@ -150,9 +154,10 @@
       </div>
     </form>
   </details>
-  <div class="v2-panel">
+  <div class="v2-panel" *ngIf="tab === 'publications'">
     <h2>Mis publicaciones</h2>
     <div class="v2-row" *ngFor="let e of items">
+      <img class="dashboard-thumbnail" [src]="e.imageUrl" alt="" loading="lazy" />
       <span>{{ e.title }} · {{ e.active ? "Activa" : "Pausada" }}</span
       ><button (click)="edit(e)">Editar</button
       ><button (click)="active(e)">{{ e.active ? "Pausar" : "Activar" }}</button
@@ -160,7 +165,7 @@
     </div>
     <p *ngIf="!items.length">Publica tu primera experiencia.</p>
   </div>
-  <form class="v2-panel" (ngSubmit)="addSlot()" #sf="ngForm">
+  <form *ngIf="tab === 'availability'" class="v2-panel" (ngSubmit)="addSlot()" #sf="ngForm">
     <h2>Abrir disponibilidad</h2>
     <div class="v2-form-grid">
       <label
@@ -196,8 +201,10 @@
       Publicar fecha
     </button>
   </form>
-  <h2>Solicitudes de viajeros</h2>
-  <div class="v2-panel" *ngFor="let b of bookings">
+  <ng-container *ngIf="tab === 'bookings'">
+  <div class="v2-heading"><h2>Solicitudes de viajeros</h2><label>Estado<select [(ngModel)]="bookingFilter"><option value="">Todos</option><option value="REQUESTED">Pendientes</option><option value="CONFIRMED">Confirmadas</option><option value="COMPLETED">Completadas</option><option value="CANCELLED">Canceladas</option></select></label></div>
+  <p *ngIf="!filteredBookings.length">No hay reservas con este estado.</p>
+  <div class="v2-panel" *ngFor="let b of filteredBookings">
     <h3>{{ b.title }}</h3>
     <p>
       {{ b.reference }} · {{ b.date }} · {{ b.people }} personas ·
@@ -226,4 +233,5 @@
       </button>
     </div>
   </div>
+  </ng-container>
 </section>
