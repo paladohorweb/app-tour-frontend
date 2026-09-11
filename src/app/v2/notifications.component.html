@@ -1,0 +1,89 @@
+<section class="v2-wrap">
+  <h1>Centro de notificaciones</h1>
+  <p>Avisos de tus reservas y comunicaciones dentro de App Guía.</p>
+  <p class="v2-error" *ngIf="error">{{ error }}</p>
+  <p class="v2-success" *ngIf="message">{{ message }}</p>
+  <div class="v2-panel">
+    <label class="v2-check"
+      ><input type="checkbox" [(ngModel)]="marketing" /> Quiero recibir
+      promociones en mi bandeja.</label
+    ><button (click)="save()">Guardar preferencia</button>
+  </div>
+  <form
+    class="v2-panel"
+    *ngIf="auth.isAdmin()"
+    (ngSubmit)="send()"
+    #nf="ngForm"
+  >
+    <h2>Enviar una notificación</h2>
+    <label
+      >ID de usuario (vacío: todos los usuarios activos)<input
+        name="user"
+        type="number"
+        [(ngModel)]="input.userId"
+        min="1" /></label
+    ><label
+      >Título<input
+        name="title"
+        [(ngModel)]="input.title"
+        maxlength="120"
+        required /></label
+    ><label
+      >Mensaje<textarea
+        name="message"
+        [(ngModel)]="input.message"
+        maxlength="1500"
+        required
+      ></textarea></label
+    ><label class="v2-check"
+      ><input name="promo" type="checkbox" [(ngModel)]="input.promotional" /> Es
+      una promoción: enviar solo a quienes autorizaron.</label
+    ><button class="v2-btn" [disabled]="nf.invalid || sending">
+      Enviar a la bandeja
+    </button>
+  </form>
+  <button (click)="load()">Actualizar avisos</button>
+  <article class="v2-panel" *ngFor="let n of items">
+    <span class="v2-tag">{{ n.seen ? "Leída" : "Nueva" }}</span>
+    <h2>{{ n.title }}</h2>
+    <p>{{ n.message }}</p>
+    <small>{{ n.createdAt | date: "medium" }}</small
+    ><button *ngIf="!n.seen" (click)="read(n)">Marcar como leída</button>
+  </article>
+  <p *ngIf="!items.length">No tienes avisos pendientes.</p>
+  <details class="v2-panel">
+    <summary>Mis datos personales</summary>
+    <form (ngSubmit)="request()" #pf="ngForm">
+      <label
+        >Tipo de solicitud<select name="kind" [(ngModel)]="privacy.kind">
+          <option value="ACCESS">Consultar mis datos</option>
+          <option value="CORRECT">Corregir información</option>
+          <option value="DELETE">Solicitar supresión</option>
+          <option value="REVOKE">Revocar autorización</option>
+          <option value="COMPLAINT">Reclamo</option>
+        </select></label
+      ><label
+        >Detalle<textarea
+          name="detail"
+          [(ngModel)]="privacy.detail"
+          required
+          maxlength="2000"
+        ></textarea></label
+      ><button class="v2-btn" [disabled]="pf.invalid">
+        Registrar solicitud
+      </button>
+    </form>
+    <p>
+      No adjuntes documentos de identidad ni datos financieros. La solicitud
+      será atendida por el responsable; no elimina automáticamente registros con
+      obligaciones de conservación.
+    </p>
+  </details>
+  <div class="v2-panel" *ngFor="let r of requests">
+    <strong>Solicitud #{{ r.id }} · {{ r.kind }} · {{ r.status }}</strong>
+    <p>{{ r.detail }}</p>
+    <button *ngIf="auth.isAdmin() && r.status === 'OPEN'" (click)="close(r.id)">
+      Marcar atendida tras responder al titular
+    </button>
+  </div>
+</section>

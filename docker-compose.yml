@@ -1,0 +1,9 @@
+services:
+  turismo-demo:
+    build:
+      context: .
+      args:
+        APP_VARIANT: demo
+    image: app-guia-demo:2.0.0
+    ports: ["8088:80"]
+    restart: unless-stopped

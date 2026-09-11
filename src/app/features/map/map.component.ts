@@ -1,132 +1,172 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import * as L from 'leaflet';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { TourService } from '../../core/services/tour.service';
-import { Tour } from '../../core/models/tour.model';
-
+import * as L from 'leaflet';
+import { V2Api, navigationUrl } from '../../v2/api.service';
+import { Experience } from '../../v2/models';
+import { Subscription } from 'rxjs';
 @Component({
   standalone: true,
-  selector: 'app-map',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css']
+  styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
-  private map!: L.Map;
-  private markers = new Map<number, L.Marker>();
-
-  tours: Tour[] = [];
-  selectedTour?: Tour;
-
-  constructor(private tourService: TourService) {}
-
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.initMap();
-      this.loadTours();
-    }, 100);
-  }
-
-  ngOnDestroy(): void {
-    if (this.map) this.map.remove();
-  }
-
-  private initMap(): void {
-    this.map = L.map('map', {
-      zoomControl: false
-    }).setView([4.5709, -74.2973], 6);
-
+  map?: L.Map;
+  layer = L.layerGroup();
+  items: Experience[] = [];
+  q = '';
+  kind = '';
+  selected?: Experience;
+  error = '';
+  loading = true;
+  locating = false;
+  location?: L.CircleMarker;
+  accuracy?: L.Circle;
+  observer?: ResizeObserver;
+  subscription?: Subscription;
+  destroyed = false;
+  constructor(private api: V2Api) {}
+  ngAfterViewInit() {
+    this.map = L.map('map', { zoomControl: false }).setView([4.57, -74.29], 6);
     L.control.zoom({ position: 'bottomright' }).addTo(this.map);
-
     L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap'
-    }).addTo(this.map);
+      attribution: '© OpenStreetMap contributors · HOT',
+      maxZoom: 19,
+    })
+      .on(
+        'tileerror',
+        () =>
+          (this.error =
+            'No se pudieron cargar algunas partes del mapa. Revisa tu conexión.'),
+      )
+      .addTo(this.map);
+    this.layer.addTo(this.map);
+    this.observer = new ResizeObserver(() => this.map?.invalidateSize());
+    this.observer.observe(document.getElementById('map')!);
+    this.load();
   }
-
-  private loadTours(): void {
-    this.tourService.listar().subscribe({
-      next: (res) => {
-        this.tours = (res ?? []).filter(t => t.latitud && t.longitud);
-
-        const bounds = L.latLngBounds([]);
-
-        this.tours.forEach(tour => {
-          const latlng: L.LatLngExpression = [tour.latitud!, tour.longitud!];
-          bounds.extend(latlng);
-
-          const marker = L.marker(latlng, {
-            icon: this.createMarkerIcon(false)
-          }).addTo(this.map);
-
-          marker.bindPopup(this.createPopup(tour));
-
-          marker.on('click', () => {
-            this.selectTour(tour);
-          });
-
-          this.markers.set(tour.id, marker);
-        });
-
-        if (this.tours.length) {
-          this.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 9 });
-        }
-
-        setTimeout(() => this.map.invalidateSize(), 200);
+  load() {
+    this.error = '';
+    this.loading = true;
+    this.subscription?.unsubscribe();
+    this.subscription = this.api.get<Experience[]>('/experiences').subscribe({
+      next: (r) => {
+        this.items = r.filter(
+          (e) =>
+            Number.isFinite(e.latitude) &&
+            Number.isFinite(e.longitude) &&
+            Math.abs(e.latitude) <= 90 &&
+            Math.abs(e.longitude) <= 180,
+        );
+        this.loading = false;
+        this.redraw(true);
       },
-      error: (err) => console.error('MAP ERROR', err)
+      error: () => {
+        this.loading = false;
+        this.error = 'No pudimos cargar las experiencias. Puedes reintentar.';
+      },
     });
   }
-
-  selectTour(tour: Tour): void {
-    this.selectedTour = tour;
-
-    this.markers.forEach((marker, id) => {
-      marker.setIcon(this.createMarkerIcon(id === tour.id));
-    });
-
-    const marker = this.markers.get(tour.id);
-
-    if (marker && tour.latitud && tour.longitud) {
-      this.map.flyTo([tour.latitud, tour.longitud], 13, {
-        duration: 0.9
-      });
-
-      setTimeout(() => marker.openPopup(), 450);
+  get filtered() {
+    const norm = (v: string) =>
+      v
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+    return this.items.filter(
+      (e) =>
+        (!this.kind || e.kind === this.kind) &&
+        norm(e.title + ' ' + e.municipality + ' ' + e.department).includes(
+          norm(this.q),
+        ),
+    );
+  }
+  redraw(fit = false) {
+    this.layer.clearLayers();
+    if (this.selected && !this.filtered.some((e) => e.id === this.selected?.id))
+      this.selected = undefined;
+    const points: L.LatLngExpression[] = [];
+    for (const e of this.filtered) {
+      points.push([e.latitude, e.longitude]);
+      const content = document.createElement('div');
+      const title = document.createElement('strong');
+      title.textContent = e.title;
+      const city = document.createElement('p');
+      city.textContent = e.municipality;
+      content.append(title, city);
+      L.circleMarker([e.latitude, e.longitude], {
+        radius: 10,
+        color: '#fff',
+        weight: 3,
+        fillColor:
+          e.kind === 'STAY'
+            ? '#a65a32'
+            : e.kind === 'EVENT'
+              ? '#7c3aed'
+              : '#0f766e',
+        fillOpacity: 1,
+      })
+        .bindPopup(content)
+        .on('click', () => this.select(e))
+        .addTo(this.layer);
     }
+    if (fit && points.length)
+      this.map?.fitBounds(L.latLngBounds(points), {
+        padding: [40, 40],
+        maxZoom: 12,
+      });
   }
-
-  centerColombia(): void {
-    this.map.flyTo([4.5709, -74.2973], 6, { duration: 0.8 });
+  select(e: Experience) {
+    this.selected = e;
+    this.map?.flyTo([e.latitude, e.longitude], 14);
   }
-
-  private createMarkerIcon(active: boolean): L.DivIcon {
-    return L.divIcon({
-      className: active ? 'tour-marker active' : 'tour-marker',
-      html: `
-        <div class="marker-shell">
-          <div class="marker-dot">
-            <span>🧭</span>
-          </div>
-          <div class="marker-pulse"></div>
-        </div>
-      `,
-      iconSize: [48, 48],
-      iconAnchor: [24, 42],
-      popupAnchor: [0, -38]
-    });
+  locate() {
+    if (!navigator.geolocation) {
+      this.error = 'Tu navegador no ofrece ubicación. Busca un municipio.';
+      return;
+    }
+    this.locating = true;
+    this.error = '';
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        if (this.destroyed) return;
+        this.locating = false;
+        const ll: L.LatLngExpression = [p.coords.latitude, p.coords.longitude];
+        this.location?.remove();
+        this.accuracy?.remove();
+        this.location = L.circleMarker(ll, {
+          radius: 8,
+          color: '#fff',
+          fillColor: '#2563eb',
+          fillOpacity: 1,
+        })
+          .bindTooltip('Tu ubicación')
+          .addTo(this.map!);
+        this.accuracy = L.circle(ll, {
+          radius: p.coords.accuracy,
+          weight: 1,
+          fillOpacity: 0.06,
+        }).addTo(this.map!);
+        this.map?.setView(ll, 13);
+      },
+      () => {
+        if (this.destroyed) return;
+        this.locating = false;
+        this.error =
+          'No se obtuvo tu ubicación. Revisa el permiso o busca un municipio.';
+      },
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 },
+    );
   }
-
-  private createPopup(tour: Tour): string {
-    return `
-      <div class="tour-popup">
-        <img src="${tour.imagenUrl || 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop'}" />
-        <div class="tour-popup-body">
-          <strong>${tour.nombre}</strong>
-          <p>${tour.ciudad}, ${tour.pais}</p>
-          <span>$ ${Number(tour.precio).toLocaleString('es-CO')}</span>
-        </div>
-      </div>
-    `;
+  directions(e: Experience) {
+    return navigationUrl(e.meetingLatitude, e.meetingLongitude);
+  }
+  ngOnDestroy() {
+    this.destroyed = true;
+    this.subscription?.unsubscribe();
+    this.observer?.disconnect();
+    this.map?.remove();
   }
 }

@@ -97,6 +97,7 @@ export class NavbarComponent {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
+    if (!target.closest('.app-navbar')) this.closeAllMenus();
 
     const clickedInsideDropdown = Boolean(
       target.closest('.user-dropdown')

@@ -16,7 +16,11 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
   standalone: true,
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -25,11 +29,27 @@ export class LoginComponent implements OnInit {
   error = '';
   passwordVisible = false;
 
+  /*
+   * Debe ser público porque el HTML lo utiliza
+   * en [queryParams].
+   */
   returnUrl = '';
 
   readonly form = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    email: [
+      '',
+      [
+        Validators.required,
+        Validators.email
+      ]
+    ],
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(6)
+      ]
+    ]
   });
 
   constructor(
@@ -41,11 +61,14 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     const requestedReturnUrl =
-      this.route.snapshot.queryParamMap.get('returnUrl') || '';
+      this.route.snapshot.queryParamMap.get('returnUrl') ?? '';
 
-    this.returnUrl = this.sanitizeReturnUrl(requestedReturnUrl);
+    this.returnUrl = this.sanitizeReturnUrl(
+      requestedReturnUrl
+    );
 
-    const email = this.route.snapshot.queryParamMap.get('email');
+    const email =
+      this.route.snapshot.queryParamMap.get('email');
 
     if (email) {
       this.form.controls.email.setValue(email);
@@ -79,12 +102,12 @@ export class LoginComponent implements OnInit {
         this.loading = false;
         this.navigateAfterLogin();
       },
-      error: (err) => {
-        console.error('Error iniciando sesión:', err);
+      error: (error) => {
+        console.error('Error iniciando sesión:', error);
 
         this.error =
-          err?.error?.message ||
-          'Correo o contraseña incorrectos. Verifica tus datos.';
+          error?.error?.message ||
+          'Correo o contraseña incorrectos.';
 
         this.loading = false;
       }
@@ -93,12 +116,13 @@ export class LoginComponent implements OnInit {
 
   private navigateAfterLogin(): void {
     const destination =
-      this.returnUrl || this.getDefaultDestinationByRole();
+      this.returnUrl ||
+      this.getDefaultRouteByRole();
 
     this.router.navigateByUrl(destination);
   }
 
-  private getDefaultDestinationByRole(): string {
+  private getDefaultRouteByRole(): string {
     switch (this.authService.getUserRole()) {
       case 'ADMIN':
         return '/admin/dashboard';
@@ -115,10 +139,10 @@ export class LoginComponent implements OnInit {
   }
 
   private sanitizeReturnUrl(value: string): string {
-    if (!value.startsWith('/') || value.startsWith('//')) {
-      return '';
-    }
+    const isInvalid =
+      !value.startsWith('/') ||
+      value.startsWith('//');
 
-    return value;
+    return isInvalid ? '' : value;
   }
 }

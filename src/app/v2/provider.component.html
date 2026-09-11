@@ -1,0 +1,229 @@
+<section class="v2-wrap">
+  <span class="v2-eyebrow">TU CONOCIMIENTO, SU PRÓXIMO VIAJE</span>
+  <h1>Panel del prestador</h1>
+  <p class="v2-error" role="alert" *ngIf="error">{{ error }}</p>
+  <p class="v2-success" role="status" *ngIf="message">{{ message }}</p>
+  <details class="v2-panel" [open]="editing > 0">
+    <summary>
+      {{ editing ? "Editar experiencia" : "Publicar una experiencia" }}
+    </summary>
+    <form (ngSubmit)="save()" #f="ngForm">
+      <div class="v2-form-grid">
+        <label
+          >Nombre<input
+            name="title"
+            [(ngModel)]="form.title"
+            maxlength="120"
+            required /></label
+        ><label
+          >Tipo<select name="kind" [(ngModel)]="form.kind">
+            <option value="TOUR">Tour</option>
+            <option value="STAY">Hospedaje</option>
+            <option value="EVENT">Evento</option>
+          </select></label
+        ><label
+          >Departamento<input
+            name="department"
+            [(ngModel)]="form.department"
+            required /></label
+        ><label
+          >Municipio<input
+            name="municipality"
+            [(ngModel)]="form.municipality"
+            required /></label
+        ><label
+          >Dirección o vereda<input
+            name="address"
+            [(ngModel)]="form.address"
+            required /></label
+        ><label
+          >WhatsApp (57 + 10 dígitos)<input
+            name="whatsapp"
+            [(ngModel)]="form.whatsapp"
+            pattern="57[0-9]{10}"
+            required /></label
+        ><label
+          >Precio COP por persona {{ form.kind === "STAY" ? "y noche" : ""
+          }}<input
+            name="price"
+            type="number"
+            [(ngModel)]="form.price"
+            min="1"
+            required /></label
+        ><label
+          >RNT del prestador<input
+            name="rnt"
+            [(ngModel)]="form.rnt"
+            required /></label
+        ><label
+          >Imagen (URL HTTPS)<input
+            name="image"
+            type="url"
+            [(ngModel)]="form.imageUrl"
+            pattern="https://.*"
+            required
+        /></label>
+      </div>
+      <label
+        >Descripción, duración, qué incluye y recomendaciones<textarea
+          name="description"
+          [(ngModel)]="form.description"
+          maxlength="5000"
+          required
+        ></textarea></label
+      ><label
+        >Condiciones de cancelación y reprogramación<textarea
+          name="policy"
+          [(ngModel)]="form.cancellationPolicy"
+          maxlength="3000"
+          required
+        ></textarea>
+      </label>
+      <h3>Ubicación de la experiencia</h3>
+      <app-location-picker
+        [lat]="form.latitude"
+        [lng]="form.longitude"
+        (point)="
+          form.latitude = $event.latitude; form.longitude = $event.longitude
+        "
+      ></app-location-picker>
+      <h3>Punto de encuentro</h3>
+      <app-location-picker
+        [lat]="form.meetingLatitude"
+        [lng]="form.meetingLongitude"
+        (point)="
+          form.meetingLatitude = $event.latitude;
+          form.meetingLongitude = $event.longitude
+        "
+      ></app-location-picker
+      ><button type="button" (click)="useLocation()">Usar mi ubicación</button>
+      <div class="v2-form-grid">
+        <label
+          >Latitud del lugar<input
+            name="lat"
+            type="number"
+            step="any"
+            min="-90"
+            max="90"
+            [(ngModel)]="form.latitude"
+            required /></label
+        ><label
+          >Longitud del lugar<input
+            name="lng"
+            type="number"
+            step="any"
+            min="-180"
+            max="180"
+            [(ngModel)]="form.longitude"
+            required /></label
+        ><label
+          >Latitud del encuentro<input
+            name="mlat"
+            type="number"
+            step="any"
+            min="-90"
+            max="90"
+            [(ngModel)]="form.meetingLatitude"
+            required /></label
+        ><label
+          >Longitud del encuentro<input
+            name="mlng"
+            type="number"
+            step="any"
+            min="-180"
+            max="180"
+            [(ngModel)]="form.meetingLongitude"
+            required
+        /></label>
+      </div>
+      <label
+        >Cómo reconocer el punto de encuentro<textarea
+          name="meeting"
+          [(ngModel)]="form.meetingInstructions"
+          required
+        ></textarea>
+      </label>
+      <div class="v2-actions">
+        <button class="v2-btn" [disabled]="f.invalid || busy">
+          Guardar experiencia</button
+        ><button type="button" (click)="reset()">Limpiar</button>
+      </div>
+    </form>
+  </details>
+  <div class="v2-panel">
+    <h2>Mis publicaciones</h2>
+    <div class="v2-row" *ngFor="let e of items">
+      <span>{{ e.title }} · {{ e.active ? "Activa" : "Pausada" }}</span
+      ><button (click)="edit(e)">Editar</button
+      ><button (click)="active(e)">{{ e.active ? "Pausar" : "Activar" }}</button
+      ><a [routerLink]="['/experiencias', e.id]">Ver</a>
+    </div>
+    <p *ngIf="!items.length">Publica tu primera experiencia.</p>
+  </div>
+  <form class="v2-panel" (ngSubmit)="addSlot()" #sf="ngForm">
+    <h2>Abrir disponibilidad</h2>
+    <div class="v2-form-grid">
+      <label
+        >Experiencia<select name="experience" [(ngModel)]="selected" required>
+          <option [ngValue]="0">Selecciona</option>
+          <option *ngFor="let e of items" [ngValue]="e.id">
+            {{ e.title }}
+          </option>
+        </select></label
+      ><label
+        >Fecha<input
+          name="date"
+          type="date"
+          [(ngModel)]="slot.date"
+          required /></label
+      ><label
+        >Hora<input
+          name="time"
+          type="time"
+          [(ngModel)]="slot.time"
+          required /></label
+      ><label
+        >Cupos por personas<input
+          name="capacity"
+          type="number"
+          [(ngModel)]="slot.capacity"
+          min="1"
+          max="1000"
+          required
+      /></label>
+    </div>
+    <button class="v2-btn" [disabled]="sf.invalid || !selected">
+      Publicar fecha
+    </button>
+  </form>
+  <h2>Solicitudes de viajeros</h2>
+  <div class="v2-panel" *ngFor="let b of bookings">
+    <h3>{{ b.title }}</h3>
+    <p>
+      {{ b.reference }} · {{ b.date }} · {{ b.people }} personas ·
+      {{ b.total | currency: "COP" : "symbol-narrow" : "1.0-0" }}
+    </p>
+    <p>{{ status[b.status] }} · {{ status[b.paymentStatus] }}</p>
+    <div class="v2-actions">
+      <button
+        *ngIf="b.status === 'REQUESTED'"
+        class="v2-btn"
+        (click)="action(b, 'confirm')"
+      >
+        Confirmar disponibilidad</button
+      ><button
+        *ngIf="b.status === 'CONFIRMED' && b.paymentStatus === 'PENDING'"
+        (click)="action(b, 'verify-payment')"
+      >
+        Registrar pago recibido</button
+      ><button *ngIf="b.status === 'CONFIRMED'" (click)="action(b, 'complete')">
+        Completar experiencia</button
+      ><button
+        *ngIf="b.status === 'REQUESTED' || b.status === 'CONFIRMED'"
+        (click)="action(b, 'cancel')"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</section>

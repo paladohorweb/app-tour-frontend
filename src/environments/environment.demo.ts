@@ -1,0 +1,1 @@
+export const environment = { demo: true, demoMessage: 'Demo interactivo · datos ficticios en este navegador. No se realizan compras. Usuarios: admin@demo.com, guia@demo.com o viajero@demo.com. Contraseña: 123456.', apiUrl: '/api', legalVersion: '2026-09-v2' };

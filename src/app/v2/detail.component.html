@@ -1,0 +1,130 @@
+<section class="v2-wrap">
+  <a routerLink="/tours">← Volver a experiencias</a>
+  <p class="v2-error" role="alert" *ngIf="error">{{ error }}</p>
+  <ng-container *ngIf="e"
+    ><div class="v2-detail">
+      <div>
+        <img class="v2-cover" [src]="e.imageUrl" [alt]="e.title" />
+        <p class="v2-eyebrow">{{ e.municipality }} · {{ e.department }}</p>
+        <h1>{{ e.title }}</h1>
+        <p class="v2-prose">{{ e.description }}</p>
+        <h2>Punto de encuentro y acceso</h2>
+        <p>{{ e.address }}</p>
+        <p>{{ e.meetingInstructions }}</p>
+        <a
+          [href]="directions"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="v2-btn"
+          >Cómo llegar ↗</a
+        >
+        <p class="v2-muted">
+          Se abre Google Maps. Revisa las indicaciones del prestador para el
+          último tramo rural.
+        </p>
+        <h2>Condiciones de esta experiencia</h2>
+        <p class="v2-prose">{{ e.cancellationPolicy }}</p>
+        <p>
+          RNT informado por el prestador: {{ e.rnt }}. Verifica su vigencia
+          antes de comprar.
+        </p>
+      </div>
+      <aside class="v2-panel">
+        <h2>Organiza tu experiencia</h2>
+        <strong class="v2-price">{{
+          e.price | currency: "COP" : "symbol-narrow" : "1.0-0"
+        }}</strong>
+        <p>por persona {{ e.kind === "STAY" ? "y noche" : "" }}</p>
+        <form (ngSubmit)="reserve()" *ngIf="!booking">
+          <label
+            >Fecha y horario<select
+              name="slot"
+              [(ngModel)]="slotId"
+              (ngModelChange)="dateChanged()"
+              required
+            >
+              <option [ngValue]="0">Selecciona una fecha</option>
+              <option
+                *ngFor="let s of slots"
+                [ngValue]="s.id"
+                [disabled]="s.available === 0"
+              >
+                {{ s.date }} · {{ s.time }} · {{ s.available }} cupos
+              </option>
+            </select></label
+          >
+          <p *ngIf="!slots.length">
+            El prestador aún no ha publicado disponibilidad.
+          </p>
+          <label
+            >Personas<input
+              name="people"
+              type="number"
+              [(ngModel)]="people"
+              min="1"
+              max="30"
+              required /></label
+          ><label *ngIf="e.kind === 'STAY'"
+            >Salida<input
+              name="end"
+              type="date"
+              [(ngModel)]="endDate"
+              required
+            /><small
+              >Selecciona de 1 a 30 noches. La disponibilidad se verifica para
+              toda la estancia.</small
+            ></label
+          >
+          <p>
+            Total consultado:
+            <strong>{{
+              total | currency: "COP" : "symbol-narrow" : "1.0-0"
+            }}</strong>
+          </p>
+          <label class="v2-check"
+            ><input name="terms" type="checkbox" [(ngModel)]="terms" required />
+            Acepto los
+            <a routerLink="/legal/terminos" target="_blank">términos</a> y las
+            condiciones de cancelación.</label
+          ><label class="v2-check"
+            ><input
+              name="privacy"
+              type="checkbox"
+              [(ngModel)]="privacy"
+              required
+            />
+            Autorizo el tratamiento necesario de mis datos según la
+            <a routerLink="/legal/privacidad" target="_blank">política</a
+            >.</label
+          ><button class="v2-btn" [disabled]="busy || !slots.length">
+            {{ busy ? "Registrando…" : "Solicitar y continuar por WhatsApp" }}
+          </button>
+          <p class="v2-muted">
+            La solicitud no bloquea cupos ni confirma pagos. El prestador debe
+            confirmarla.
+          </p>
+        </form>
+        <div *ngIf="booking">
+          <h3>Solicitud {{ booking.reference }}</h3>
+          <p>
+            Ya quedó registrada. Continúa la conversación para acordar la
+            compra.
+          </p>
+          <a
+            *ngIf="!demo"
+            [href]="whatsapp"
+            class="v2-btn v2-whatsapp"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Abrir WhatsApp ↗</a
+          >
+          <p class="v2-demo" *ngIf="demo">
+            En el demo no contactamos números reales. Cambia al usuario guía
+            para confirmar la solicitud.
+          </p>
+          <a routerLink="/mis-reservas">Ver mi viaje →</a>
+        </div>
+      </aside>
+    </div></ng-container
+  >
+</section>

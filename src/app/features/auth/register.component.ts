@@ -38,9 +38,10 @@ export class RegisterComponent implements OnInit {
     {
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(12), Validators.maxLength(72)]],
       confirmPassword: ['', [Validators.required]],
-      rol: this.fb.nonNullable.control<RolRegistro>('ROLE_USER')
+      rol: this.fb.nonNullable.control<RolRegistro>('ROLE_USER'),
+      acceptedTerms: [false, Validators.requiredTrue], acceptedPrivacy: [false, Validators.requiredTrue], marketing: [false]
     },
     {
       validators: [this.passwordsMatchValidator]
@@ -78,7 +79,7 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    const { nombre, email, password, rol } = this.form.getRawValue();
+    const { nombre, email, password, rol, acceptedTerms, acceptedPrivacy, marketing } = this.form.getRawValue();
 
     this.loading = true;
     this.error = '';
@@ -87,7 +88,7 @@ export class RegisterComponent implements OnInit {
       nombre: nombre.trim(),
       email: email.trim().toLowerCase(),
       password,
-      rol
+      rol, acceptedTerms, acceptedPrivacy, marketing, legalVersion: '2026-09-v2'
     }).subscribe({
       next: async () => {
         this.loading = false;

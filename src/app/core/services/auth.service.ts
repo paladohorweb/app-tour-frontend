@@ -38,18 +38,19 @@ export class AuthService {
     email: string;
     password: string;
     rol: 'ROLE_USER' | 'ROLE_GUIA';
+    acceptedTerms?: boolean; acceptedPrivacy?: boolean; legalVersion?: string; marketing?: boolean;
   }): Observable<any> {
     return this.http.post<any>(`${this.BASE_URL}/register`, payload);
   }
 
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem(this.TOKEN_KEY);
+    sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
     this.userSubject.next(null);
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return sessionStorage.getItem(this.TOKEN_KEY);
   }
 
   isAuthenticated(): boolean {
@@ -140,10 +141,10 @@ export class AuthService {
       throw new Error('La respuesta de autenticación no contiene accessToken.');
     }
 
-    localStorage.setItem(this.TOKEN_KEY, authResponse.accessToken);
+    sessionStorage.setItem(this.TOKEN_KEY, authResponse.accessToken);
 
     if (authResponse?.refreshToken) {
-      localStorage.setItem(
+      sessionStorage.setItem(
         this.REFRESH_TOKEN_KEY,
         authResponse.refreshToken
       );
@@ -166,7 +167,7 @@ export class AuthService {
 
   private isTokenExpired(payload: any): boolean {
     if (typeof payload?.exp !== 'number') {
-      return false;
+      return true;
     }
 
     return payload.exp * 1000 <= Date.now();

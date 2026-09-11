@@ -1,0 +1,38 @@
+<section class="v2-wrap">
+  <span class="v2-eyebrow">TODO LISTO PARA DESCUBRIR</span>
+  <h1>Mi viaje</h1>
+  <p>Tus solicitudes, confirmaciones y puntos de encuentro.</p>
+  <p class="v2-error" *ngIf="error">{{ error }}</p>
+  <div class="v2-panel" *ngFor="let b of items">
+    <div class="v2-heading">
+      <h2>{{ b.title }}</h2>
+      <span class="v2-tag">{{ status[b.status] }}</span>
+    </div>
+    <p>{{ b.reference }} · {{ b.date }} · {{ b.people }} personas</p>
+    <p>
+      {{ b.total | currency: "COP" : "symbol-narrow" : "1.0-0" }} ·
+      {{ status[b.paymentStatus] }}
+    </p>
+    <p>{{ b.cancellationSnapshot }}</p>
+    <p>Punto de encuentro: {{ b.meetingInstructions }}</p>
+    <div class="v2-actions">
+      <a [routerLink]="['/experiencias', b.experienceId]">Ver experiencia</a
+      ><a
+        class="v2-btn"
+        *ngIf="directions(b)"
+        [href]="directions(b)"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Cómo llegar ↗</a
+      ><button
+        *ngIf="b.status === 'REQUESTED' || b.status === 'CONFIRMED'"
+        (click)="cancel(b)"
+      >
+        Cancelar reserva
+      </button>
+    </div>
+  </div>
+  <div class="v2-panel" *ngIf="!items.length && !error">
+    Aún no tienes solicitudes. <a routerLink="/tours">Explorar experiencias</a>
+  </div>
+</section>

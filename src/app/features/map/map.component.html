@@ -1,64 +1,59 @@
 <section class="map-page">
-
-  <aside class="map-sidebar">
-    <div class="sidebar-header">
-      <span class="section-tag">Mapa turístico</span>
-      <h1>Tours cerca de tu próxima experiencia</h1>
-      <p>
-        Selecciona un tour y visualiza su ubicación exacta en el mapa.
-      </p>
-    </div>
-
-    <div class="sidebar-actions">
-      <button class="btn btn-dark btn-soft w-100" (click)="centerColombia()">
-        Centrar Colombia
-      </button>
-    </div>
-
-    <div class="selected-card" *ngIf="selectedTour">
-      <img [src]="selectedTour.imagenUrl" [alt]="selectedTour.nombre">
-
-      <div>
-        <small>Tour seleccionado</small>
-        <h3>{{ selectedTour.nombre }}</h3>
-        <p>{{ selectedTour.ciudad }}, {{ selectedTour.pais }}</p>
-        <strong>$ {{ selectedTour.precio | number }}</strong>
-
-        <a [routerLink]="['/checkout', selectedTour.id]" class="btn btn-primary btn-soft w-100 mt-3">
-          Reservar ahora
-        </a>
-      </div>
-    </div>
-
-    <div class="tour-list">
-      <article
-        class="tour-item"
-        *ngFor="let tour of tours"
-        [class.active]="selectedTour?.id === tour.id"
-        (click)="selectTour(tour)">
-
-        <img [src]="tour.imagenUrl" [alt]="tour.nombre">
-
-        <div class="tour-info">
-          <h3>{{ tour.nombre }}</h3>
-          <p>{{ tour.ciudad }}, {{ tour.pais }}</p>
-          <strong>$ {{ tour.precio | number }}</strong>
-        </div>
-
-        <span class="tour-arrow">›</span>
-      </article>
-    </div>
-  </aside>
-
-  <div class="map-content">
-    <div class="map-top-card">
-      <div>
-        <strong>{{ tours.length }} tours disponibles</strong>
-        <span>Explora experiencias en el mapa</span>
-      </div>
-    </div>
-
-    <div id="map"></div>
+  <div class="map-toolbar">
+    <h1>Explora Colombia</h1>
+    <label class="visually-hidden" for="map-search">Buscar municipio</label
+    ><input
+      id="map-search"
+      [(ngModel)]="q"
+      (ngModelChange)="redraw(true)"
+      placeholder="Busca un municipio o experiencia"
+    /><select
+      aria-label="Tipo de experiencia"
+      [(ngModel)]="kind"
+      (ngModelChange)="redraw(true)"
+    >
+      <option value="">Todos</option>
+      <option value="TOUR">Tours</option>
+      <option value="STAY">Hospedajes</option>
+      <option value="EVENT">Eventos</option></select
+    ><button (click)="locate()" [disabled]="locating">
+      {{ locating ? "Localizando…" : "Mi ubicación" }}
+    </button>
   </div>
-
+  <p class="map-error" role="alert" *ngIf="error">
+    {{ error }} <button (click)="load()">Reintentar</button>
+  </p>
+  <div class="map-layout">
+    <div id="map" aria-label="Mapa de experiencias en Colombia"></div>
+    <aside class="map-results">
+      <p role="status">
+        {{ loading ? "Cargando…" : filtered.length + " experiencias" }}
+      </p>
+      <article class="map-selected" *ngIf="selected">
+        <h2>{{ selected.title }}</h2>
+        <p>{{ selected.meetingInstructions }}</p>
+        <div class="v2-actions">
+          <a [routerLink]="['/experiencias', selected.id]">Ver disponibilidad</a
+          ><a
+            [href]="directions(selected)"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Cómo llegar ↗</a
+          >
+        </div>
+      </article>
+      <button class="map-item" *ngFor="let e of filtered" (click)="select(e)">
+        <img [src]="e.imageUrl" alt="" loading="lazy" /><span
+          ><strong>{{ e.title }}</strong
+          ><small
+            >{{ e.municipality }} ·
+            {{ e.price | currency: "COP" : "symbol-narrow" : "1.0-0" }}</small
+          ></span
+        >
+      </button>
+      <p *ngIf="!loading && !filtered.length">
+        Prueba otro municipio o tipo de experiencia.
+      </p>
+    </aside>
+  </div>
 </section>

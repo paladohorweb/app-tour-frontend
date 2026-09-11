@@ -1,0 +1,59 @@
+<section class="v2-hero">
+  <div class="v2-wrap">
+    <span class="v2-eyebrow">COLOMBIA, A TU RITMO</span>
+    <h1>Tu próximo viaje<br />empieza en un pueblo.</h1>
+    <p>
+      Encuentra experiencias locales, conversa con tu anfitrión y descubre cómo
+      llegar.
+    </p>
+    <a routerLink="/mapa" class="v2-btn v2-light">Explorar el mapa ↗</a>
+  </div>
+</section>
+<section class="v2-wrap">
+  <div class="v2-demo" *ngIf="demo">{{ demoMessage }}</div>
+  <div class="v2-filters">
+    <label
+      >¿A dónde quieres ir?<input
+        [(ngModel)]="q"
+        placeholder="Municipio, departamento o experiencia" /></label
+    ><label
+      >Qué quieres hacer<select [(ngModel)]="kind">
+        <option value="">Todas las experiencias</option>
+        <option value="TOUR">Tours</option>
+        <option value="STAY">Hospedajes</option>
+        <option value="EVENT">Eventos</option>
+      </select></label
+    >
+  </div>
+  <div class="v2-heading">
+    <h2>Descubre algo nuevo</h2>
+    <span>{{ filtered.length }} experiencias</span>
+  </div>
+  <p role="status" *ngIf="loading">Buscando experiencias…</p>
+  <div class="v2-error" role="alert" *ngIf="error">
+    {{ error }} <button (click)="load()">Reintentar</button>
+  </div>
+  <div class="v2-grid">
+    <a
+      class="v2-card"
+      *ngFor="let e of filtered"
+      [routerLink]="['/experiencias', e.id]"
+      ><img [src]="e.imageUrl" [alt]="e.title" loading="lazy" />
+      <div class="v2-card-body">
+        <span class="v2-tag">{{ label(e.kind) }}</span>
+        <p class="v2-muted">{{ e.municipality }} · {{ e.department }}</p>
+        <h3>{{ e.title }}</h3>
+        <p>{{ e.description | slice: 0 : 120 }}…</p>
+        <strong>{{
+          e.price | currency: "COP" : "symbol-narrow" : "1.0-0"
+        }}</strong
+        ><small>
+          / {{ e.kind === "STAY" ? "persona por noche" : "persona" }}</small
+        >
+      </div></a
+    >
+  </div>
+  <p *ngIf="!loading && !error && !filtered.length">
+    No hay experiencias para esta búsqueda. Prueba otro municipio.
+  </p>
+</section>
