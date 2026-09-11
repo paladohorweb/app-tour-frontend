@@ -1,13 +1,14 @@
 <section class="welcome">
   <div class="welcome-copy">
     <p class="eyebrow">MENOS RUTINA. MÁS COLOMBIA.</p>
-    <h1>Juan te guía<span>Tu próximo<br />«qué buen plan».</span></h1>
+    <h1>Juan te guía<span>Tu próxima<br /><em>gran historia.</em></span></h1>
     <p class="intro">Escápate a un pueblo. Descubre un sabor. Quédate una noche más.</p>
     <div class="actions"><a class="primary" routerLink="/tours">Encuentra tu próxima experiencia →</a><a class="secondary" routerLink="/mapa">Explorar el mapa ↗</a></div>
     <p class="caption">Tours, hospedajes y eventos. A tu ritmo, con contacto directo.</p>
   </div>
-  <div class="landscape" aria-hidden="true"><div class="sun"></div><div class="mountain far"></div><div class="mountain near"></div><div class="landscape-label">El mejor recuerdo<br />todavía está por venir.</div></div>
+  <div class="landscape" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="planet"></div><div class="coordinate">EXPLORA / COLOMBIA</div><div class="floating-card"><span>Tu próximo destino</span><strong>Más cerca de lo que imaginas.</strong><div class="route-line"><i></i><i></i><i></i></div><small>DESCUBRE → CONECTA → VIAJA</small></div></div>
 </section>
+<div class="travel-strip"><span>01 / TOURS CON HISTORIA</span><span>02 / ESCAPADAS PARA QUEDARTE</span><span>03 / EVENTOS PARA RECORDAR</span></div>
 <section class="landing-section">
   <p class="eyebrow">PLANES PARA SALIR DEL CHAT</p><h2>Elige tu próxima escapada.</h2>
   <div class="category-tabs" aria-label="Filtrar planes"><button (click)="category = ''" [attr.aria-pressed]="category === ''">Todos</button><button (click)="category = 'TOUR'" [attr.aria-pressed]="category === 'TOUR'">Tours</button><button (click)="category = 'STAY'" [attr.aria-pressed]="category === 'STAY'">Hospedajes</button><button (click)="category = 'EVENT'" [attr.aria-pressed]="category === 'EVENT'">Eventos</button></div>
@@ -25,6 +26,7 @@
     <a routerLink="/mapa" [queryParams]="{kind:'EVENT'}"><span class="number">03 / COMPARTIR</span><h3>Haz parte del encuentro</h3><p>Descubre eventos publicados y organiza tu visita con el prestador.</p><strong>Buscar eventos →</strong></a>
   </div>
 </section>
+<section class="map-invitation landing-section"><div><p class="eyebrow">EL CAMINO TAMBIÉN ES PARTE DEL PLAN</p><h2>No solo elijas un destino.<br /><em>Encuentra cómo llegar.</em></h2><p>Explora experiencias en el mapa, consulta su punto de encuentro y abre las indicaciones cuando estés listo.</p><a class="primary" routerLink="/mapa">Abrir mapa de experiencias ↗</a></div><div class="map-art" aria-hidden="true"><span class="map-pin pin-one">TOUR</span><span class="map-pin pin-two">HOSPEDAJE</span><span class="map-pin pin-three">EVENTO</span></div></section>
 <section class="subscribe landing-section" id="novedades">
   <div><p class="eyebrow">SIGAMOS DESCUBRIENDO</p><h2>Tu próxima escapada,<br />más cerca.</h2><p>Suscríbete a novedades y promociones de Juan te guía en la bandeja de la aplicación. Puedes cancelar cuando quieras.</p><p class="demo-note" *ngIf="demo">Modo demo: esta preferencia solo se guarda en este navegador.</p></div>
   <div class="subscription-panel">

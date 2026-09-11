@@ -11,7 +11,7 @@ import { Experience } from './models';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.css'],
+  styleUrls: ['./landing.component.css', './landing-future.css'],
 })
 export class LandingComponent implements OnInit {
   consent = false;
