@@ -17,8 +17,14 @@ export class DemoV2Service {
     if (!this.state) this.seed();
   }
   private seed() {
-    const photo =
-      'https://images.unsplash.com/photo-1518638150340-f706e86654de?auto=format&fit=crop&w=1200&q=80';
+    const photos = [
+      'photo-1447933601403-0c6688de566e',
+      'photo-1449158743715-0a90ebb6d2d8',
+      'photo-1492684223066-81342ee5ff30',
+      'photo-1470770841072-f978cf4d019e',
+      'photo-1518638150340-f706e86654de',
+      'photo-1449158743715-0a90ebb6d2d8',
+    ];
     const locations = [
       [
         'Jardín entre café y montañas',
@@ -93,7 +99,7 @@ export class DemoV2Service {
       meetingInstructions:
         'Punto ilustrativo del demo. En una reserva real, el prestador debe indicar el acceso exacto y cómo reconocerlo.',
       whatsapp: '',
-      imageUrl: photo,
+      imageUrl: 'https://images.unsplash.com/' + photos[i] + '?auto=format&fit=crop&w=1000&q=80',
       rnt: 'DEMO — no corresponde a un registro real',
       cancellationPolicy:
         'Condiciones ilustrativas: solicita cancelaciones o cambios al prestador. Los derechos legales aplicables prevalecen.',

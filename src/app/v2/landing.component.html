@@ -1,22 +1,30 @@
 <section class="welcome">
   <div class="welcome-copy">
-    <p class="eyebrow">PUEBLOS · CAMINOS · HISTORIAS</p>
-    <h1>Juan te guía<span>Colombia te espera.</span></h1>
-    <p class="intro">Sal de la rutina. Encuentra un rincón para descansar, una experiencia para recordar y el camino para llegar.</p>
+    <p class="eyebrow">MENOS RUTINA. MÁS COLOMBIA.</p>
+    <h1>Juan te guía<span>Tu próximo<br />«qué buen plan».</span></h1>
+    <p class="intro">Escápate a un pueblo. Descubre un sabor. Quédate una noche más.</p>
     <div class="actions"><a class="primary" routerLink="/tours">Encuentra tu próxima experiencia →</a><a class="secondary" routerLink="/mapa">Explorar el mapa ↗</a></div>
     <p class="caption">Tours, hospedajes y eventos. A tu ritmo, con contacto directo.</p>
   </div>
-  <div class="landscape" aria-hidden="true"><div class="sun"></div><div class="mountain far"></div><div class="mountain near"></div><div class="landscape-label">Un pueblo.<br />Mil formas de descubrirlo.</div></div>
+  <div class="landscape" aria-hidden="true"><div class="sun"></div><div class="mountain far"></div><div class="mountain near"></div><div class="landscape-label">El mejor recuerdo<br />todavía está por venir.</div></div>
 </section>
 <section class="landing-section">
-  <p class="eyebrow">ELIGE TU FORMA DE VIAJAR</p><h2>¿Qué quieres vivir?</h2>
+  <p class="eyebrow">PLANES PARA SALIR DEL CHAT</p><h2>Elige tu próxima escapada.</h2>
+  <div class="category-tabs" aria-label="Filtrar planes"><button (click)="category = ''" [attr.aria-pressed]="category === ''">Todos</button><button (click)="category = 'TOUR'" [attr.aria-pressed]="category === 'TOUR'">Tours</button><button (click)="category = 'STAY'" [attr.aria-pressed]="category === 'STAY'">Hospedajes</button><button (click)="category = 'EVENT'" [attr.aria-pressed]="category === 'EVENT'">Eventos</button></div>
+  <p *ngIf="preview || demo" class="example-note">Ejemplos de demostración · Fotografías ilustrativas y precios de ejemplo.</p>
+  <p *ngIf="loadingExperiences" role="status">Buscando tu próximo plan…</p>
+  <p *ngIf="catalogError" role="alert">{{catalogError}} <button (click)="loadExperiences()">Reintentar</button></p>
+  <div class="experience-grid">
+    <article class="experience-card" *ngFor="let e of cards"><div class="photo"><img [src]="e.imageUrl" [alt]="e.title" loading="lazy" /><span>{{label(e.kind)}}</span></div><div class="experience-body"><p class="city">{{e.municipality}} · Colombia</p><h3>{{e.title}}</h3><div class="price"><strong>{{e.price | currency:'COP':'symbol-narrow':'1.0-0'}}</strong><small>/ persona{{e.kind === 'STAY' ? ' y noche' : ''}}</small></div><a *ngIf="!preview" [routerLink]="['/experiencias',e.id]" class="book">Ver fechas y reservar ↗</a><p *ngIf="preview" class="sample">Plan ilustrativo · Aún no disponible para reservar</p></div></article>
+  </div>
+  <p *ngIf="!loadingExperiences && !catalogError && !cards.length">No hay planes publicados en esta categoría.</p>
+  <a class="all-plans" routerLink="/tours">Explorar todas las experiencias →</a>
   <div class="options">
     <a routerLink="/mapa" [queryParams]="{kind:'TOUR'}"><span class="number">01 / EXPLORAR</span><h3>Caminos e historias</h3><p>Encuentra tours y descubre el lugar de cada experiencia en el mapa.</p><strong>Buscar tours →</strong></a>
     <a routerLink="/mapa" [queryParams]="{kind:'STAY'}"><span class="number">02 / DESCANSAR</span><h3>Quédate un poco más</h3><p>Explora hospedajes y consulta las fechas para tu próxima escapada.</p><strong>Buscar hospedajes →</strong></a>
     <a routerLink="/mapa" [queryParams]="{kind:'EVENT'}"><span class="number">03 / COMPARTIR</span><h3>Haz parte del encuentro</h3><p>Descubre eventos publicados y organiza tu visita con el prestador.</p><strong>Buscar eventos →</strong></a>
   </div>
 </section>
-<section class="how landing-section"><div><p class="eyebrow">DEL PLAN AL CAMINO</p><h2>Tu viaje empieza<br />con una buena idea.</h2><a routerLink="/tours">Ver experiencias disponibles →</a></div><ol><li><h3>Encuentra tu lugar</h3><p>Filtra por destino, categoría y presupuesto.</p></li><li><h3>Organiza la visita</h3><p>Elige fecha y personas. Registra tu solicitud y coordina disponibilidad y pago por WhatsApp.</p></li><li><h3>Prepárate para llegar</h3><p>Consulta tu viaje y abre las indicaciones al punto de encuentro. La solicitud necesita confirmación del prestador.</p></li></ol></section>
 <section class="subscribe landing-section" id="novedades">
   <div><p class="eyebrow">SIGAMOS DESCUBRIENDO</p><h2>Tu próxima escapada,<br />más cerca.</h2><p>Suscríbete a novedades y promociones de Juan te guía en la bandeja de la aplicación. Puedes cancelar cuando quieras.</p><p class="demo-note" *ngIf="demo">Modo demo: esta preferencia solo se guarda en este navegador.</p></div>
   <div class="subscription-panel">
