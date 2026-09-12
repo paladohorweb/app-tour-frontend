@@ -1,14 +1,11 @@
-# Set the real backend URL before using this configuration.
+# Juan te guia: standalone demo, no backend required.
 [build]
-  command = "npm run build:production"
-  publish = "dist/turismo-app/browser"
+  command = "npm run build:demo"
+  publish = "dist/turismo-demo-v2/browser"
 [build.environment]
   NODE_VERSION = "20.20.2"
-[[redirects]]
-  from = "/api/*"
-  to = "https://REEMPLAZAR-BACKEND.example/api/:splat"
-  status = 200
-  force = true
+  NPM_VERSION = "10.9.0"
+  NG_CLI_ANALYTICS = "false"
 [[redirects]]
   from = "/*"
   to = "/index.html"
