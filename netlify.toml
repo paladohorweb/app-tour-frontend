@@ -1,7 +1,7 @@
 # Juan te guia: standalone demo, no backend required.
 [build]
-  command = "npm run build:demo"
-  publish = "dist/turismo-demo-v2/browser"
+  command = "npm run build:demo -- --output-path=dist/turismo-app"
+  publish = "dist/turismo-app/browser"
 [build.environment]
   NODE_VERSION = "20.20.2"
   NPM_VERSION = "10.9.0"
