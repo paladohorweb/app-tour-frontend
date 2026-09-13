@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build:demo -- --output-path=dist/turismo-app"
+  command = "npm run build:demo-v3 -- --output-path=dist/turismo-app"
   publish = "dist/turismo-app/browser"
 
 [build.environment]

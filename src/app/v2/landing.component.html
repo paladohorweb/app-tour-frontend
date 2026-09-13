@@ -1,42 +1,55 @@
-<section class="welcome">
-  <div class="welcome-copy">
-    <p class="eyebrow">MENOS RUTINA. MÁS COLOMBIA.</p>
-    <h1>Juan te guía<span>Tu próxima<br /><em>gran historia.</em></span></h1>
-    <p class="intro">Escápate a un pueblo. Descubre un sabor. Quédate una noche más.</p>
-    <div class="actions"><a class="primary" routerLink="/tours">Encuentra tu próxima experiencia →</a><a class="secondary" routerLink="/mapa">Explorar el mapa ↗</a></div>
-    <p class="caption">Tours, hospedajes y eventos. A tu ritmo, con contacto directo.</p>
+<section class="cinema-hero">
+  <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="/assets/media/places/cartagena.webp" aria-hidden="true">
+    <source src="/assets/media/hero-cartagena.mp4" type="video/mp4" />
+  </video>
+  <div class="hero-shade"></div>
+  <div class="hero-content">
+    <p class="eyebrow">COLOMBIA SE VIVE DE CERCA</p>
+    <h1>Juan te guía</h1>
+    <h2>Historias que empiezan donde termina la rutina.</h2>
+    <p class="intro">Tours, hospedajes y eventos creados por quienes conocen cada destino. Elige el plan, revisa cómo llegar y coordina tu reserva.</p>
+    <div class="actions"><a class="primary" routerLink="/tours">Explorar experiencias</a><a class="secondary" routerLink="/mapa">Ver mapa</a></div>
+    <div class="trust-line"><span>✓ Contacto directo</span><span>✓ Ubicación y ruta</span><span>✓ Condiciones visibles</span></div>
   </div>
-  <div class="landscape" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="planet"></div><div class="coordinate">EXPLORA / COLOMBIA</div><div class="floating-card"><span>Tu próximo destino</span><strong>Más cerca de lo que imaginas.</strong><div class="route-line"><i></i><i></i><i></i></div><small>DESCUBRE → CONECTA → VIAJA</small></div></div>
+  <a class="hero-discover" href="#planes">Descubrir planes <span>↓</span></a>
 </section>
-<div class="travel-strip"><span>01 / TOURS CON HISTORIA</span><span>02 / ESCAPADAS PARA QUEDARTE</span><span>03 / EVENTOS PARA RECORDAR</span></div>
-<section class="landing-section">
-  <p class="eyebrow">PLANES PARA SALIR DEL CHAT</p><h2>Elige tu próxima escapada.</h2>
-  <div class="category-tabs" aria-label="Filtrar planes"><button (click)="category = ''" [attr.aria-pressed]="category === ''">Todos</button><button (click)="category = 'TOUR'" [attr.aria-pressed]="category === 'TOUR'">Tours</button><button (click)="category = 'STAY'" [attr.aria-pressed]="category === 'STAY'">Hospedajes</button><button (click)="category = 'EVENT'" [attr.aria-pressed]="category === 'EVENT'">Eventos</button></div>
-  <p *ngIf="preview || demo" class="example-note">Ejemplos de demostración · Fotografías ilustrativas y precios de ejemplo.</p>
+
+<section class="quick-search" aria-label="Buscador de experiencias">
+  <div><span>Destino</span><strong>Colombia</strong></div><div><span>Qué buscas</span><strong>Experiencias locales</strong></div><a routerLink="/tours">Buscar planes →</a>
+</section>
+
+<section class="stream-section" id="planes">
+  <div class="section-heading"><div><p class="eyebrow">SELECCIÓN JUAN TE GUÍA</p><h2>Planes que vale la pena contar.</h2></div><div class="row-controls" aria-label="Mover carrusel"><button (click)="scrollRow('featured-row',-1)" aria-label="Anterior">←</button><button (click)="scrollRow('featured-row',1)" aria-label="Siguiente">→</button></div></div>
+  <p *ngIf="preview || demo" class="example-note">Demo interactivo · Ubicaciones, disponibilidad y precios ilustrativos.</p>
   <p *ngIf="loadingExperiences" role="status">Buscando tu próximo plan…</p>
   <p *ngIf="catalogError" role="alert">{{catalogError}} <button (click)="loadExperiences()">Reintentar</button></p>
-  <div class="experience-grid">
-    <article class="experience-card" *ngFor="let e of cards"><div class="photo"><img [src]="e.imageUrl" [alt]="e.title" loading="lazy" /><span>{{label(e.kind)}}</span></div><div class="experience-body"><p class="city">{{e.municipality}} · Colombia</p><h3>{{e.title}}</h3><div class="price"><strong>{{e.price | currency:'COP':'symbol-narrow':'1.0-0'}}</strong><small>/ persona{{e.kind === 'STAY' ? ' y noche' : ''}}</small></div><a *ngIf="!preview" [routerLink]="['/experiencias',e.id]" class="book">Ver fechas y reservar ↗</a><p *ngIf="preview" class="sample">Plan ilustrativo · Aún no disponible para reservar</p></div></article>
+  <div class="category-tabs" aria-label="Filtrar planes"><button (click)="category = ''" [attr.aria-pressed]="category === ''">Todos</button><button (click)="category = 'TOUR'" [attr.aria-pressed]="category === 'TOUR'">Tours</button><button (click)="category = 'STAY'" [attr.aria-pressed]="category === 'STAY'">Hospedajes</button><button (click)="category = 'EVENT'" [attr.aria-pressed]="category === 'EVENT'">Eventos</button></div>
+  <div class="experience-row" id="featured-row">
+    <article class="experience-card" *ngFor="let e of cards" (pointerenter)="playPreview($event)" (pointerleave)="pausePreview($event)">
+      <div class="photo">
+        <img [src]="e.imageUrl" [alt]="e.title" loading="lazy" width="640" height="400" />
+        <video *ngIf="e.previewUrl" muted loop playsinline preload="none" [attr.poster]="e.imageUrl" aria-hidden="true"><source [src]="e.previewUrl" type="video/mp4" /></video>
+        <span>{{label(e.kind)}}</span><button *ngIf="e.previewUrl" class="preview-toggle" (click)="togglePreview($event)" aria-label="Reproducir vista previa">▶</button>
+        <div class="photo-gradient"></div>
+      </div>
+      <div class="experience-body"><p class="city">{{e.municipality}} · {{e.department}}</p><h3>{{e.title}}</h3><div class="card-meta"><span>★ 4.9</span><span>Local</span><span>Desde</span></div><div class="price"><strong>{{e.price | currency:'COP':'symbol-narrow':'1.0-0'}}</strong><small>/ persona{{e.kind === 'STAY' ? ' y noche' : ''}}</small></div><a [routerLink]="['/experiencias',e.id]" class="book">Ver experiencia</a></div>
+    </article>
   </div>
-  <p *ngIf="!loadingExperiences && !catalogError && !cards.length">No hay planes publicados en esta categoría.</p>
-  <a class="all-plans" routerLink="/tours">Explorar todas las experiencias →</a>
-  <div class="options">
-    <a routerLink="/mapa" [queryParams]="{kind:'TOUR'}"><span class="number">01 / EXPLORAR</span><h3>Caminos e historias</h3><p>Encuentra tours y descubre el lugar de cada experiencia en el mapa.</p><strong>Buscar tours →</strong></a>
-    <a routerLink="/mapa" [queryParams]="{kind:'STAY'}"><span class="number">02 / DESCANSAR</span><h3>Quédate un poco más</h3><p>Explora hospedajes y consulta las fechas para tu próxima escapada.</p><strong>Buscar hospedajes →</strong></a>
-    <a routerLink="/mapa" [queryParams]="{kind:'EVENT'}"><span class="number">03 / COMPARTIR</span><h3>Haz parte del encuentro</h3><p>Descubre eventos publicados y organiza tu visita con el prestador.</p><strong>Buscar eventos →</strong></a>
-  </div>
+  <a class="all-plans" routerLink="/tours">Ver el catálogo completo →</a>
 </section>
-<section class="map-invitation landing-section"><div><p class="eyebrow">EL CAMINO TAMBIÉN ES PARTE DEL PLAN</p><h2>No solo elijas un destino.<br /><em>Encuentra cómo llegar.</em></h2><p>Explora experiencias en el mapa, consulta su punto de encuentro y abre las indicaciones cuando estés listo.</p><a class="primary" routerLink="/mapa">Abrir mapa de experiencias ↗</a></div><div class="map-art" aria-hidden="true"><span class="map-pin pin-one">TOUR</span><span class="map-pin pin-two">HOSPEDAJE</span><span class="map-pin pin-three">EVENTO</span></div></section>
+
+<section class="map-story">
+  <div class="map-story-copy"><p class="eyebrow">DEL DESCUBRIMIENTO AL CAMINO</p><h2>El mapa también te ayuda a decidir.</h2><p>Compara planes por zona, encuentra el punto de encuentro y abre la navegación desde tu ubicación cuando estés listo para salir.</p><ul><li>Filtra tours, hospedajes y eventos.</li><li>Consulta precios directamente sobre el mapa.</li><li>Continúa la reserva con el prestador.</li></ul><a class="primary" routerLink="/mapa">Explorar Colombia en el mapa</a></div>
+  <a class="map-preview" routerLink="/mapa" aria-label="Abrir mapa de experiencias"><div class="route route-a"></div><div class="route route-b"></div><span class="map-dot dot-a">Jardín</span><span class="map-dot dot-b">Guatapé</span><span class="map-dot dot-c">Cartagena</span><div class="map-preview-card"><small>11 planes disponibles</small><strong>Tu próxima historia está aquí.</strong><span>Abrir mapa →</span></div></a>
+</section>
+
+<section class="value-strip"><article><strong>01</strong><h3>Descubre</h3><p>Planes auténticos en pueblos y ciudades de Colombia.</p></article><article><strong>02</strong><h3>Organiza</h3><p>Fechas, precios, condiciones y punto de encuentro.</p></article><article><strong>03</strong><h3>Conecta</h3><p>Coordina la experiencia directamente por WhatsApp.</p></article></section>
+
 <section class="subscribe landing-section" id="novedades">
-  <div><p class="eyebrow">SIGAMOS DESCUBRIENDO</p><h2>Tu próxima escapada,<br />más cerca.</h2><p>Suscríbete a novedades y promociones de Juan te guía en la bandeja de la aplicación. Puedes cancelar cuando quieras.</p><p class="demo-note" *ngIf="demo">Modo demo: esta preferencia solo se guarda en este navegador.</p></div>
+  <div><p class="eyebrow">SIGAMOS DESCUBRIENDO</p><h2>Recibe nuevas rutas, eventos y escapadas.</h2><p>Suscríbete a las novedades de Juan te guía. Puedes cambiar esta preferencia cuando quieras.</p><p class="demo-note" *ngIf="demo">Modo demo: esta preferencia solo se guarda en este navegador.</p></div>
   <div class="subscription-panel">
-    <ng-container *ngIf="!auth.isAuthenticated(); else account"><h3>Únete a Juan te guía</h3><p>Inicia sesión o crea tu cuenta. Después podrás activar tu suscripción aquí.</p><a class="primary" routerLink="/login" [queryParams]="{returnUrl:'/'}">Iniciar sesión para suscribirme</a><a routerLink="/register">Crear una cuenta</a></ng-container>
-    <ng-template #account>
-      <form *ngIf="ready && !subscribed" (ngSubmit)="save(true)"><h3>Recibe inspiración para viajar</h3><label><input type="checkbox" name="consent" [(ngModel)]="consent" required /> Acepto recibir novedades y promociones dentro de la aplicación según la <a routerLink="/legal/privacidad">política de tratamiento de datos</a>.</label><button class="primary" [disabled]="busy || !consent">{{busy ? 'Guardando…' : 'Suscribirme a novedades'}}</button></form>
-      <div *ngIf="ready && subscribed"><h3>Ya eres parte del viaje</h3><p>Tu suscripción está activa.</p><a routerLink="/notificaciones">Ver mis novedades →</a><button class="secondary" (click)="save(false)" [disabled]="busy">{{busy ? 'Guardando…' : 'Cancelar suscripción'}}</button></div>
-      <p *ngIf="!ready && !error" role="status">Consultando tu preferencia…</p>
-      <button *ngIf="!ready && error" (click)="load()">Reintentar</button>
-    </ng-template>
+    <ng-container *ngIf="!auth.isAuthenticated(); else account"><h3>Únete a Juan te guía</h3><p>Crea tu cuenta para guardar planes y recibir inspiración para tu próximo viaje.</p><a class="primary" routerLink="/login" [queryParams]="{returnUrl:'/'}">Iniciar sesión</a><a routerLink="/register">Crear una cuenta</a></ng-container>
+    <ng-template #account><form *ngIf="ready && !subscribed" (ngSubmit)="save(true)"><h3>Recibe inspiración para viajar</h3><label><input type="checkbox" name="consent" [(ngModel)]="consent" required /> Acepto recibir novedades dentro de la aplicación según la <a routerLink="/legal/privacidad">política de datos</a>.</label><button class="primary" [disabled]="busy || !consent">{{busy ? 'Guardando…' : 'Suscribirme'}}</button></form><div *ngIf="ready && subscribed"><h3>Ya eres parte del viaje</h3><p>Tu suscripción está activa.</p><a routerLink="/notificaciones">Ver novedades →</a><button class="secondary" (click)="save(false)" [disabled]="busy">Cancelar suscripción</button></div><p *ngIf="!ready && !error" role="status">Consultando tu preferencia…</p><button *ngIf="!ready && error" (click)="load()">Reintentar</button></ng-template>
     <p role="status" *ngIf="message">{{message}}</p><p role="alert" *ngIf="error">{{error}}</p>
   </div>
 </section>

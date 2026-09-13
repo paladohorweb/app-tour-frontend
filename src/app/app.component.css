@@ -8,3 +8,6 @@
 .app-main {
   flex: 1;
 }
+
+/* Reserve a full viewport while lazy routes load. */
+.app-main { min-width: 0; min-height: calc(100svh - 76px); }

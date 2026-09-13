@@ -26,13 +26,39 @@ export class LandingComponent implements OnInit {
   catalogError = '';
   experiences: Experience[] = [];
   examples = [
-    {id: 0, title:'Café y caminos de Jardín', municipality:'Jardín', kind:'TOUR', price:85000, imageUrl:'https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=800&q=80'},
-    {id: 0, title:'Una cabaña entre montañas', municipality:'Salento', kind:'STAY', price:145000, imageUrl:'https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?auto=format&fit=crop&w=800&q=80'},
-    {id: 0, title:'Sabores y música al atardecer', municipality:'Villa de Leyva', kind:'EVENT', price:65000, imageUrl:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80'},
+    {id: 0, title:'Café y caminos de Jardín', municipality:'Jardín', department:'Antioquia', kind:'TOUR', price:85000, imageUrl:'/assets/media/places/jardin.webp', previewUrl:undefined},
+    {id: 0, title:'Una cabaña entre montañas', municipality:'Salento', department:'Quindío', kind:'STAY', price:145000, imageUrl:'/assets/media/places/salento.webp', previewUrl:undefined},
+    {id: 0, title:'Sabores y música al atardecer', municipality:'Villa de Leyva', department:'Boyacá', kind:'EVENT', price:65000, imageUrl:'/assets/media/places/villa-de-leyva.webp', previewUrl:undefined},
   ];
   get preview() { return !this.loadingExperiences && !this.catalogError && !this.experiences.length; }
-  get cards() { return (this.preview ? this.examples : this.experiences).filter(e => !this.category || e.kind === this.category).slice(0,6); }
+  get cards() { return (this.preview ? this.examples : this.experiences).filter(e => !this.category || e.kind === this.category); }
   label(kind: string) { return kind === 'STAY' ? 'Hospedaje' : kind === 'EVENT' ? 'Evento' : 'Tour'; }
+  playPreview(event: Event) {
+    const video = (event.currentTarget as HTMLElement).querySelector('video');
+    video?.play().catch(() => undefined);
+  }
+  pausePreview(event: Event) {
+    const video = (event.currentTarget as HTMLElement).querySelector('video');
+    if (!video) return;
+    video.pause();
+    video.currentTime = 0;
+  }
+  togglePreview(event: Event) {
+    event.preventDefault();
+    const video = (event.currentTarget as HTMLElement).closest('.experience-card')?.querySelector('video');
+    if (!video) return;
+    if (video.paused) {
+      video.classList.add('playing');
+      video.play().catch(() => video.classList.remove('playing'));
+    } else {
+      video.pause();
+      video.currentTime = 0;
+      video.classList.remove('playing');
+    }
+  }
+  scrollRow(id: string, direction: number) {
+    document.getElementById(id)?.scrollBy({ left: direction * 720, behavior: 'smooth' });
+  }
   loadExperiences() {
     this.loadingExperiences = true; this.catalogError = '';
     this.api.get<Experience[]>('/experiences').subscribe({

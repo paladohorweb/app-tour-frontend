@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://app-tour2026-demo-v3.netlify.app/sitemap.xml

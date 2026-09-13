@@ -72,11 +72,11 @@ async function logout() {
 }
 try {
   await visit("/");
-  await page.getByRole('heading', { name: /Juan te guía/ }).waitFor();
-  await page.getByRole('link', {name: 'Iniciar sesión para suscribirme'}).waitFor();
+  await page.getByRole('heading', { name: /Juan te guía/, level: 1 }).waitFor();
+  await page.getByRole('link', {name: 'Iniciar sesión', exact: true}).waitFor();
   await visit('/tours');
   await page.locator(".v2-card").first().waitFor();
-  assert.equal(await page.locator(".v2-card").count(), 6);
+  assert.equal(await page.locator(".v2-card").count(), 11);
   await page.getByRole("button", { name: "Abrir navegación" }).click();
   assert.equal(await page.locator(".navbar-collapse.show").count(), 1);
   await page.mouse.click(380, 800);
@@ -84,13 +84,15 @@ try {
   await visit("/mapa");
   await page.locator(".map-item").first().waitFor();
   const rect = await page.locator("#map").boundingBox();
+  const offlineNotice = await page.locator(".map-error").boundingBox();
+  const listRect = await page.locator(".map-results").boundingBox();
   assert(
-    rect.y < 350 && rect.height >= 300,
-    "Mobile map should be visible before list",
+    rect.y < 760 + (offlineNotice?.height || 0) && rect.height >= 300 && listRect.y >= rect.y + rect.height,
+    `Mobile map should be visible before list: ${JSON.stringify(rect)}`,
   );
-  await page.getByRole("button", { name: "Mi ubicación", exact: true }).click();
+  await page.getByRole("button", { name: "Usar mi ubicación", exact: true }).click();
   await page.waitForFunction(
-    () => document.querySelectorAll(".leaflet-overlay-pane path").length >= 8,
+    () => document.querySelectorAll(".leaflet-overlay-pane path").length >= 2 && document.querySelectorAll(".map-price-label").length === 11,
   );
   await login("viajero@demo.com");
   await visit("/experiencias/1");
@@ -106,7 +108,7 @@ try {
     .click();
   await page.getByRole("heading", { name: /Solicitud DEMO-/ }).waitFor();
   let booking = await page.evaluate(
-    () => JSON.parse(localStorage.getItem("app-guia-demo-v2")).bookings[0],
+    () => JSON.parse(localStorage.getItem("app-guia-demo-v3")).bookings[0],
   );
   assert.equal(booking.status, "REQUESTED");
   assert.equal(booking.paymentStatus, "PENDING");
@@ -130,7 +132,7 @@ try {
     .click();
   await page.waitForFunction(
     () =>
-      JSON.parse(localStorage.getItem("app-guia-demo-v2")).bookings[0]
+      JSON.parse(localStorage.getItem("app-guia-demo-v3")).bookings[0]
         .paymentStatus === "VERIFIED",
   );
   await logout();

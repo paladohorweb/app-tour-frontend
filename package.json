@@ -1,6 +1,6 @@
 {
   "name": "turismo-app",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 4200 --proxy-config proxy.conf.json",
@@ -8,6 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "node tests/e2e.mjs",
     "build:demo": "ng build --configuration demo",
+    "build:demo-v3": "ng build --configuration demo",
     "build:production": "ng build --configuration production",
     "start:demo": "ng serve --build-target turismo-app:build:demo"
   },

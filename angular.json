@@ -29,7 +29,10 @@
                 "output": "assets/leaflet"
               },
               "src/_headers",
-              "src/_redirects"
+              "src/_redirects",
+              "src/robots.txt",
+              "src/sitemap.xml",
+              "src/llms.txt"
             ],
             "styles": [
               "src/styles.css"

@@ -14,6 +14,7 @@ export interface Experience {
   meetingInstructions: string;
   whatsapp: string;
   imageUrl: string;
+  previewUrl?: string;
   rnt: string;
   cancellationPolicy: string;
   price: number;

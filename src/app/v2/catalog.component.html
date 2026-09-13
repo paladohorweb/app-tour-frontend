@@ -37,7 +37,7 @@
     <label>Presupuesto por persona (COP)<input type="number" min="0" [(ngModel)]="maxPrice" placeholder="Sin límite" /></label>
     <label>Ordenar por<select [(ngModel)]="sort"><option value="">Orden original</option><option value="price">Menor precio</option><option value="price-desc">Mayor precio</option></select></label>
     <button class="v2-btn" (click)="reset()">Limpiar filtros</button>
-    <a routerLink="/mapa" [queryParams]="{q:q,kind:kind}">Ver destino en el mapa ↗</a>
+    <a class="v2-back" routerLink="/mapa" [queryParams]="{q:q,kind:kind}">Ver destino en el mapa ↗</a>
   </div>
   <p role="status" *ngIf="loading">Buscando experiencias…</p>
   <div class="v2-error" role="alert" *ngIf="error">

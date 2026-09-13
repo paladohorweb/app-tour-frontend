@@ -49,3 +49,5 @@
 }
 :host .app-footer{background:#163f34;color:#f7f9ed;border-top:5px solid #d7ee60}
 :host .footer-logo{background:#d7ee60;color:#173e34;border-radius:12px}
+
+.footer-title{font-size:1rem}.footer-link{min-height:32px;padding-block:.25rem}

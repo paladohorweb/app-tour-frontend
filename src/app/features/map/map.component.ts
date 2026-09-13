@@ -84,13 +84,20 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase();
-    return this.items.filter(
+    const result = this.items.filter(
       (e) =>
         (!this.kind || e.kind === this.kind) &&
         norm(e.title + ' ' + e.municipality + ' ' + e.department).includes(
           norm(this.q),
         ),
     );
+    if (this.location)
+      result.sort(
+        (a, b) =>
+          this.location!.getLatLng().distanceTo([a.latitude, a.longitude]) -
+          this.location!.getLatLng().distanceTo([b.latitude, b.longitude]),
+      );
+    return result;
   }
   redraw(fit = false) {
     this.layer.clearLayers();
@@ -155,6 +162,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           fillOpacity: 0.06,
         }).addTo(this.map!);
         this.map?.setView(ll, 13);
+        this.redraw(false);
       },
       () => {
         if (this.destroyed) return;

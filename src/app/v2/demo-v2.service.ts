@@ -5,7 +5,7 @@ import { DemoApiError } from '../core/demo/demo.models';
 import { Experience, Booking, Slot, Notice } from './models';
 @Injectable({ providedIn: 'root' })
 export class DemoV2Service {
-  private key = 'app-guia-demo-v2';
+  private key = 'app-guia-demo-v3';
   private state: any;
   constructor(
     private session: DemoSessionService,
@@ -17,71 +17,20 @@ export class DemoV2Service {
     if (!this.state) this.seed();
   }
   private seed() {
-    const photos = [
-      'photo-1447933601403-0c6688de566e',
-      'photo-1449158743715-0a90ebb6d2d8',
-      'photo-1492684223066-81342ee5ff30',
-      'photo-1470770841072-f978cf4d019e',
-      'photo-1518638150340-f706e86654de',
-      'photo-1449158743715-0a90ebb6d2d8',
+    const locations: Array<[string, string, string, number, number, Experience['kind'], number, string, string?]> = [
+      ['Jardín: café, cascadas y pueblo', 'Jardín', 'Antioquia', 5.5994, -75.8193, 'TOUR', 85000, 'jardin', 'jardin'],
+      ['Refugio junto al río Quindío', 'Salento', 'Quindío', 4.637, -75.57, 'STAY', 185000, 'salento'],
+      ['Noche de historia en la Plaza Mayor', 'Villa de Leyva', 'Boyacá', 5.633, -73.524, 'EVENT', 68000, 'villa-de-leyva'],
+      ['Guatapé desde la piedra y el agua', 'Guatapé', 'Antioquia', 6.233, -75.158, 'TOUR', 112000, 'guatape', 'guatape'],
+      ['Cartagena: murallas al atardecer', 'Cartagena', 'Bolívar', 10.423, -75.551, 'TOUR', 138000, 'cartagena'],
+      ['Casa colonial para desconectarte', 'Barichara', 'Santander', 6.635, -73.223, 'STAY', 210000, 'barichara'],
+      ['Desfile de silleteros', 'Medellín', 'Antioquia', 6.2442, -75.5812, 'EVENT', 79000, 'medellin-flores', 'medellin-flores'],
+      ['Carnaval: palco y experiencia cultural', 'Barranquilla', 'Atlántico', 10.9639, -74.7964, 'EVENT', 155000, 'barranquilla'],
+      ['Cali vibra: noche de salsa', 'Cali', 'Valle del Cauca', 3.4516, -76.532, 'EVENT', 72000, 'cali'],
+      ['Ruta de piloneras y vallenato', 'Valledupar', 'Cesar', 10.4631, -73.2532, 'EVENT', 88000, 'valledupar'],
+      ['Mompox: magia frente al río', 'Santa Cruz de Mompox', 'Bolívar', 9.2419, -74.4267, 'STAY', 195000, 'mompox'],
     ];
-    const locations = [
-      [
-        'Jardín entre café y montañas',
-        'Jardín',
-        'Antioquia',
-        5.5994,
-        -75.8193,
-        'TOUR',
-        85000,
-      ],
-      [
-        'Una noche en el paisaje cafetero',
-        'Salento',
-        'Quindío',
-        4.637,
-        -75.57,
-        'STAY',
-        145000,
-      ],
-      [
-        'Sabores y música del pueblo',
-        'Villa de Leyva',
-        'Boyacá',
-        5.633,
-        -73.524,
-        'EVENT',
-        65000,
-      ],
-      [
-        'Guatapé: colores junto al agua',
-        'Guatapé',
-        'Antioquia',
-        6.233,
-        -75.158,
-        'TOUR',
-        95000,
-      ],
-      [
-        'Historias frente al mar',
-        'Cartagena',
-        'Bolívar',
-        10.423,
-        -75.551,
-        'TOUR',
-        120000,
-      ],
-      [
-        'Una pausa en Barichara',
-        'Barichara',
-        'Santander',
-        6.635,
-        -73.223,
-        'STAY',
-        160000,
-      ],
-    ];
-    const experiences = locations.map((v, i) => ({
+    const experiences = locations.map((v, i): Experience => ({
       id: i + 1,
       ownerId: 2,
       title: v[0],
@@ -93,13 +42,13 @@ export class DemoV2Service {
       meetingLongitude: v[4],
       kind: v[5],
       price: v[6],
-      description:
-        'Una experiencia de demostración para descubrir el destino con acompañamiento local. Consulta duración, accesibilidad y servicios incluidos con el prestador antes de reservar.',
-      address: 'Parque principal — ubicación ilustrativa',
+      description: `Descubre ${v[1]} con una experiencia preparada por anfitriones locales. Incluye orientación antes de salir, punto de encuentro y acompañamiento durante el plan.`,
+      address: `Zona central de ${v[1]} — ubicación ilustrativa`,
       meetingInstructions:
         'Punto ilustrativo del demo. En una reserva real, el prestador debe indicar el acceso exacto y cómo reconocerlo.',
       whatsapp: '',
-      imageUrl: 'https://images.unsplash.com/' + photos[i] + '?auto=format&fit=crop&w=1000&q=80',
+      imageUrl: `/assets/media/places/${v[7]}.webp`,
+      previewUrl: v[8] ? `/assets/media/previews/${v[8]}.mp4` : undefined,
       rnt: 'DEMO — no corresponde a un registro real',
       cancellationPolicy:
         'Condiciones ilustrativas: solicita cancelaciones o cambios al prestador. Los derechos legales aplicables prevalecen.',

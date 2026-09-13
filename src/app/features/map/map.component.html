@@ -1,64 +1,33 @@
 <section class="map-page">
-  <p class="v2-demo" *ngIf="demo">Explora los planes de ejemplo · Las ubicaciones y precios son ilustrativos.</p>
+  <header class="map-header">
+    <div><p class="map-kicker">EXPLORA COLOMBIA</p><h1>Elige el plan. Encuentra el camino.</h1><p>Descubre experiencias por ubicación, compara precios y abre la ruta hacia el punto de encuentro.</p></div>
+    <button class="location-button" (click)="locate()" [disabled]="locating"><span aria-hidden="true">⌖</span>{{ locating ? "Buscando ubicación…" : "Usar mi ubicación" }}</button>
+  </header>
   <div class="map-toolbar">
-    <h1>Explora Colombia</h1>
-    <label class="visually-hidden" for="map-search">Buscar municipio</label
-    ><input
-      id="map-search"
-      [(ngModel)]="q"
-      (ngModelChange)="redraw(true)"
-      placeholder="Busca un municipio o experiencia"
-    /><select
-      aria-label="Tipo de experiencia"
-      [(ngModel)]="kind"
-      (ngModelChange)="redraw(true)"
-    >
-      <option value="">Todos</option>
-      <option value="TOUR">Tours</option>
-      <option value="STAY">Hospedajes</option>
-      <option value="EVENT">Eventos</option></select
-    ><button (click)="locate()" [disabled]="locating">
-      {{ locating ? "Localizando…" : "Mi ubicación" }}
-    </button>
+    <label><span>¿A dónde quieres ir?</span><input id="map-search" [(ngModel)]="q" (ngModelChange)="redraw(true)" placeholder="Municipio o experiencia" /></label>
+    <label><span>Tipo de plan</span><select [(ngModel)]="kind" (ngModelChange)="redraw(true)"><option value="">Todos los planes</option><option value="TOUR">Tours</option><option value="STAY">Hospedajes</option><option value="EVENT">Eventos</option></select></label>
+    <div class="result-count"><strong>{{ filtered.length }}</strong><span>planes en el mapa</span></div>
   </div>
-  <div class="map-legend"><span>● Tours</span><span>● Hospedajes</span><span>● Eventos</span><button (click)="redraw(true)">Ver todos los resultados</button></div>
-  <p class="map-error" role="alert" *ngIf="error">
-    {{ error }} <button (click)="load()">Reintentar</button>
-  </p>
+  <p class="map-error" role="alert" *ngIf="error">{{ error }} <button (click)="load()">Reintentar</button></p>
   <div class="map-layout">
-    <div id="map" aria-label="Mapa de experiencias en Colombia"></div>
-    <aside class="map-results">
-      <p role="status">
-        {{ loading ? "Cargando…" : filtered.length + " experiencias" }}
-      </p>
+    <div class="map-stage">
+      <div id="map" aria-label="Mapa de experiencias en Colombia"></div>
+      <div class="map-key" aria-label="Leyenda"><span><i class="tour"></i>Tour</span><span><i class="stay"></i>Hospedaje</span><span><i class="event"></i>Evento</span></div>
       <article class="map-selected" *ngIf="selected">
-        <img class="selected-cover" [src]="selected.imageUrl" [alt]="selected.title" />
+        <img class="selected-cover" [src]="selected.imageUrl" [alt]="selected.title" width="360" height="200" />
         <button class="close-selection" (click)="selected = undefined" aria-label="Cerrar selección">×</button>
-        <h2>{{ selected.title }}</h2>
-        <p>{{ selected.meetingInstructions }}</p>
-        <div class="v2-actions">
-          <a [routerLink]="['/experiencias', selected.id]">Ver disponibilidad</a
-          ><a
-            [href]="directions(selected)"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Cómo llegar ↗</a
-          >
-        </div>
+        <div class="selected-copy"><p>{{ selected.municipality }} · {{ selected.department }}</p><h2>{{ selected.title }}</h2><strong>{{selected.price | currency:'COP':'symbol-narrow':'1.0-0'}} <small>/ persona</small></strong><div class="selected-actions"><a [routerLink]="['/experiencias', selected.id]">Ver fechas</a><a [href]="directions(selected)" target="_blank" rel="noopener noreferrer">Cómo llegar ↗</a></div></div>
       </article>
+    </div>
+    <aside class="map-results">
+      <div class="results-heading"><div><p>PLANES CERCA DEL DESTINO</p><h2>Explora y compara</h2></div><button (click)="redraw(true)">Ver todos</button></div>
+      <p role="status" class="loading-result" *ngIf="loading">Cargando experiencias…</p>
       <button class="map-item" *ngFor="let e of filtered" (click)="select(e)" [class.is-selected]="selected?.id === e.id" [attr.aria-pressed]="selected?.id === e.id">
-        <img [src]="e.imageUrl" alt="" loading="lazy" /><span
-          ><strong>{{ e.title }}</strong
-          ><small
-            >{{ e.municipality }} ·
-            {{ e.price | currency: "COP" : "symbol-narrow" : "1.0-0" }}</small
-          ></span
-        >
-        <small *ngIf="location">{{distance(e)}} km en línea recta</small>
+        <img [src]="e.imageUrl" alt="" loading="lazy" width="96" height="96" />
+        <span><small class="map-type">{{e.kind === 'STAY' ? 'HOSPEDAJE' : e.kind === 'EVENT' ? 'EVENTO' : 'TOUR'}}</small><strong>{{ e.title }}</strong><small>{{ e.municipality }}<ng-container *ngIf="location"> · {{distance(e)}} km</ng-container></small><b>{{e.price | currency:'COP':'symbol-narrow':'1.0-0'}}</b></span>
       </button>
-      <p *ngIf="!loading && !filtered.length">
-        Prueba otro municipio o tipo de experiencia.
-      </p>
+      <p class="empty-result" *ngIf="!loading && !filtered.length">No encontramos planes con estos filtros. Prueba otro municipio.</p>
     </aside>
   </div>
+  <p class="map-disclaimer" *ngIf="demo">Demo: ubicaciones y precios ilustrativos. En producción, cada prestador registra y valida su punto de encuentro.</p>
 </section>

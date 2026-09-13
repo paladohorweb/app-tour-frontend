@@ -15,14 +15,15 @@
       type="button"
       (click)="toggleMenu()"
       [attr.aria-expanded]="menuOpen"
-      aria-label="Abrir navegación">
+      [attr.aria-label]="menuOpen ? 'Cerrar navegación' : 'Abrir navegación'"
+      aria-controls="main-navigation">
 
       <span class="toggler-line"></span>
       <span class="toggler-line"></span>
       <span class="toggler-line"></span>
     </button>
 
-    <div class="collapse navbar-collapse" [class.show]="menuOpen">
+    <div id="main-navigation" class="collapse navbar-collapse" [class.show]="menuOpen">
 
       <ul class="navbar-nav me-auto mb-3 mb-lg-0 gap-lg-1">
         <li class="nav-item">

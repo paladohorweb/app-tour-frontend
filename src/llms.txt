@@ -1,0 +1,12 @@
+# Juan te guía
+
+Juan te guía es una plataforma colombiana para descubrir tours, hospedajes y eventos publicados por prestadores locales.
+
+## Secciones públicas
+- /: presentación y experiencias destacadas
+- /tours: catálogo de experiencias
+- /mapa: exploración geográfica y navegación
+- /legal/terminos: términos del servicio
+- /legal/privacidad: política de tratamiento de datos
+
+Las experiencias y los precios de esta versión son datos ilustrativos de demostración.
