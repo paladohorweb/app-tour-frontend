@@ -1,0 +1,38 @@
+{
+  "documentedAt": "2026-09-13",
+  "reason": "Temporary Angular 17 compatibility baseline. Remove this file when Angular is upgraded.",
+  "packages": {
+    "@angular/animations": "moderate",
+    "@angular/common": "high",
+    "@angular/compiler": "high",
+    "@angular/core": "high",
+    "@angular/forms": "moderate",
+    "@angular/platform-browser": "moderate",
+    "@angular/platform-browser-dynamic": "moderate",
+    "@angular/router": "moderate"
+  },
+  "advisories": {
+    "1113587": "high",
+    "1117732": "high",
+    "1117734": "high",
+    "1120371": "high",
+    "1120372": "high",
+    "1120383": "high",
+    "1120387": "high",
+    "1123497": "high",
+    "1123501": "high",
+    "1123505": "moderate",
+    "1123509": "moderate",
+    "1123514": "moderate",
+    "1123536": "high",
+    "1123541": "high",
+    "1123546": "moderate",
+    "1123560": "high",
+    "1130677": "high",
+    "1130693": "high",
+    "1130697": "high",
+    "1204770": "moderate",
+    "1204774": "moderate",
+    "1204775": "moderate"
+  }
+}

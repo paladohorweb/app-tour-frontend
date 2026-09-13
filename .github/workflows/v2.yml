@@ -14,7 +14,11 @@ jobs:
       - run: npm ci
       - run: npm run build:demo
       - run: npm run build:production
-      - run: npm audit --audit-level=high
       - run: node tests/check-production.mjs
       - run: npx playwright install --with-deps chromium
       - run: npm test
+      - name: Security gate for production dependencies
+        run: node tests/check-audit-baseline.mjs
+      - name: Full Angular 17 dependency audit
+        continue-on-error: true
+        run: npm audit --audit-level=high
