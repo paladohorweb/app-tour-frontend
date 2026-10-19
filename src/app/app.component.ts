@@ -1,3 +1,4 @@
+import { JgmLicenseNoticeComponent } from './core/license/license-notice';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -22,6 +23,7 @@ import { LoadingService } from './core/services/loading.service';
   selector: 'app-root',
   standalone: true,
   imports: [
+    JgmLicenseNoticeComponent,
     CommonModule,
     RouterOutlet,
     NavbarComponent,
@@ -110,3 +112,4 @@ export class AppComponent implements OnInit, OnDestroy {
     return 'default';
   }
 }
+

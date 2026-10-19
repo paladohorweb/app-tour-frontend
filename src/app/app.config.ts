@@ -1,3 +1,4 @@
+import { jgmLicenseInterceptor } from './core/license/license-notice';
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
@@ -18,6 +19,7 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
 
-    provideHttpClient(withInterceptors([loadingInterceptor, jwtInterceptor])),
+    provideHttpClient(withInterceptors([jgmLicenseInterceptor,loadingInterceptor, jwtInterceptor])),
   ],
 };
+
