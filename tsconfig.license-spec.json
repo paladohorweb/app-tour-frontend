@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/license-spec",
+    "types": [
+      "jasmine"
+    ]
+  },
+  "include": [
+    "src/app/core/license/license-notice.spec.ts",
+    "src/**/*.d.ts"
+  ]
+}

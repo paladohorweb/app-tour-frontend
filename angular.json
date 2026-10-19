@@ -103,6 +103,20 @@
           "options": {
             "buildTarget": "turismo-app:build"
           }
+        },
+        "test-license": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "tsconfig.license-spec.json",
+            "include": [
+              "src/app/core/license/license-notice.spec.ts"
+            ],
+            "browsers": "ChromeHeadless"
+          }
         }
       }
     }

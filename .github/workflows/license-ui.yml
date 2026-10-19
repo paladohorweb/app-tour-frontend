@@ -1,0 +1,22 @@
+name: License UI functional checks
+on:
+  push:
+    branches: [feature/v2-angular17]
+    paths: ['src/app/core/license/**', 'angular.json', 'tsconfig.license-spec.json', '.github/workflows/license-ui.yml']
+  pull_request:
+    paths: ['src/app/core/license/**', 'angular.json', 'tsconfig.license-spec.json', '.github/workflows/license-ui.yml']
+permissions:
+  contents: read
+jobs:
+  license-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.20.2
+          cache: npm
+      - run: npm ci
+      - run: npx ng run turismo-app:test-license --watch=false
+# Security audits remain enforced in v2.yml; this job validates only the new feature.
